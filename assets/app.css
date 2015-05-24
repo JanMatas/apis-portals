@@ -1,0 +1,45 @@
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+.profile-image-container{
+    position:relative;
+    
+    padding-left : 20%;
+	padding-right : 20%;
+}
+.icon-container{
+    position:relative;
+    margin: 0 auto;
+    margin-left : 30%;
+	margin-right : 30%;
+}
+
+.center-block {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+ }
+
+
+.padded {
+	padding : 2%;
+}
+
+
+.container-body {
+    padding-top: 65px; 
+    padding-bottom: 65px;
+    min-height: 100%;
+    width: 100% !important;
+    height: 100% !important;
+
+}
+
+.map {
+    outline: 1px solid black;
+    height:  100%;
+
+    margin: 5px;
+}

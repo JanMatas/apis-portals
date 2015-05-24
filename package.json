@@ -1,0 +1,20 @@
+{
+  "name": "apis-portals",
+  "version": "0.0.1",
+  "description": "Apis portals main server",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Jan Matas",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.12.4",
+    "bower": "^1.4.1",
+    "express": "^4.12.4",
+    "gulp": "^3.8.11",
+    "gulp-concat": "^2.5.2",
+    "gulp-nodemon": "^2.0.3"
+  }
+}
