@@ -14,12 +14,13 @@
     
     <script src="js/chartjs/Chart.js"></script>
     <script src="js/chartjs/angular-chart.js"></script>
-    <script src="js/dist/vis.js"></script>
-
+    <script src="js/vis/vis.js"></script>
+    <script src="js/ui-bootstrap-tpls-0.13.0.min.js"></script>
     <link rel="stylesheet" href="css/angular-chart.css">
     <link rel="stylesheet" href="css/vis.min.css">
 
-    <script src="/angular-vis.js"></script>
+
+
 
 
     <script src="/app.js"></script>
@@ -30,7 +31,7 @@
 	
 	<div ng-include="'/navbars/navbar-header.html'"></div>
 
-    <div ng-include="'/map.html'" class="container container-body"></div>
+    <div ng-view class="container container-body"></div>
     
     <div ng-include="'/navbars/navbar-footer.html'"></div>
     
