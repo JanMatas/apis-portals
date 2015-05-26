@@ -6,6 +6,6 @@ module.exports = {
 		user :'root',
 		password: '092468',
 		database: 'apis_portals',
-		debug:true
+		debug:false
 	}
 }

@@ -12,4 +12,29 @@ var getConnection = function(callback) {
     });
 };
 
-module.exports = getConnection;
+var fetchData = function(query, cb) {
+		getConnection( function (err, connection) {
+		// handle errors
+		if (err) {
+			connection.release();
+			cb(err, data)
+			return;
+		}
+		connection.on('error', function(err) {   
+			cb(err, data)
+            return;   
+        });
+
+		connection.query(query,function(err,rows){
+            connection.release();
+			cb(err, rows);
+        });
+
+	})
+
+}
+
+module.exports = {
+	connection : getConnection,
+	fetchData : fetchData
+}

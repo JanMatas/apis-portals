@@ -24540,13 +24540,13 @@ return /******/ (function(modules) { // webpackBootstrap
             selection.forEach(function (selection) {
               var node = selection.node;
               // only move the node if it was not fixed initially
-              if (selection.xFixed === false) {
+             
                 node.x = _this2.canvas._XconvertDOMtoCanvas(_this2.canvas._XconvertCanvasToDOM(selection.x) + deltaX);
-              }
+              
               // only move the node if it was not fixed initially
-              if (selection.yFixed === false) {
+             
                 node.y = _this2.canvas._YconvertDOMtoCanvas(_this2.canvas._YconvertCanvasToDOM(selection.y) + deltaY);
-              }
+              
             });
 
             // start the simulation of the physics
@@ -24581,8 +24581,8 @@ return /******/ (function(modules) { // webpackBootstrap
         if (selection && selection.length) {
           selection.forEach(function (s) {
             // restore original xFixed and yFixed
-            s.node.options.fixed.x = s.xFixed;
-            s.node.options.fixed.y = s.yFixed;
+            s.node.options.fixed.x = true;
+            s.node.options.fixed.y = true;
           });
           this.body.emitter.emit('startSimulation');
         } else {

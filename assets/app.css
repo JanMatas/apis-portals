@@ -37,6 +37,13 @@
 
 }
 
+.full-size {
+    min-height: 100%;
+    width: 100% !important;
+    height: 100% !important;
+
+}
+
 .map {
     outline: 1px solid black;
     height:  100%;
