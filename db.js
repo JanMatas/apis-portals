@@ -12,7 +12,7 @@ var getConnection = function(callback) {
     });
 };
 
-var fetchData = function(query, cb) {
+var executeQuery = function(query, cb) {
 		getConnection( function (err, connection) {
 		// handle errors
 		if (err) {
@@ -36,5 +36,6 @@ var fetchData = function(query, cb) {
 
 module.exports = {
 	connection : getConnection,
-	fetchData : fetchData
+	fetchData : executeQuery,
+	executeQuery : executeQuery
 }

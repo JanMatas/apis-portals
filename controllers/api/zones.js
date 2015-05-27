@@ -1,28 +1,19 @@
 var router = require('express').Router();
-var connection = require('../../db');
+var db = require('../../db');
 
 router.get('/',function(req, res, next){
 
-	connection( function (err, connection) {
-		// handle errors
-		if (err) {
-			connection.release();
-			return res.send(100, "Error in connection database");
-		}
-		connection.on('error', function(err) {      
-              res.send(100, "Error in connection database");
-              return;     
-        });
+	query = "SELECT * FROM Zone"
+	db.fetchData(query, function(err, zones) {
 
-		query = "select * from Zone";
-		connection.query(query,function(err,rows){
-            connection.release();
-            if(!err) {
-                res.json(rows);
-            }           
-        });
+			if(err) {
+				return res.send(500, err);
+			}
 
-	})
+			return res.json(zones);
+		})
+			
+
 })
 
 module.exports = router;

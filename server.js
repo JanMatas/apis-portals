@@ -17,7 +17,7 @@ app.use('/api/employees', require('./controllers/api/emp'));
 app.use('/api/zones', require('./controllers/api/zones'));
 app.use('/api/session', require('./controllers/api/session'));
 app.use('/api/map', require('./controllers/api/map'));
-
+app.use('/api/transaction', require('./controllers/api/transactionPortal.js'));
 
 var server = app.listen(3000, function(){
 	console.log('Server listening on', 3000)

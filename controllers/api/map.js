@@ -38,4 +38,49 @@ router.get('/', function(req, res, next) {
 
 });
 
+router.post('/', function(req, res, next) {
+	if(config.auth) {
+		if (!req.headers['x-auth']) {
+			return res.send(401);
+		}
+		var token = req.headers['x-auth'];
+		var auth = jwt.decode(token, config.secret);
+	}
+	var nodePositions = req.body.nodePositions
+ 	console.log(nodePositions)
+	for (n in nodePositions) {
+		// make sure its a node, not an edge
+		if (n < 100000) {
+			console.log(nodePositions[n])
+			var query = "";
+			if (n < 10000) { 
+				//its a zone
+				query = "UPDATE Zone SET " +
+					"map_x=(" + nodePositions[n].x + 
+					"), map_y=(" + nodePositions[n].y +
+					") WHERE id=" + n;
+			} else {
+				query = "UPDATE Portal SET " +
+					"map_x=(" + nodePositions[n].x + 
+					"), map_y=(" + nodePositions[n].y +
+					") WHERE id=" + (n - 10000);
+
+			}
+			console.log(query);
+			db.executeQuery(query, function (err) {
+				if (err) {
+					console.log(err)
+					return res.send(500, err);
+				} 
+				
+			})
+		}
+	}
+	res.send(201)
+
+});
+
+
+
+
 module.exports = router
