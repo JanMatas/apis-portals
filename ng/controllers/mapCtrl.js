@@ -2,9 +2,9 @@
 //Offset of portal node
 var PORTAL_NODE_OFFSET = 10000;
 
-app.controller('MapCtrl', function($scope, MapSvc) {
+/** This is the controller for the map on home screen*/
+app.controller('MapCtrl', function($scope, $modal, MapSvc) {
     $scope.name = name;
-
     var createData = function(createNetwork) {
 
         MapSvc.fetch(1).success(function(data) {
@@ -41,10 +41,9 @@ app.controller('MapCtrl', function($scope, MapSvc) {
                     })
 
                 }
-
             }
             for (p in data.portals) {
-                console.log(p)
+
                 if (data.portals[p].map_x === null || data.portals[p].map_x === null) {
                     nodes.push({
                         id: data.portals[p].id + PORTAL_NODE_OFFSET,
@@ -82,8 +81,7 @@ app.controller('MapCtrl', function($scope, MapSvc) {
 
                 })
             }
-            console.log(nodes)
-            console.log(edges)
+
 
             createNetwork(nodes, edges);
         })
@@ -113,6 +111,44 @@ app.controller('MapCtrl', function($scope, MapSvc) {
         $scope.network = network;
         $scope.nodesDataSet = nodesDataSet;
         $scope.edgesDataSet = edgesDataSet;
+       
+		network.on( 'click', function(properties) {
+			
+			if (properties.nodes.length != 0) {
+				if (properties.nodes <= PORTAL_NODE_OFFSET) {
+					var modalInstance = $modal.open({
+
+					    templateUrl: 'modals/mapZoneModal.html',
+					    controller: 'MapZoneModalInstance',
+					    size: 'lg',
+					    resolve : {
+					    	node : function() {
+
+					      		return properties.nodes[0];
+					      	}, 
+					      	label : function() {
+
+					      		return nodesDataSet.get(properties.nodes)[0].label;
+					      	}
+					    }
+					});
+ 
+			    } else {
+					var modalInstance = $modal.open({
+					    templateUrl: 'modals/mapPortalModal.html',
+					    controller: 'MapPortalModalInstance',
+					    size: 'lg',
+					    resolve : {
+					    	node : function() {
+					      		return properties.nodes;
+					      	}
+					    }
+					});
+				}
+
+			}
+		});
+       /*
         network.on('stabilized', function() {
             $scope.saveConfig()
             network.setOptions({
@@ -120,22 +156,22 @@ app.controller('MapCtrl', function($scope, MapSvc) {
                     fixed: true
                 }
             })
-        })
+        })*/
 
-        console.log(network);
+
     }
 
     createData(createNetwork)
-        // create an array with edges
-
-    // create a network
 
     var temp = [];
 
     $scope.saveConfig = function() {
         nodesPositions = $scope.network.getPositions();
         MapSvc.save(nodesPositions);
-
         
     }
+
+
 });
+
+

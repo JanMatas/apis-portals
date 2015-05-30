@@ -80,64 +80,13 @@ app.controller('EmpProfileCtrl', function ($scope, EmpSvc, $routeParams) {
   )
   
 });
-app.controller('ModalDemoCtrl', function ($scope, $modal, $log) {
-
-  $scope.items = ['item1', 'item2', 'item3'];
-
-  $scope.animationsEnabled = true;
-
-  $scope.open = function (size) {
-
-    var modalInstance = $modal.open({
-      animation: $scope.animationsEnabled,
-      templateUrl: 'myModalContent.html',
-      controller: 'ModalInstanceCtrl',
-      size: size,
-      resolve: {
-        items: function () {
-          return $scope.items;
-        }
-      }
-    });
-
-    modalInstance.result.then(function (selectedItem) {
-      $scope.selected = selectedItem;
-    }, function () {
-      $log.info('Modal dismissed at: ' + new Date());
-    });
-  };
-
-  $scope.toggleAnimation = function () {
-    $scope.animationsEnabled = !$scope.animationsEnabled;
-  };
-
-});
-
-// Please note that $modalInstance represents a modal window (instance) dependency.
-// It is not the same as the $modal service used above.
-
-app.controller('ModalInstanceCtrl', function ($scope, $modalInstance, items) {
-
-  $scope.items = items;
-  $scope.selected = {
-    item: $scope.items[0]
-  };
-
-  $scope.ok = function () {
-    $modalInstance.close($scope.selected.item);
-  };
-
-  $scope.cancel = function () {
-    $modalInstance.dismiss('cancel');
-  };
-});
 
 //Offset of portal node
 var PORTAL_NODE_OFFSET = 10000;
 
-app.controller('MapCtrl', function($scope, MapSvc) {
+/** This is the controller for the map on home screen*/
+app.controller('MapCtrl', function($scope, $modal, MapSvc) {
     $scope.name = name;
-
     var createData = function(createNetwork) {
 
         MapSvc.fetch(1).success(function(data) {
@@ -174,10 +123,9 @@ app.controller('MapCtrl', function($scope, MapSvc) {
                     })
 
                 }
-
             }
             for (p in data.portals) {
-                console.log(p)
+
                 if (data.portals[p].map_x === null || data.portals[p].map_x === null) {
                     nodes.push({
                         id: data.portals[p].id + PORTAL_NODE_OFFSET,
@@ -215,8 +163,7 @@ app.controller('MapCtrl', function($scope, MapSvc) {
 
                 })
             }
-            console.log(nodes)
-            console.log(edges)
+
 
             createNetwork(nodes, edges);
         })
@@ -246,6 +193,44 @@ app.controller('MapCtrl', function($scope, MapSvc) {
         $scope.network = network;
         $scope.nodesDataSet = nodesDataSet;
         $scope.edgesDataSet = edgesDataSet;
+       
+		network.on( 'click', function(properties) {
+			
+			if (properties.nodes.length != 0) {
+				if (properties.nodes <= PORTAL_NODE_OFFSET) {
+					var modalInstance = $modal.open({
+
+					    templateUrl: 'modals/mapZoneModal.html',
+					    controller: 'MapZoneModalInstance',
+					    size: 'lg',
+					    resolve : {
+					    	node : function() {
+
+					      		return properties.nodes[0];
+					      	}, 
+					      	label : function() {
+
+					      		return nodesDataSet.get(properties.nodes)[0].label;
+					      	}
+					    }
+					});
+ 
+			    } else {
+					var modalInstance = $modal.open({
+					    templateUrl: 'modals/mapPortalModal.html',
+					    controller: 'MapPortalModalInstance',
+					    size: 'lg',
+					    resolve : {
+					    	node : function() {
+					      		return properties.nodes;
+					      	}
+					    }
+					});
+				}
+
+			}
+		});
+       /*
         network.on('stabilized', function() {
             $scope.saveConfig()
             network.setOptions({
@@ -253,25 +238,26 @@ app.controller('MapCtrl', function($scope, MapSvc) {
                     fixed: true
                 }
             })
-        })
+        })*/
 
-        console.log(network);
+
     }
 
     createData(createNetwork)
-        // create an array with edges
-
-    // create a network
 
     var temp = [];
 
     $scope.saveConfig = function() {
         nodesPositions = $scope.network.getPositions();
         MapSvc.save(nodesPositions);
-
         
     }
+
+
 });
+
+
+
 app.controller("PieCtrl", function ($scope) {
 	$scope.test = "ahoj";
   $scope.labels = ["Download Sales", "In-Store Sales", "Mail-Order Sales"];
@@ -328,3 +314,77 @@ app.service('ZonesSvc', function($http) {
 		return $http.get('/api/zones')
 	}
 })
+app.controller('ModalDemoCtrl', function ($scope, $modal, $log) {
+
+  $scope.items = ['item1', 'item2', 'item3'];
+
+  $scope.animationsEnabled = true;
+
+  $scope.open = function (size) {
+
+    var modalInstance = $modal.open({
+      animation: $scope.animationsEnabled,
+      templateUrl: 'modals/loginModal.html',
+      controller: 'ModalInstanceCtrl',
+      size: size,
+      resolve: {
+        items: function () {
+          return $scope.items;
+        }
+      }
+    });
+
+    modalInstance.result.then(function (selectedItem) {
+      $scope.selected = selectedItem;
+    }, function () {
+      $log.info('Modal dismissed at: ' + new Date());
+    });
+  };
+
+  $scope.toggleAnimation = function () {
+    $scope.animationsEnabled = !$scope.animationsEnabled;
+  };
+
+});
+
+// Please note that $modalInstance represents a modal window (instance) dependency.
+// It is not the same as the $modal service used above.
+
+app.controller('ModalInstanceCtrl', function ($scope, $modalInstance, items) {
+
+  $scope.items = items;
+  $scope.selected = {
+    item: $scope.items[0]
+  };
+
+  $scope.ok = function () {
+    $modalInstance.close($scope.selected.item);
+  };
+
+  $scope.cancel = function () {
+    $modalInstance.dismiss('cancel');
+  };
+});
+app.controller('MapPortalModalInstance', function ($scope, $modalInstance, $http) {
+
+  	$scope.cancel = function () {
+    	$modalInstance.dismiss('cancel');
+  	};
+});
+app.controller('MapZoneModalInstance', function ($scope, $modalInstance, $http, node, label) {
+  	$scope.name = label;
+  	$http.get('/api/positionInfo/zone?zoneId='+node).success(function(data){
+  		$scope.emps = [];
+  		for (x in data) {
+	  		$scope.emps.push({
+	          id : data[x].id,
+	          firstname : data[x].firstname,
+	          lastname : data[x].lastname,
+	          img : '/images/emps/' + data[x].id + '.jpg' 		
+	  		})
+  		}
+  	})
+  	$scope.cancel = function () {
+    	$modalInstance.dismiss('cancel');
+  	};
+});

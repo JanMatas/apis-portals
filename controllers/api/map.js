@@ -16,7 +16,6 @@ router.get('/', function(req, res, next) {
 
 	var query = "SELECT * FROM Zone z where buildingId = " + req.query.buildingID;
 
-	console.log(query)
 	
 	db.fetchData(query, function(err, zones) {
 		query = "SELECT * FROM Portal where buildingId = " + req.query.buildingID;

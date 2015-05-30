@@ -15,20 +15,20 @@ var getConnection = function(callback) {
 var executeQuery = function(query, cb) {
 		getConnection( function (err, connection) {
 		// handle errors
-		if (err) {
-			connection.release();
-			cb(err, data)
-			return;
-		}
-		connection.on('error', function(err) {   
-			cb(err, data)
-            return;   
-        });
+			if (err) {
+				connection.release();
+				cb(err, data)
+				return;
+			}
+			connection.on('error', function(err) {   
+				cb(err, data)
+	            return;   
+	        });
 
-		connection.query(query,function(err,rows){
-            connection.release();
-			cb(err, rows);
-        });
+			connection.query(query,function(err,rows){
+	            connection.release();
+				cb(err, rows);
+	        });
 
 	})
 
