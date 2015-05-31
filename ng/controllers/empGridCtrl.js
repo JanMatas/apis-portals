@@ -1,6 +1,4 @@
 app.controller('EmpGridCtrl', function($scope, EmpSvc) {
-
-
     $scope.departments = []
 
     var splitIntoDepartments = function(emps) {

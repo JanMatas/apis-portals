@@ -1,5 +1,7 @@
 var mysql = require('mysql');
 
+//TODO connections are not actually pooling because of HEROKU timeouts - needs solution
+
 // Loads db configuration from config.js
 var config = require('./config');
 
@@ -11,7 +13,9 @@ var pool = mysql.createPool(config.db);
 	the function to be executed */
 var getConnection = function(callback) {
     pool.getConnection(function(err, connection) {
+        console.log(err);
         callback(err, connection);
+
     });
 };
 
@@ -20,18 +24,18 @@ var executeQuery = function(query, cb) {
     getConnection(function(err, connection) {
         // handle errors
         if (err) {
-            connection.release();
-            cb(err, data)
+            connection.destroy()
+            cb(err, undefined)
             return;
         }
         connection.on('error', function(err) {
-            connection.release();
-            cb(err, data)
+            connection.destroy()
+            cb(err, undefined)
             return;
         });
 
         connection.query(query, function(err, rows) {
-            connection.release();
+            connection.destroy();
             cb(err, rows);
         });
 

@@ -8,7 +8,7 @@ var config = require('../../config')
 router.get('/', function(req, res, next) {
 	if(config.authenticate) {
 		if (!req.headers['x-auth']) {
-			return res.send(401);
+			//return res.send(401);
 		}
 		var token = req.headers['x-auth'];
 		var auth = jwt.decode(token, config.secret);
@@ -23,12 +23,13 @@ router.get('/', function(req, res, next) {
 	
 		db.fetchData(query, function(err, portals) {
 			if(err) {
-				return res.send(500, err);
+				console.log('db err');
+				return next(err);
 			}
 			if (zones == []) {
-				return res.send(204)
+				return next("not found");
 			}
-			return res.json({zones : zones, portals: portals});
+			res.json({zones : zones, portals: portals});
 		})
 			
 

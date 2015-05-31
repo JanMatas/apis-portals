@@ -2,7 +2,7 @@ module.exports = {
 	secret: 'supersecretkey',
 	port: 3000,
 	db: {
-		connectionLimit : 100,
+		connectionLimit : 10,
 		host :'us-cdbr-iron-east-02.cleardb.net',
 		user :'b369ac359b0a33',
 		password: '1839ba5b',

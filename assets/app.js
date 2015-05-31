@@ -37,8 +37,6 @@ app.config(function($routeProvider) {
         })
 })
 app.controller('EmpGridCtrl', function($scope, EmpSvc) {
-
-
     $scope.departments = []
 
     var splitIntoDepartments = function(emps) {
@@ -103,10 +101,11 @@ var PORTAL_NODE_OFFSET = 10000;
 /** This is the controller for the map on home screen*/
 app.controller('MapCtrl', function($scope, $modal, MapSvc) {
     $scope.name = name;
+
     var createData = function(createNetwork) {
-
+    	
         MapSvc.fetch(1).success(function(data) {
-
+        	//$scope.mapReady = true;
             var nodes = [];
             var edges = [];
 
@@ -161,6 +160,7 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
                         y: data.portals[p].map_y,
                         color: '#FFFFA3'
 
+
                     })
 
                 }
@@ -178,10 +178,12 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
                     to: data.portals[p].zoneTo,
 
                 })
+
             }
 
 
             createNetwork(nodes, edges);
+
         })
 
     }
@@ -191,12 +193,19 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
 
         var edgesDataSet = new vis.DataSet(edges);
         var container = document.getElementById('mynetwork');
+        
+
+        
+        console.log(container);
         var data = {
             nodes: nodesDataSet,
             edges: edgesDataSet
         };
 
         options = {
+        	interaction: {
+        		selectConnectedEdges : false
+        	},
             physics: {
                 stabilization: false
             },
@@ -237,8 +246,13 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
                         controller: 'MapPortalModalInstance',
                         size: 'lg',
                         resolve: {
+                            label: function() {
+
+                                return nodesDataSet.get(properties.nodes)[0].label;
+                            },
+
                             node: function() {
-                                return properties.nodes;
+                                return properties.nodes[0] - PORTAL_NODE_OFFSET;
                             }
                         }
                     });
@@ -272,13 +286,11 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
 
 
 });
-app.controller("PieCtrl", function ($scope) {
-	$scope.test = "ahoj";
-  $scope.labels = ["Download Sales", "In-Store Sales", "Mail-Order Sales"];
-  $scope.data = [300, 500, 100];
+app.controller("PieCtrl", function($scope) {
+    $scope.test = "ahoj";
+    $scope.labels = ["Download Sales", "In-Store Sales", "Mail-Order Sales"];
+    $scope.data = [300, 500, 100];
 });
-
-
 app.controller('ZonesCtrl', function($scope, ZonesSvc) {
     $scope.oneAtATime = true;
 
@@ -369,14 +381,59 @@ app.controller('ModalInstanceCtrl', function($scope, $modalInstance, items) {
         $modalInstance.dismiss('cancel');
     };
 });
-app.controller('MapPortalModalInstance', function ($scope, $modalInstance, $http) {
+app.controller('MapPortalModalInstance', function($scope, $window, $modalInstance, $http, label, node) {
 
-  	$scope.cancel = function () {
-    	$modalInstance.dismiss('cancel');
-  	};
+    $http.get('/api/transactionInfo/portal?portalId=' + node + '&limit=5').success(function(data) {
+        $scope.transactions = [];
+        for (x in data) {
+            $scope.transactions.push({
+                empId: data[x].employeeId,
+                firstname: data[x].firstname,
+                lastname: data[x].lastname,
+                img: '/images/emps/' + data[x].employeeId + '.jpg',
+                date: data[x].timestamp*1000
+            })
+        }
+        $scope.isTrans = $scope.transactions.length != 0;
+        console.log($scope.transactions)
+    })
+
+
+    $scope.name = label;
+    $scope.connection = "Established" // TODO implement this
+    $scope.status = "Armed" //TODO implement this
+
+    $scope.armed = true;
+
+    $scope.arm = function() {
+        $scope.status = "Armed"
+        $scope.armed = true;
+    }
+
+    $scope.disarm = function() {
+        $scope.status = "DisArmed"
+        $scope.armed = false;
+    }
+
+    $scope.changeConfig = function() {
+        $modalInstance.dismiss('cancel');
+        $window.location.href = '/#/options';
+    }
+
+    $scope.cancel = function() {
+        $modalInstance.dismiss('cancel');
+    };
+
 });
+
+var createDate = function(timestamp) {
+    var t = timestamp.split(/[- :]/);
+    var d = new Date(t[0], t[1] - 1, t[2], t[3], t[4], t[5]);
+    return d;
+}
 app.controller('MapZoneModalInstance', function ($scope, $modalInstance, $http, node, label) {
   	$scope.name = label;
+    $scope.isEmp = true;
   	$http.get('/api/positionInfo/zone?zoneId='+node).success(function(data){
   		$scope.emps = [];
   		for (x in data) {
@@ -387,6 +444,7 @@ app.controller('MapZoneModalInstance', function ($scope, $modalInstance, $http, 
 	          img : '/images/emps/' + data[x].id + '.jpg' 		
 	  		})
   		}
+      $scope.isEmp = $scope.emps.length != 0;
   	})
   	$scope.cancel = function () {
     	$modalInstance.dismiss('cancel');

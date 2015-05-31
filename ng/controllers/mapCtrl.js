@@ -4,10 +4,11 @@ var PORTAL_NODE_OFFSET = 10000;
 /** This is the controller for the map on home screen*/
 app.controller('MapCtrl', function($scope, $modal, MapSvc) {
     $scope.name = name;
+
     var createData = function(createNetwork) {
-
+    	
         MapSvc.fetch(1).success(function(data) {
-
+        	//$scope.mapReady = true;
             var nodes = [];
             var edges = [];
 
@@ -62,6 +63,7 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
                         y: data.portals[p].map_y,
                         color: '#FFFFA3'
 
+
                     })
 
                 }
@@ -79,10 +81,12 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
                     to: data.portals[p].zoneTo,
 
                 })
+
             }
 
 
             createNetwork(nodes, edges);
+
         })
 
     }
@@ -92,12 +96,19 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
 
         var edgesDataSet = new vis.DataSet(edges);
         var container = document.getElementById('mynetwork');
+        
+
+        
+        console.log(container);
         var data = {
             nodes: nodesDataSet,
             edges: edgesDataSet
         };
 
         options = {
+        	interaction: {
+        		selectConnectedEdges : false
+        	},
             physics: {
                 stabilization: false
             },
@@ -138,8 +149,13 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
                         controller: 'MapPortalModalInstance',
                         size: 'lg',
                         resolve: {
+                            label: function() {
+
+                                return nodesDataSet.get(properties.nodes)[0].label;
+                            },
+
                             node: function() {
-                                return properties.nodes;
+                                return properties.nodes[0] - PORTAL_NODE_OFFSET;
                             }
                         }
                     });

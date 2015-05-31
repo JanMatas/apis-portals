@@ -1,5 +1,6 @@
 app.controller('MapZoneModalInstance', function ($scope, $modalInstance, $http, node, label) {
   	$scope.name = label;
+    $scope.isEmp = true;
   	$http.get('/api/positionInfo/zone?zoneId='+node).success(function(data){
   		$scope.emps = [];
   		for (x in data) {
@@ -10,6 +11,7 @@ app.controller('MapZoneModalInstance', function ($scope, $modalInstance, $http, 
 	          img : '/images/emps/' + data[x].id + '.jpg' 		
 	  		})
   		}
+      $scope.isEmp = $scope.emps.length != 0;
   	})
   	$scope.cancel = function () {
     	$modalInstance.dismiss('cancel');

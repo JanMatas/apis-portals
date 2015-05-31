@@ -3,7 +3,7 @@ var bodyParser = require('body-parser');
 var app = express();
 var config = require('./config')
 
-var port = process.env.PORT || 5000;
+var port = process.env.PORT || config.port;
 
 //Middleware
 app.use(require('./auth')); //Authetification middleware
@@ -21,6 +21,7 @@ app.use('/api/session', require('./controllers/api/session')); //Authetification
 app.use('/api/map', require('./controllers/api/map')); //Endpoint for map view - serves information about nodes
 app.use('/api/transaction', require('./controllers/api/transactionPortal')); //Endpoint for saving transactions
 app.use('/api/positionInfo', require('./controllers/api/positionInfo')); // Endpoint for position of employees
+app.use('/api/transactionInfo', require('./controllers/api/transactionInfo'))
 
 var server = app.listen(port, function() { //Starts the app on given port
     console.log('Server listening on', port)

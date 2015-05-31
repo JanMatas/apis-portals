@@ -1,15 +1,24 @@
 <div class="modal-header">
-    <h3 class="modal-title">I'm a modal!</h3>
+    <h3 class="modal-title">Portal {{name}}</h3>
 </div>
 <div class="modal-body">
-    <ul>
-        <li ng-repeat="item in items">
-            <a ng-click="selected.item = item">{{ item }}</a>
-        </li>
-    </ul>
-    Selected: <b>{{ selected.item }}</b>
+    <h3> Status : {{status}}</h3>
+    <hr>
+    <h3>Last transactions: </h3>
+    <table class="table table-striped">
+        <tr ng-repeat="t in transactions">
+            <td style="width:12%">
+                <a ng-href="/#/profile/{{t.empId}}"><img ng-src="{{t.img}}" class="img-thumbnail img-responsive img-circle"></a>
+            </td>
+            <td style="width:20%"><p>{{ t.firstname }}</p></td>
+            <td style="width:20%">{{ t.lastname }}</td>
+            <td>{{ t.date | date:"dd.MM.yyyy HH:mm:ss"}}</td>
+        </tr>
+    </table>
 </div>
 <div class="modal-footer">
-    <button class="btn btn-primary" ng-click="ok()">OK</button>
+    <button ng-if="armed" class="btn btn-primary" ng-click="disarm()">Disarm</button>
+    <button ng-if="!armed" class="btn btn-primary" ng-click="arm()">Arm</button>
+    <button class="btn btn-primary" ng-click="changeConfig()">Change configuration</button>
     <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
 </div>

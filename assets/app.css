@@ -23,6 +23,7 @@ html, body {
  }
 
 
+
 .padded {
 	padding : 2%;
 }
@@ -49,4 +50,9 @@ html, body {
     outline: 1px solid black;
     height:  100%;
     margin: 5px;
+}
+
+.spinner-centered {
+    vertical-align: middle;
+    font-size: 40px;
 }
