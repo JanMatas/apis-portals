@@ -1,39 +1,86 @@
 //Frontend entry point
 var app = angular.module('app', ['ngRoute', 'chart.js', 'ui.bootstrap']);
 
+app.run(function($rootScope, $location, AuthSvc) {
+
+    $rootScope.$on('$routeChangeStart', function(event, next) {
+        if (!next.$$route) { //Routing to not found always allowed
+            return;
+        }
+        var authorizedRoles = next.$$route.data.authorizedRoles;
+        
+        if (!AuthSvc.isAuthorized(authorizedRoles)) {
+            event.preventDefault();
+
+            if (AuthSvc.isLoggedIn()) {
+
+                console.log('DENY');
+                
+            } else {
+
+                console.log('NOT LOGGED IN');
+            }
+        }
+    });
+});
+app.constant('USER_ROLES', {
+  all: '*',
+  admin: 'admin',
+  editor: 'editor',
+  guest: 'guest'
+})
 // Routing for frontend
 // It associates a controller and a partial view to the
 // given route
-app.config(function($routeProvider) {
+app.config(function($routeProvider, USER_ROLES) {
     $routeProvider
         .when('/', {
             // TODO - decide on entry view
             controller: 'MapCtrl',
-            templateUrl: 'map.html'
+            templateUrl: 'map.html',
+            data : {
+                authorizedRoles: [USER_ROLES.all]
+            }
         })
         .when('/map', {
             // Map view
             controller: 'MapCtrl',
-            templateUrl: 'map.html'
+            templateUrl: 'map.html',
+            data : {
+                authorizedRoles: [USER_ROLES.admin, USER_ROLES.editor]
+            }
         })
         .when('/zones', {
         	// Zones list view
             controller: 'ZonesCtrl',
-            templateUrl: 'zones.html'
+            templateUrl: 'zones.html',
+            data : {
+                authorizedRoles: [USER_ROLES.admin, USER_ROLES.editor]
+            }
         })
         .when('/employees', {
         	// Employee list view
             controller: 'EmpGridCtrl',
-            templateUrl: 'emp_grid.html'
+            templateUrl: 'emp_grid.html',
+            data : {
+                authorizedRoles: [USER_ROLES.admin, USER_ROLES.editor]
+            }
         })
         .when('/profile/:empId', {
         	// Employee profile view
             controller: 'EmpProfileCtrl',
-            templateUrl: 'profile.html'
+            templateUrl: 'profile.html',
+            data : {
+                authorizedRoles: [USER_ROLES.admin, USER_ROLES.editor]
+            }
         })
         .otherwise({
         	// Not implemented
-            templateUrl: 'notImplemented.html'
+            templateUrl: 'notImplemented.html',
+            data : {
+                authorizedRoles: [USER_ROLES.all]
+            }
+
         })
 })
 app.controller('EmpGridCtrl', function($scope, EmpSvc) {
@@ -69,9 +116,10 @@ app.controller('EmpGridCtrl', function($scope, EmpSvc) {
         console.log($scope.departments);
     })
 });
-app.controller('EmpProfileCtrl', function($scope, EmpSvc, $routeParams) {
+app.controller('EmpProfileCtrl', function($scope, EmpSvc, TimeSvc, $routeParams) {
 
     EmpSvc.fetch().success(function(data) {
+
         for (x in data) {
 
             if (data[x].id == $routeParams.empId) {
@@ -93,6 +141,48 @@ app.controller('EmpProfileCtrl', function($scope, EmpSvc, $routeParams) {
         }
 
     })
+
+    TimeSvc.fetch('2015-01-30', '2015-08-10', $routeParams.empId).success( function(data) {
+        console.log(data)
+        $scope.labels2 = []
+        $scope.data2 = []
+
+        
+        for (d in data) {
+            $scope.labels2.push(data[d].name)
+            $scope.data2.push(data[d].timeSum)
+        }
+
+    });
+
+    $scope.labels = ["January", "February", "March", "April", "May", "June", "July"];
+    $scope.series = ['Series A', 'Series B'];
+    $scope.data = [
+        [65, 59, 80, 81, 56, 55, 40],
+        [28, 48, 40, 19, 86, 27, 90]
+    ];
+
+
+
+
+    $scope.select2 = function() {
+        console.log("TEST")
+        $scope.chartTab2Show = true;
+    };
+    $scope.deselect2 = function() {
+        console.log("TEST DESELCT")
+        $scope.chartTab2Show = false;
+    };
+    $scope.select = function() {
+        $scope.chartTabShow = true;
+    };
+    $scope.deselect = function() {
+        $scope.chartTabShow = false;
+    };
+
+    $scope.onClick = function(points, evt) {
+        console.log(points, evt);
+    };
 
 });
 //Offset of portal node
@@ -164,7 +254,6 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
                     })
 
                 }
-
                 edges.push({
 
                     from: data.portals[p].zoneFrom,
@@ -308,6 +397,49 @@ app.controller('ZonesCtrl', function($scope, ZonesSvc) {
     })
     $scope.zoneFilter = '';
 });
+app.factory('AuthSvc', function($http) {
+    var currentUser = null;
+    var loggedIn = false;
+    var token = null;
+    var role = "admin";
+
+    // initMaybe it wasn't meant to work for mpm?ial state says we haven't logged in or out yet...
+    // this tells us we are in public browsing
+    var initialState = true;
+
+    return {
+        initialState: function() {
+            return initialState;
+        },
+        login: function(username, password) {
+
+            return $http.post('api/session', {
+                username: username,
+                password: password
+            }).then(function(val) {
+            	loggedIn = true;
+                token = val.data;
+                $http.defaults.headers.common['X-Auth'] = val.data;
+                
+
+ 
+            })
+        },
+        logout: function() {
+            currentUser = null;
+            authorized = false;
+        },
+        isLoggedIn: function() {
+            return loggedIn;
+        },
+        currentUser: function() {
+            return currentUser;
+        },
+        isAuthorized: function(roles) {
+            return roles.indexOf(role) >= 0 || roles.indexOf("*") >= 0;
+        }
+    };
+})
 app.service('EmpSvc', function($http) {
     this.fetch = function() {
         return $http.get('/api/employees')
@@ -325,58 +457,65 @@ app.service('MapSvc', function($http) {
     }
 })
 
+app.service('TimeSvc', function($http) {
+    this.fetch = function(startDate, endDate, empId) {
+
+        return $http.get('/api/timeInfo?startDate=' + startDate + '&endDate=' + endDate + '&employeeId=' + empId);
+    }
+})
+
 app.service('ZonesSvc', function($http) {
     this.fetch = function() {
         return $http.get('/api/zones')
     }
 })
-app.controller('ModalDemoCtrl', function($scope, $modal, $log) {
+app.controller('ModalDemoCtrl', function($scope, $rootScope, $modal, AuthSvc) {
 
     $scope.items = ['item1', 'item2', 'item3'];
+    $scope.loggedIn = AuthSvc.isLoggedIn();
+    $scope.currentUser = AuthSvc.currentUser();
+    $rootScope.$on('login', function(event) {
+        $scope.currentUser = AuthSvc.currentUser();
+        $scope.loggedIn = AuthSvc.isLoggedIn();
+    });
 
-    $scope.animationsEnabled = true;
 
-    $scope.open = function(size) {
+
+    $scope.open = function() {
 
         var modalInstance = $modal.open({
-            animation: $scope.animationsEnabled,
             templateUrl: 'modals/loginModal.html',
-            controller: 'ModalInstanceCtrl',
-            size: size,
-            resolve: {
-                items: function() {
-                    return $scope.items;
-                }
-            }
+            controller: 'LoginModalInstance',
         });
-
-        modalInstance.result.then(function(selectedItem) {
-            $scope.selected = selectedItem;
-        }, function() {
-            $log.info('Modal dismissed at: ' + new Date());
-        });
-    };
-
-    $scope.toggleAnimation = function() {
-        $scope.animationsEnabled = !$scope.animationsEnabled;
     };
 
 });
 
-// Please note that $modalInstance represents a modal window (instance) dependency.
-// It is not the same as the $modal service used above.
 
-app.controller('ModalInstanceCtrl', function($scope, $modalInstance, items) {
+app.controller('LoginModalInstance', function($scope, $rootScope, $modalInstance, AuthSvc) {
+    $scope.alerts = [];
 
-    $scope.items = items;
-    $scope.selected = {
-        item: $scope.items[0]
+
+
+    $scope.closeAlert = function(index) {
+        $scope.alerts.splice(index, 1);
     };
 
     $scope.ok = function() {
-        $modalInstance.close($scope.selected.item);
-    };
+        AuthSvc.login($scope.username, $scope.password)
+            .then(function(response) {
+                $rootScope.$emit('login');
+                $modalInstance.close();
 
+            }, function(error) {
+                $scope.alerts = [{
+                    type: 'danger',
+                    msg: 'Oh snap! You have probably entered wrong username and password.'
+                }];
+            });
+
+
+    };
     $scope.cancel = function() {
         $modalInstance.dismiss('cancel');
     };

@@ -67,7 +67,6 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
                     })
 
                 }
-
                 edges.push({
 
                     from: data.portals[p].zoneFrom,

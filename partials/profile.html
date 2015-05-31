@@ -49,33 +49,19 @@
                 </div>
                 <br>
                 <br>
-                <div class="row padded">
-                    <ul class="nav nav-tabs" data-tabs="tabs" id="tabs">
-                        <li>
-                            <a data-toggle="tab" href="#orange">Time spent in zones</a>
-                        </li>
-                        <li>
-                            <a data-toggle="tab" href="#yellow">Passes through gates</a>
-                        </li>
-                        <li>
-                            <a data-toggle="tab" href="#green">Employee statistics</a>
-                        </li>
-                    </ul>
-                    <div class="tab-content" id="my-tab-content">
-                        <div class="padded">
-                            <canvas class="chart chart-pie" id="pie"></canvas>
-                        </div>
-                        <div class="tab-pane" id="orange">
-                        </div>
-                        <div class="tab-pane" id="yellow">
-                            <h1>Yellow</h1>
-                            <p>yellow yellow yellow yellow yellow</p>
-                        </div>
-                        <div class="tab-pane" id="green">
-                            <h1>Green</h1>
-                            <p>green green green green green</p>
-                        </div>
-                    </div>
+                <tabset justified="true">
+                    <tab heading="Time in zones" select="select2()" deselect="deselect2()"></tab>
+                    <tab heading="Passes through gates" ></tab>
+                    <tab heading="Statistics" select="select()" deselect="deselect()"></tab>
+                </tabset>
+                <div ng-show="chartTabShow">
+                    TODO : find out what to put here
+                    <canvas id="line" class="chart chart-line" data="data" labels="labels" series="series">
+                    </canvas>
+                </div>
+                <div ng-show="chartTab2Show">
+
+                    <canvas id="pie" class="chart chart-pie" data="data2" labels="labels2" options = "options" legend="true"></canvas>
                 </div>
             </div>
         </div>

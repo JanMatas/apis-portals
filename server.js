@@ -22,6 +22,7 @@ app.use('/api/map', require('./controllers/api/map')); //Endpoint for map view -
 app.use('/api/transaction', require('./controllers/api/transactionPortal')); //Endpoint for saving transactions
 app.use('/api/positionInfo', require('./controllers/api/positionInfo')); // Endpoint for position of employees
 app.use('/api/transactionInfo', require('./controllers/api/transactionInfo'))
+app.use('/api/timeInfo', require('./controllers/api/timeInfo'))
 
 var server = app.listen(port, function() { //Starts the app on given port
     console.log('Server listening on', port)

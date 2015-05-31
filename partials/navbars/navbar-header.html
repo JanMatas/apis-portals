@@ -1,10 +1,30 @@
 <nav class="navbar navbar-inverse navbar-fixed-top">
-    <div class="navbar-header col-xs-8">
+    <div class="navbar-header col-xs-6">
         <a class="navbar-brand" href="/#/home">Project APIS portals</a>
     </div>
-    <div ng-controller="ModalDemoCtrl" class="col-xs-4">
+    <div ng-controller="ModalDemoCtrl" class="col-xs-6">
         <div class="container pull-right">
-            <button class="btn btn-primary pull-right " ng-click="open()">Login</button>
+            <div ng-if="loggedIn">
+                <p class="navbar-brand">Welcome  , {{currentUser}} </p>
+                <span>
+
+                <div class="btn-group" dropdown is-open="status.isopen">
+                    <button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle ng-disabled="disabled">
+                        Choose building <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="choice in items">
+                            <a href>{{choice}}</a>
+                        </li>
+                    </ul>
+                
+                </div>
+                
+                </span>
+            </div>
+            <div ng-if="!loggedIn">
+                <button class="btn btn-primary pull-right " ng-click="open()">Login</button>
+            </div>
         </div>
     </div>
 </nav>

@@ -13,7 +13,7 @@ var pool = mysql.createPool(config.db);
 	the function to be executed */
 var getConnection = function(callback) {
     pool.getConnection(function(err, connection) {
-        console.log(err);
+
         callback(err, connection);
 
     });

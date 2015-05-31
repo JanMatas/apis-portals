@@ -1,50 +1,50 @@
-app.controller('ModalDemoCtrl', function($scope, $modal, $log) {
+app.controller('ModalDemoCtrl', function($scope, $rootScope, $modal, AuthSvc) {
 
     $scope.items = ['item1', 'item2', 'item3'];
+    $scope.loggedIn = AuthSvc.isLoggedIn();
+    $scope.currentUser = AuthSvc.currentUser();
+    $rootScope.$on('login', function(event) {
+        $scope.currentUser = AuthSvc.currentUser();
+        $scope.loggedIn = AuthSvc.isLoggedIn();
+    });
 
-    $scope.animationsEnabled = true;
 
-    $scope.open = function(size) {
+
+    $scope.open = function() {
 
         var modalInstance = $modal.open({
-            animation: $scope.animationsEnabled,
             templateUrl: 'modals/loginModal.html',
-            controller: 'ModalInstanceCtrl',
-            size: size,
-            resolve: {
-                items: function() {
-                    return $scope.items;
-                }
-            }
+            controller: 'LoginModalInstance',
         });
-
-        modalInstance.result.then(function(selectedItem) {
-            $scope.selected = selectedItem;
-        }, function() {
-            $log.info('Modal dismissed at: ' + new Date());
-        });
-    };
-
-    $scope.toggleAnimation = function() {
-        $scope.animationsEnabled = !$scope.animationsEnabled;
     };
 
 });
 
-// Please note that $modalInstance represents a modal window (instance) dependency.
-// It is not the same as the $modal service used above.
 
-app.controller('ModalInstanceCtrl', function($scope, $modalInstance, items) {
+app.controller('LoginModalInstance', function($scope, $rootScope, $modalInstance, AuthSvc) {
+    $scope.alerts = [];
 
-    $scope.items = items;
-    $scope.selected = {
-        item: $scope.items[0]
+
+
+    $scope.closeAlert = function(index) {
+        $scope.alerts.splice(index, 1);
     };
 
     $scope.ok = function() {
-        $modalInstance.close($scope.selected.item);
-    };
+        AuthSvc.login($scope.username, $scope.password)
+            .then(function(response) {
+                $rootScope.$emit('login');
+                $modalInstance.close();
 
+            }, function(error) {
+                $scope.alerts = [{
+                    type: 'danger',
+                    msg: 'Oh snap! You have probably entered wrong username and password.'
+                }];
+            });
+
+
+    };
     $scope.cancel = function() {
         $modalInstance.dismiss('cancel');
     };
