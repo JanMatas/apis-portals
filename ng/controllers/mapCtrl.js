@@ -1,4 +1,3 @@
-
 //Offset of portal node
 var PORTAL_NODE_OFFSET = 10000;
 
@@ -111,44 +110,45 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
         $scope.network = network;
         $scope.nodesDataSet = nodesDataSet;
         $scope.edgesDataSet = edgesDataSet;
-       
-		network.on( 'click', function(properties) {
-			
-			if (properties.nodes.length != 0) {
-				if (properties.nodes <= PORTAL_NODE_OFFSET) {
-					var modalInstance = $modal.open({
 
-					    templateUrl: 'modals/mapZoneModal.html',
-					    controller: 'MapZoneModalInstance',
-					    size: 'lg',
-					    resolve : {
-					    	node : function() {
+        network.on('click', function(properties) {
 
-					      		return properties.nodes[0];
-					      	}, 
-					      	label : function() {
+            if (properties.nodes.length != 0) {
+                if (properties.nodes <= PORTAL_NODE_OFFSET) {
+                    var modalInstance = $modal.open({
 
-					      		return nodesDataSet.get(properties.nodes)[0].label;
-					      	}
-					    }
-					});
- 
-			    } else {
-					var modalInstance = $modal.open({
-					    templateUrl: 'modals/mapPortalModal.html',
-					    controller: 'MapPortalModalInstance',
-					    size: 'lg',
-					    resolve : {
-					    	node : function() {
-					      		return properties.nodes;
-					      	}
-					    }
-					});
-				}
+                        templateUrl: 'modals/mapZoneModal.html',
+                        controller: 'MapZoneModalInstance',
+                        size: 'lg',
+                        resolve: {
+                            node: function() {
 
-			}
-		});
-       /*
+                                return properties.nodes[0];
+                            },
+                            label: function() {
+
+                                return nodesDataSet.get(properties.nodes)[0].label;
+                            }
+                        }
+                    });
+
+                } else {
+                    var modalInstance = $modal.open({
+                        templateUrl: 'modals/mapPortalModal.html',
+                        controller: 'MapPortalModalInstance',
+                        size: 'lg',
+                        resolve: {
+                            node: function() {
+                                return properties.nodes;
+                            }
+                        }
+                    });
+                }
+
+            }
+        });
+
+        /*
         network.on('stabilized', function() {
             $scope.saveConfig()
             network.setOptions({
@@ -168,10 +168,8 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
     $scope.saveConfig = function() {
         nodesPositions = $scope.network.getPositions();
         MapSvc.save(nodesPositions);
-        
+
     }
 
 
 });
-
-

@@ -1,5 +1,6 @@
 module.exports = {
 	secret: 'supersecretkey',
+	port: 3000,
 	db: {
 		connectionLimit : 100,
 		host :'localhost',

@@ -1,12 +1,10 @@
-  <div class="row" id="userList">
-    
-    <div ng-repeat="d in departments" class = "row">
-    <h1> Department: {{d.department}}</h1>
-	    <div ng-repeat="u in d.emps" class="col-xs-4 col-sm-2">
-	      <a ng-href="/#/profile/{{u.id}}"><img ng-src="{{u.img}}" class="img-thumbnail img-responsive img-circle"></a>
-	      <h3 class="text-center">{{u.firstname}} <br> {{u.lastname}}</h3>
-
-	      <hr>
-	    </div>
+<div class="row" id="userList">
+    <div ng-repeat="d in departments" class="row">
+        <h1> Department: {{d.department}}</h1>
+        <div ng-repeat="u in d.emps" class="col-xs-4 col-sm-2">
+            <a ng-href="/#/profile/{{u.id}}"><img ng-src="{{u.img}}" class="img-thumbnail img-responsive img-circle"></a>
+            <h3 class="text-center">{{u.firstname}} <br> {{u.lastname}}</h3>
+            <hr>
+        </div>
     </div>
-  </div>
+</div>

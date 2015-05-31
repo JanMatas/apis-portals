@@ -9,11 +9,9 @@ router.get('/',function(req, res, next){
 			if(err) {
 				return res.send(500, err);
 			}
-
 			return res.json(zones);
 		})
 			
-
 })
 
 module.exports = router;
