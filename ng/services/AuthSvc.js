@@ -18,6 +18,9 @@ app.factory('AuthSvc', function($http) {
                 username: username,
                 password: password
             }).then(function(val) {
+            	
+            	console.log('emmited')
+            	currentUser = username;
             	loggedIn = true;
                 token = val.data;
                 $http.defaults.headers.common['X-Auth'] = val.data;

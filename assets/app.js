@@ -185,6 +185,13 @@ app.controller('EmpProfileCtrl', function($scope, EmpSvc, TimeSvc, $routeParams)
     };
 
 });
+app.controller('FooterCtrl', function($scope,$rootScope, AuthSvc) {
+    $scope.loggedIn = AuthSvc.isLoggedIn();
+    $rootScope.$on('login', function(event) {
+        $scope.loggedIn = AuthSvc.isLoggedIn();
+        console.log("login detected in footer" + $scope.loggedIn)
+    });
+});
 //Offset of portal node
 var PORTAL_NODE_OFFSET = 10000;
 
@@ -417,6 +424,9 @@ app.factory('AuthSvc', function($http) {
                 username: username,
                 password: password
             }).then(function(val) {
+            	
+            	console.log('emmited')
+            	currentUser = username;
             	loggedIn = true;
                 token = val.data;
                 $http.defaults.headers.common['X-Auth'] = val.data;
@@ -504,9 +514,9 @@ app.controller('LoginModalInstance', function($scope, $rootScope, $modalInstance
     $scope.ok = function() {
         AuthSvc.login($scope.username, $scope.password)
             .then(function(response) {
-                $rootScope.$emit('login');
+                
                 $modalInstance.close();
-
+                $rootScope.$emit('login');
             }, function(error) {
                 $scope.alerts = [{
                     type: 'danger',

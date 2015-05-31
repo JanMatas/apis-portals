@@ -33,9 +33,9 @@ app.controller('LoginModalInstance', function($scope, $rootScope, $modalInstance
     $scope.ok = function() {
         AuthSvc.login($scope.username, $scope.password)
             .then(function(response) {
-                $rootScope.$emit('login');
+                
                 $modalInstance.close();
-
+                $rootScope.$emit('login');
             }, function(error) {
                 $scope.alerts = [{
                     type: 'danger',
