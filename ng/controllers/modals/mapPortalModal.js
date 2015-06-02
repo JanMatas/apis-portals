@@ -12,7 +12,7 @@ app.controller('MapPortalModalInstance', function($scope, $window, $modalInstanc
             })
         }
         $scope.isTrans = $scope.transactions.length != 0;
-        console.log($scope.transactions)
+     
     })
 
 

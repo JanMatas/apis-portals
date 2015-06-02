@@ -10,7 +10,7 @@ app.run(function($rootScope, $location, AuthSvc, CONFIG) {
             }
             catch(err) {
                 //accessing unrestricted address
-                console.log("accessing unrestricted address")
+
                 return;
             }
 
@@ -128,7 +128,7 @@ app.controller('EmpGridCtrl', function($scope, EmpSvc) {
 
 
         }
-        console.log($scope.departments);
+    
     })
 });
 app.controller('EmpProfileCtrl', function($scope, EmpSvc, TimeSvc, $routeParams) {
@@ -158,7 +158,7 @@ app.controller('EmpProfileCtrl', function($scope, EmpSvc, TimeSvc, $routeParams)
     })
 
     TimeSvc.fetch('2015-01-30', '2015-08-10', $routeParams.empId).success( function(data) {
-        console.log(data)
+    
         $scope.labels2 = []
         $scope.data2 = []
 
@@ -179,13 +179,13 @@ app.controller('EmpProfileCtrl', function($scope, EmpSvc, TimeSvc, $routeParams)
 
 
 
-
+    //TODO fix this
     $scope.select2 = function() {
-        console.log("TEST")
+
         $scope.chartTab2Show = true;
     };
     $scope.deselect2 = function() {
-        console.log("TEST DESELCT")
+   
         $scope.chartTab2Show = false;
     };
     $scope.select = function() {
@@ -195,9 +195,7 @@ app.controller('EmpProfileCtrl', function($scope, EmpSvc, TimeSvc, $routeParams)
         $scope.chartTabShow = false;
     };
 
-    $scope.onClick = function(points, evt) {
-        console.log(points, evt);
-    };
+
 
 });
 app.controller('LoginCtrl', function($scope,$location, $rootScope, AuthSvc) {
@@ -339,7 +337,7 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
         
 
         
-        console.log(container);
+        
         var data = {
             nodes: nodesDataSet,
             edges: edgesDataSet
@@ -462,7 +460,7 @@ app.controller('ZonesCtrl', function($scope, ZonesSvc) {
 
     ];
     ZonesSvc.fetch().success(function(data) {
-        console.log(data);
+
         for (x in data) {
             $scope.groups.push({
                 title: data[x].name,
@@ -493,7 +491,7 @@ app.factory('AuthSvc', function($http) {
                 password: password
             }).then(function(val) {
             	
-            	console.log('emmited')
+
             	currentUser = username;
             	loggedIn = true;
                 token = val.data;
@@ -511,7 +509,7 @@ app.factory('AuthSvc', function($http) {
             token = null;
             role = null;
             loggedIn = false;
-            console.log(role)
+
         },
         isLoggedIn: function() {
             return loggedIn;
@@ -568,7 +566,7 @@ app.controller('MapPortalModalInstance', function($scope, $window, $modalInstanc
             })
         }
         $scope.isTrans = $scope.transactions.length != 0;
-        console.log($scope.transactions)
+     
     })
 
 

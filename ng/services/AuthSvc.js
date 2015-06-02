@@ -19,7 +19,7 @@ app.factory('AuthSvc', function($http) {
                 password: password
             }).then(function(val) {
             	
-            	console.log('emmited')
+
             	currentUser = username;
             	loggedIn = true;
                 token = val.data;
@@ -37,7 +37,7 @@ app.factory('AuthSvc', function($http) {
             token = null;
             role = null;
             loggedIn = false;
-            console.log(role)
+
         },
         isLoggedIn: function() {
             return loggedIn;

@@ -98,7 +98,7 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
         
 
         
-        console.log(container);
+        
         var data = {
             nodes: nodesDataSet,
             edges: edgesDataSet

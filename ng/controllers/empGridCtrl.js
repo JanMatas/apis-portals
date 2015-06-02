@@ -28,6 +28,6 @@ app.controller('EmpGridCtrl', function($scope, EmpSvc) {
 
 
         }
-        console.log($scope.departments);
+    
     })
 });

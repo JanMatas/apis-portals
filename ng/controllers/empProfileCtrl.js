@@ -25,7 +25,7 @@ app.controller('EmpProfileCtrl', function($scope, EmpSvc, TimeSvc, $routeParams)
     })
 
     TimeSvc.fetch('2015-01-30', '2015-08-10', $routeParams.empId).success( function(data) {
-        console.log(data)
+    
         $scope.labels2 = []
         $scope.data2 = []
 
@@ -46,13 +46,13 @@ app.controller('EmpProfileCtrl', function($scope, EmpSvc, TimeSvc, $routeParams)
 
 
 
-
+    //TODO fix this
     $scope.select2 = function() {
-        console.log("TEST")
+
         $scope.chartTab2Show = true;
     };
     $scope.deselect2 = function() {
-        console.log("TEST DESELCT")
+   
         $scope.chartTab2Show = false;
     };
     $scope.select = function() {
@@ -62,8 +62,6 @@ app.controller('EmpProfileCtrl', function($scope, EmpSvc, TimeSvc, $routeParams)
         $scope.chartTabShow = false;
     };
 
-    $scope.onClick = function(points, evt) {
-        console.log(points, evt);
-    };
+
 
 });

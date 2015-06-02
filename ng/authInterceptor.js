@@ -7,7 +7,7 @@ app.run(function($rootScope, $location, AuthSvc, CONFIG) {
             }
             catch(err) {
                 //accessing unrestricted address
-                console.log("accessing unrestricted address")
+
                 return;
             }
 

@@ -5,7 +5,7 @@ app.controller('ZonesCtrl', function($scope, ZonesSvc) {
 
     ];
     ZonesSvc.fetch().success(function(data) {
-        console.log(data);
+
         for (x in data) {
             $scope.groups.push({
                 title: data[x].name,
