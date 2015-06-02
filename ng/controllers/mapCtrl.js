@@ -111,7 +111,6 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
                 zoomView: false,
                 selectConnectedEdges : false
             },
-            stabilize:true,
 
             nodes: {
                 physics: false

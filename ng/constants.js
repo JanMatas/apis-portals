@@ -4,3 +4,7 @@ app.constant('USER_ROLES', {
   editor: 'editor',
   guest: 'guest'
 })
+
+app.constant('CONFIG', {
+	auth: true
+})

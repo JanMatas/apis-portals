@@ -2,10 +2,11 @@
     <div class="navbar-header col-xs-6">
         <a class="navbar-brand" href="/#/home">Project APIS portals</a>
     </div>
-    <div ng-controller="ModalDemoCtrl" class="col-xs-6">
+    <div ng-controller="NavbarCtrl" class="col-xs-6">
         <div class="container pull-right">
             <div ng-if="loggedIn">
                 <p class="navbar-brand">Welcome,  {{currentUser}} </p>
+                <!--
                 <span>
 
                 <div class="btn-group" dropdown is-open="status.isopen">
@@ -19,12 +20,14 @@
                     </ul>
                 
                 </div>
-                
+                -->
+                <span>
+
+                    <button class="btn btn-primary pull-right" ng-click="logout()">Logout</button>
+
                 </span>
             </div>
-            <div ng-if="!loggedIn">
-                <button class="btn btn-primary pull-right " ng-click="open()">Login</button>
-            </div>
+
         </div>
     </div>
 </nav>

@@ -1,24 +1,34 @@
 //Frontend entry point
 var app = angular.module('app', ['ngRoute', 'chart.js', 'ui.bootstrap']);
 
-app.run(function($rootScope, $location, AuthSvc) {
+app.run(function($rootScope, $location, AuthSvc, CONFIG) {
 
     $rootScope.$on('$routeChangeStart', function(event, next) {
-        if (!next.$$route) { //Routing to not found always allowed
-            return;
-        }
-        var authorizedRoles = next.$$route.data.authorizedRoles;
+        if(CONFIG.auth) {
+            try {
+                authorizedRoles = next.$$route.data.authorizedRoles;
+            }
+            catch(err) {
+                //accessing unrestricted address
+                console.log("accessing unrestricted address")
+                return;
+            }
+
         
-        if (!AuthSvc.isAuthorized(authorizedRoles)) {
-            event.preventDefault();
-
-            if (AuthSvc.isLoggedIn()) {
-
-                console.log('DENY');
+            if (!AuthSvc.isAuthorized(next.$$route.data.authorizedRoles)) {
                 
-            } else {
 
-                console.log('NOT LOGGED IN');
+                if (!AuthSvc.isLoggedIn()) {
+                    event.preventDefault();
+                    alert("You need to login before accesing this path")
+                    $location.path('/')
+                    
+                } else {
+                    event.preventDefault();
+                    alert("You dont have permissions to access this path")
+                    $location.path('/')
+
+                }
             }
         }
     });
@@ -29,6 +39,10 @@ app.constant('USER_ROLES', {
   editor: 'editor',
   guest: 'guest'
 })
+
+app.constant('CONFIG', {
+	auth: true
+})
 // Routing for frontend
 // It associates a controller and a partial view to the
 // given route
@@ -36,12 +50,13 @@ app.config(function($routeProvider, USER_ROLES) {
     $routeProvider
         .when('/', {
             // TODO - decide on entry view
-            controller: 'MapCtrl',
-            templateUrl: 'map.html',
+            controller: 'LoginCtrl',
+            templateUrl: 'login.html',
             data : {
                 authorizedRoles: [USER_ROLES.all]
             }
         })
+
         .when('/map', {
             // Map view
             controller: 'MapCtrl',
@@ -185,13 +200,45 @@ app.controller('EmpProfileCtrl', function($scope, EmpSvc, TimeSvc, $routeParams)
     };
 
 });
-app.controller('FooterCtrl', function($scope,$rootScope, AuthSvc) {
+app.controller('LoginCtrl', function($scope,$location, $rootScope, AuthSvc) {
+
+
     $scope.loggedIn = AuthSvc.isLoggedIn();
+    $scope.currentUser = AuthSvc.currentUser();
     $rootScope.$on('login', function(event) {
+        $scope.currentUser = AuthSvc.currentUser();
         $scope.loggedIn = AuthSvc.isLoggedIn();
-        console.log("login detected in footer" + $scope.loggedIn)
     });
+
+    $scope.alerts = [];
+
+
+
+    $scope.closeAlert = function(index) {
+        $scope.alerts.splice(index, 1);
+    };
+
+    $scope.ok = function() {
+        AuthSvc.login($scope.username, $scope.password)
+            .then(function(response) {
+                
+
+                $rootScope.$emit('login');
+                $location.path('/map')
+            }, function(error) {
+                $scope.alerts = [{
+                    type: 'danger',
+                    msg: 'Oh snap! You have probably entered wrong username and password.'
+                }];
+            });
+        
+
+    };
+
+
 });
+
+
 //Offset of portal node
 var PORTAL_NODE_OFFSET = 10000;
 
@@ -305,7 +352,6 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
                 zoomView: false,
                 selectConnectedEdges : false
             },
-            stabilize:true,
 
             nodes: {
                 physics: false
@@ -387,6 +433,23 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
 
 
 });
+app.controller('NavbarCtrl', function($scope,$rootScope, $location, AuthSvc) {
+    $scope.loggedIn = AuthSvc.isLoggedIn();
+    $rootScope.$on('login', function(event) {
+        $scope.loggedIn = AuthSvc.isLoggedIn();
+        $scope.currentUser = AuthSvc.currentUser();
+    });
+    $rootScope.$on('logout', function(event) {
+        $scope.loggedIn = AuthSvc.isLoggedIn();
+    });
+    $scope.currentUser = AuthSvc.currentUser();
+    $scope.logout = function() {
+    	AuthSvc.logout();
+    	$rootScope.$emit('logout');
+    	$location.path('/')
+    }
+});
+
 app.controller("PieCtrl", function($scope) {
     $scope.test = "ahoj";
     $scope.labels = ["Download Sales", "In-Store Sales", "Mail-Order Sales"];
@@ -413,7 +476,7 @@ app.factory('AuthSvc', function($http) {
     var currentUser = null;
     var loggedIn = false;
     var token = null;
-    var role = "admin";
+    var role =  null;
 
     // initMaybe it wasn't meant to work for mpm?ial state says we haven't logged in or out yet...
     // this tells us we are in public browsing
@@ -434,6 +497,7 @@ app.factory('AuthSvc', function($http) {
             	currentUser = username;
             	loggedIn = true;
                 token = val.data;
+                role = "admin"
                 $http.defaults.headers.common['X-Auth'] = val.data;
                 
 
@@ -441,8 +505,13 @@ app.factory('AuthSvc', function($http) {
             })
         },
         logout: function() {
+
             currentUser = null;
             authorized = false;
+            token = null;
+            role = null;
+            loggedIn = false;
+            console.log(role)
         },
         isLoggedIn: function() {
             return loggedIn;
@@ -451,6 +520,7 @@ app.factory('AuthSvc', function($http) {
             return currentUser;
         },
         isAuthorized: function(roles) {
+
             return roles.indexOf(role) >= 0 || roles.indexOf("*") >= 0;
         }
     };
@@ -484,57 +554,6 @@ app.service('ZonesSvc', function($http) {
         return $http.get('/api/zones')
     }
 })
-app.controller('ModalDemoCtrl', function($scope, $rootScope, $modal, AuthSvc) {
-
-    $scope.items = ['item1', 'item2', 'item3'];
-    $scope.loggedIn = AuthSvc.isLoggedIn();
-    $scope.currentUser = AuthSvc.currentUser();
-    $rootScope.$on('login', function(event) {
-        $scope.currentUser = AuthSvc.currentUser();
-        $scope.loggedIn = AuthSvc.isLoggedIn();
-    });
-
-
-
-    $scope.open = function() {
-
-        var modalInstance = $modal.open({
-            templateUrl: 'modals/loginModal.html',
-            controller: 'LoginModalInstance',
-        });
-    };
-
-});
-
-
-app.controller('LoginModalInstance', function($scope, $rootScope, $modalInstance, AuthSvc) {
-    $scope.alerts = [];
-
-
-
-    $scope.closeAlert = function(index) {
-        $scope.alerts.splice(index, 1);
-    };
-
-    $scope.ok = function() {
-        AuthSvc.login($scope.username, $scope.password)
-            .then(function(response) {
-                
-                $modalInstance.close();
-                $rootScope.$emit('login');
-            }, function(error) {
-                $scope.alerts = [{
-                    type: 'danger',
-                    msg: 'Oh snap! You have probably entered wrong username and password.'
-                }];
-            });
-
-
-    };
-    $scope.cancel = function() {
-        $modalInstance.dismiss('cancel');
-    };
-});
 app.controller('MapPortalModalInstance', function($scope, $window, $modalInstance, $http, label, node) {
 
     $http.get('/api/transactionInfo/portal?portalId=' + node + '&limit=5').success(function(data) {

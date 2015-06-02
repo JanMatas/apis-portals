@@ -5,12 +5,13 @@ app.config(function($routeProvider, USER_ROLES) {
     $routeProvider
         .when('/', {
             // TODO - decide on entry view
-            controller: 'MapCtrl',
-            templateUrl: 'map.html',
+            controller: 'LoginCtrl',
+            templateUrl: 'login.html',
             data : {
                 authorizedRoles: [USER_ROLES.all]
             }
         })
+
         .when('/map', {
             // Map view
             controller: 'MapCtrl',

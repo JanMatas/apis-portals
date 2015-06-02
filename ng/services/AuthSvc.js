@@ -2,7 +2,7 @@ app.factory('AuthSvc', function($http) {
     var currentUser = null;
     var loggedIn = false;
     var token = null;
-    var role = "admin";
+    var role =  null;
 
     // initMaybe it wasn't meant to work for mpm?ial state says we haven't logged in or out yet...
     // this tells us we are in public browsing
@@ -23,6 +23,7 @@ app.factory('AuthSvc', function($http) {
             	currentUser = username;
             	loggedIn = true;
                 token = val.data;
+                role = "admin"
                 $http.defaults.headers.common['X-Auth'] = val.data;
                 
 
@@ -30,8 +31,13 @@ app.factory('AuthSvc', function($http) {
             })
         },
         logout: function() {
+
             currentUser = null;
             authorized = false;
+            token = null;
+            role = null;
+            loggedIn = false;
+            console.log(role)
         },
         isLoggedIn: function() {
             return loggedIn;
@@ -40,6 +46,7 @@ app.factory('AuthSvc', function($http) {
             return currentUser;
         },
         isAuthorized: function(roles) {
+
             return roles.indexOf(role) >= 0 || roles.indexOf("*") >= 0;
         }
     };

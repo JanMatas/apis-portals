@@ -1,21 +1,31 @@
-app.run(function($rootScope, $location, AuthSvc) {
+app.run(function($rootScope, $location, AuthSvc, CONFIG) {
 
     $rootScope.$on('$routeChangeStart', function(event, next) {
-        if (!next.$$route) { //Routing to not found always allowed
-            return;
-        }
-        var authorizedRoles = next.$$route.data.authorizedRoles;
+        if(CONFIG.auth) {
+            try {
+                authorizedRoles = next.$$route.data.authorizedRoles;
+            }
+            catch(err) {
+                //accessing unrestricted address
+                console.log("accessing unrestricted address")
+                return;
+            }
+
         
-        if (!AuthSvc.isAuthorized(authorizedRoles)) {
-            event.preventDefault();
-
-            if (AuthSvc.isLoggedIn()) {
-
-                console.log('DENY');
+            if (!AuthSvc.isAuthorized(next.$$route.data.authorizedRoles)) {
                 
-            } else {
 
-                console.log('NOT LOGGED IN');
+                if (!AuthSvc.isLoggedIn()) {
+                    event.preventDefault();
+                    alert("You need to login before accesing this path")
+                    $location.path('/')
+                    
+                } else {
+                    event.preventDefault();
+                    alert("You dont have permissions to access this path")
+                    $location.path('/')
+
+                }
             }
         }
     });
