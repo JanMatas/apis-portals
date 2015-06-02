@@ -22,7 +22,13 @@ html, body {
     margin-right: auto;
  }
 
-
+.imageClip{
+display: block;
+    max-width:200px;
+    max-height:200px;
+    width: auto;
+    height: auto;
+}
 
 .padded {
 	padding : 2%;
@@ -33,7 +39,7 @@ html, body {
     padding-top: 65px; 
     padding-bottom: 65px;
     min-height: 100%;
-    width: 100% !important;
+
     height: 100% !important;
 
 }
@@ -57,10 +63,15 @@ html, body {
 .map {
     outline: 1px solid black;
     height:  100%;
-    margin: 5px;
+
 }
 
 .spinner-centered {
-    vertical-align: middle;
+    margin: 0 auto;
     font-size: 40px;
+}
+.center-block {float: none !important}
+
+table {
+ table-layout:fixed;
 }

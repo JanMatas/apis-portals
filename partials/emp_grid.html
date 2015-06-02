@@ -1,9 +1,9 @@
-<div class="row" id="userList">
+<div class="row " id="userList">
     <div ng-repeat="d in departments" class="row">
         <h1> Department: {{d.department}}</h1>
-        <div ng-repeat="u in d.emps" class="col-xs-4 col-sm-2">
-            <a ng-href="/#/profile/{{u.id}}"><img ng-src="{{u.img}}" class="img-thumbnail img-responsive img-circle"></a>
-            <h3 class="text-center">{{u.firstname}} <br> {{u.lastname}}</h3>
+        <div ng-repeat="u in d.emps" class="col-lg-2 col-md-4 col-sm-6 col-xs-12 text-center">
+            <a ng-href="/#/profile/{{u.id}}"><img ng-src="{{u.img}}" class="img-thumbnail img-responsive img-circle imageClip"></a>
+            <h3 >{{u.firstname}} <br> {{u.lastname}}</h3>
             <hr>
         </div>
     </div>
