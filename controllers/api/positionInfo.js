@@ -7,11 +7,9 @@ var config = require('../../config')
 
 router.get('/employee', function(req, res, next) {
 	if(config.authenticate) {
-		if (!req.headers['x-auth']) {
+		if (!req.auth) {
 			return res.send(401);
 		}
-		var token = req.headers['x-auth'];
-		var auth = jwt.decode(token, config.secret);
 	}
 
 	var query = 
@@ -22,8 +20,7 @@ router.get('/employee', function(req, res, next) {
 		"ORDER BY timestamp DESC " +
 		"LIMIT 1";
 
-	console.log(query)
-	
+
 
 	db.fetchData(query, function(err, data) {
 		if(err) {
@@ -39,11 +36,9 @@ router.get('/employee', function(req, res, next) {
 
 router.get('/zone', function(req, res, next) {
 	if(config.authenticate) {
-		if (!req.headers['x-auth']) {
+		if (!req.auth) {
 			return res.send(401);
 		}
-		var token = req.headers['x-auth'];
-		var auth = jwt.decode(token, config.secret);
 	}
 
 	var query = 
@@ -61,7 +56,7 @@ router.get('/zone', function(req, res, next) {
 		               "INNER JOIN Portal p "+
 		                       "ON t.portalId = p.id) AS emp_zone "+
 		"WHERE  currentZone = " + req.query.zoneId;
-	console.log(query);
+
 	db.fetchData(query, function(err, data) {
 		if(err) {
 			return next( err);

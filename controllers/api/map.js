@@ -7,11 +7,9 @@ var config = require('../../config')
 
 router.get('/', function(req, res, next) {
 	if(config.authenticate) {
-		if (!req.headers['x-auth']) {
-			//return res.send(401);
+		if (!req.auth) {
+			return res.send(401);
 		}
-		var token = req.headers['x-auth'];
-		var auth = jwt.decode(token, config.secret);
 	}
 
 	var query = "SELECT * FROM Zone z where buildingId = " + req.query.buildingID;
@@ -19,11 +17,10 @@ router.get('/', function(req, res, next) {
 	
 	db.fetchData(query, function(err, zones) {
 		query = "SELECT * FROM Portal where buildingId = " + req.query.buildingID;
-		console.log(query)
-	
+
 		db.fetchData(query, function(err, portals) {
 			if(err) {
-				console.log('db err');
+
 				return next(err);
 			}
 			if (zones == []) {
@@ -47,11 +44,11 @@ router.post('/', function(req, res, next) {
 		var auth = jwt.decode(token, config.secret);
 	}
 	var nodePositions = req.body.nodePositions
- 	console.log(nodePositions)
+
 	for (n in nodePositions) {
 		// make sure its a node, not an edge
 		if (n < 100000) {
-			console.log(nodePositions[n])
+	
 			var query = "";
 			if (n < 10000) { 
 				//its a zone
@@ -66,7 +63,7 @@ router.post('/', function(req, res, next) {
 					") WHERE id=" + (n - 10000);
 
 			}
-			console.log(query);
+	
 			db.executeQuery(query, function (err) {
 				if (err) {
 					console.log(err)

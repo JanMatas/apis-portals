@@ -8,5 +8,7 @@ module.exports = {
 		password: '1839ba5b',
 		database: 'heroku_73648698f572409',
 		debug:false
-	}
+	},
+	authenticate:true
+
 }

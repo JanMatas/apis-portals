@@ -2,11 +2,7 @@ var router = require('express').Router();
 var db = require('../../db');
 var val = 0;
 var util = require('util');
-router.get('/',function (req, res, next){
 
-	
-	res.send(200)
-})
 router.post('/', function (req, res, next) {
 	var t = req.body.transaction
 	db.connection(function (err, connection) {
