@@ -299,14 +299,19 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
         };
 
         options = {
-        	interaction: {
-        		selectConnectedEdges : false
-        	},
-            physics: {
-                stabilization: false
+            
+            interaction: {
+                dragView: false,
+                zoomView: false,
+                selectConnectedEdges : false
             },
+            stabilize:true,
+
             nodes: {
                 physics: false
+            },
+            edges : {
+                smooth: false
             }
         }
 
