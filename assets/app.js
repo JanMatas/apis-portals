@@ -202,6 +202,9 @@ app.controller('LoginCtrl', function($scope,$location, $rootScope, AuthSvc) {
 
 
     $scope.loggedIn = AuthSvc.isLoggedIn();
+    if ($scope.loggedIn) {
+        $location.path('/map')
+    }
     $scope.currentUser = AuthSvc.currentUser();
     $rootScope.$on('login', function(event) {
         $scope.currentUser = AuthSvc.currentUser();
