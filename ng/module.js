@@ -1,2 +1,2 @@
 //Frontend entry point
-var app = angular.module('app', ['ngRoute', 'chart.js', 'ui.bootstrap']);
+var app = angular.module('app', ['ngRoute', 'chart.js', 'ui.bootstrap', 'ngCookies']);
