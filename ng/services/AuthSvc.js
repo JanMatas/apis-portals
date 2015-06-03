@@ -3,7 +3,6 @@ app.factory('AuthSvc', function($http, $cookies) {
     var loggedIn = false;
     var token = null;
     var role =  null;
-    console.log($cookies)
 
     // initMaybe it wasn't meant to work for mpm?ial state says we haven't logged in or out yet...
     // this tells us we are in public browsing

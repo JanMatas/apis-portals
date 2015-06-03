@@ -4,25 +4,23 @@ var app = angular.module('app', ['ngRoute', 'chart.js', 'ui.bootstrap', 'ngCooki
 app.run(function($rootScope, $location, AuthSvc, CONFIG) {
 
     $rootScope.$on('$routeChangeStart', function(event, next) {
-        if(CONFIG.auth) {
+        if (CONFIG.auth) {
             try {
                 authorizedRoles = next.$$route.data.authorizedRoles;
-            }
-            catch(err) {
+            } catch (err) {
                 //accessing unrestricted address
 
                 return;
             }
 
-        
             if (!AuthSvc.isAuthorized(next.$$route.data.authorizedRoles)) {
-                
+
 
                 if (!AuthSvc.isLoggedIn()) {
                     event.preventDefault();
                     alert("You need to login before accesing this path")
                     $location.path('/')
-                    
+
                 } else {
                     event.preventDefault();
                     alert("You dont have permissions to access this path")
@@ -478,7 +476,6 @@ app.factory('AuthSvc', function($http, $cookies) {
     var loggedIn = false;
     var token = null;
     var role =  null;
-    console.log($cookies)
 
     // initMaybe it wasn't meant to work for mpm?ial state says we haven't logged in or out yet...
     // this tells us we are in public browsing
@@ -571,7 +568,7 @@ app.service('ZonesSvc', function($http) {
         return $http.get('/api/zones')
     }
 })
-app.controller('MapPortalModalInstance', function($scope, $window, $modalInstance, $http, label, node) {
+app.controller('MapPortalModalInstance', function($scope, $location, $modalInstance, $http, label, node) {
 
     $http.get('/api/transactionInfo/portal?portalId=' + node + '&limit=5').success(function(data) {
         $scope.transactions = [];
@@ -613,6 +610,10 @@ app.controller('MapPortalModalInstance', function($scope, $window, $modalInstanc
     $scope.cancel = function() {
         $modalInstance.dismiss('cancel');
     };
+    $scope.profile = function(empId) {
+        $modalInstance.dismiss('cancel');
+        $location.path('/profile/' + empId);
+    }
 
 });
 
@@ -621,22 +622,27 @@ var createDate = function(timestamp) {
     var d = new Date(t[0], t[1] - 1, t[2], t[3], t[4], t[5]);
     return d;
 }
-app.controller('MapZoneModalInstance', function ($scope, $modalInstance, $http, node, label) {
-  	$scope.name = label;
+app.controller('MapZoneModalInstance', function($scope, $modalInstance, $location, $http, node, label) {
+    $scope.name = label;
     $scope.isEmp = true;
-  	$http.get('/api/positionInfo/zone?zoneId='+node).success(function(data){
-  		$scope.emps = [];
-  		for (x in data) {
-	  		$scope.emps.push({
-	          id : data[x].id,
-	          firstname : data[x].firstname,
-	          lastname : data[x].lastname,
-	          img : '/images/emps/' + data[x].id + '.jpg' 		
-	  		})
-  		}
-      $scope.isEmp = $scope.emps.length != 0;
-  	})
-  	$scope.cancel = function () {
-    	$modalInstance.dismiss('cancel');
-  	};
+    $http.get('/api/positionInfo/zone?zoneId=' + node).success(function(data) {
+        $scope.emps = [];
+        for (x in data) {
+            $scope.emps.push({
+                id: data[x].id,
+                firstname: data[x].firstname,
+                lastname: data[x].lastname,
+                img: '/images/emps/' + data[x].id + '.jpg'
+            })
+        }
+        $scope.isEmp = $scope.emps.length != 0;
+    })
+    $scope.cancel = function() {
+        $modalInstance.dismiss('cancel');
+    };
+    $scope.profile = function(empId) {
+        $modalInstance.dismiss('cancel');
+        $location.path('/profile/' + empId);
+    }
+
 });

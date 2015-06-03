@@ -1,11 +1,13 @@
 <nav class="navbar navbar-inverse navbar-fixed-top">
-    <div class="navbar-header col-xs-6">
+    <div class="navbar-header col-xs-8">
         <a class="navbar-brand" href="/#/">Project APIS portals</a>
     </div>
-    <div ng-controller="NavbarCtrl" class="col-xs-6">
+    <div ng-controller="NavbarCtrl" >
         <div class="container pull-right">
             <div ng-if="loggedIn">
-                <p class="navbar-brand">Welcome,  {{currentUser}} </p>
+
+                <p class="navbar-brand hidden-sm hidden-xs">Welcome,  {{currentUser}} </p>
+
                 <!--
                 <span>
 

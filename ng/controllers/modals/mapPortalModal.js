@@ -1,4 +1,4 @@
-app.controller('MapPortalModalInstance', function($scope, $window, $modalInstance, $http, label, node) {
+app.controller('MapPortalModalInstance', function($scope, $location, $modalInstance, $http, label, node) {
 
     $http.get('/api/transactionInfo/portal?portalId=' + node + '&limit=5').success(function(data) {
         $scope.transactions = [];
@@ -40,6 +40,10 @@ app.controller('MapPortalModalInstance', function($scope, $window, $modalInstanc
     $scope.cancel = function() {
         $modalInstance.dismiss('cancel');
     };
+    $scope.profile = function(empId) {
+        $modalInstance.dismiss('cancel');
+        $location.path('/profile/' + empId);
+    }
 
 });
 

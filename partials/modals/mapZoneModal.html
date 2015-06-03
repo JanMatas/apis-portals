@@ -4,7 +4,7 @@
 <div class="modal-body">
     <div class="row">
         <div ng-repeat="u in emps" class="col-xs-4 col-sm-2">
-            <a ng-href="/#/profile/{{u.id}}"><img ng-src="{{u.img}}" class="img-thumbnail img-responsive img-circle"></a>
+            <a ng-click="profile(u.id)"><img ng-src="{{u.img}}" class="img-thumbnail img-responsive img-circle"></a>
             <h3 class="text-center">{{u.firstname}} <br> {{u.lastname}}</h3>
         </div>
         <h3 ng-if="!isEmp" class="text-center">No employees are in {{name}}</h3>

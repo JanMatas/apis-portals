@@ -2,9 +2,12 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
 var config = require('./config')
+var favicon = require('serve-favicon');
 
 var port = process.env.PORT || config.port;
 
+
+app.use(favicon(__dirname + '/assets/favicon.ico'));
 //Middleware
 app.use(require('./auth')); //Authetification middleware
 app.use(bodyParser.json()); //JSON request parsing
