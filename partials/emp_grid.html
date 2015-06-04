@@ -1,9 +1,19 @@
-<div class="row " id="userList">
-    <div ng-repeat="d in departments" class="row">
+<div id="userList">
+    <div class="input-group col-lg-8 col-lg-offset-2">
+        <span class="input-group-addon" id="sizing-addon1">Filter: </span>
+        <input type="text" class="form-control" placeholder="Employee lastname" ng-model="employeeFilter">
+        <input type="text" class="form-control" placeholder="Department name" ng-model="departmentFilter">
+    </div>
+
+    <div class="row">
+        <br>
+    </div>
+    <div ng-repeat="d in departments | filter: {department : departmentFilter}" class="container">
+
         <h1> Department: {{d.department}}</h1>
-        <div ng-repeat="u in d.emps" class="col-lg-2 col-md-4 col-sm-6 col-xs-12 text-center">
+        <div ng-repeat="u in d.emps | filter: {lastname : employeeFilter} " class="col-lg-2 col-md-4 col-sm-6 col-xs-10 text-center">
             <a ng-href="/#/profile/{{u.id}}"><img ng-src="{{u.img}}" class="img-thumbnail img-responsive img-circle imageClip"></a>
-            <h3 >{{u.firstname}} <br> {{u.lastname}}</h3>
+            <h3>{{u.firstname}} <br> {{u.lastname}}</h3>
             <hr>
         </div>
     </div>

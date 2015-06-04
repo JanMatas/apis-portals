@@ -1,6 +1,7 @@
 app.controller('EmpGridCtrl', function($scope, EmpSvc) {
     $scope.departments = []
-
+    $scope.departmentFilter = ""
+    $scope.employeeFilter = ""
     var splitIntoDepartments = function(emps) {
         var department = [];
         for (x in emps) {
@@ -28,6 +29,8 @@ app.controller('EmpGridCtrl', function($scope, EmpSvc) {
 
 
         }
-    
+
     })
+
+
 });

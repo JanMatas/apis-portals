@@ -8,11 +8,11 @@ app.controller('MapPortalModalInstance', function($scope, $location, $modalInsta
                 firstname: data[x].firstname,
                 lastname: data[x].lastname,
                 img: '/images/emps/' + data[x].employeeId + '.jpg',
-                date: data[x].timestamp*1000
+                date: data[x].timestamp * 1000
             })
         }
         $scope.isTrans = $scope.transactions.length != 0;
-     
+
     })
 
 
