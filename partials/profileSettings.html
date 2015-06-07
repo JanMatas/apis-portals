@@ -4,13 +4,15 @@
             <div class="col-md-12 lead">
                 Employee profile settings
                 <hr>
+                
             </div>
         </div>
         <div class="row">
             <br>
             <div class="col-md-4 text-center">
                 <div class="profile-image-container">
-                    <img class="img-thumbnail avatar img-responsive" ng-src="{{emp.img}}">
+
+                    <img class="img-thumbnail avatar img-responsive" ng-src="{{emp.img}}" on-error-src="http://google.com/favicon.ico" />
                     <div class="col-offset-4 centered text-left">
                     </div>
                 </div>
@@ -19,23 +21,19 @@
                 <div class="panel panel-default padded" ng-show="zonesReady">
                     <div class="panel-heading">
                         <h3 class="panel-title">Permissions:</h3>
-                    <form class="form-inline">
-  <div class="form-group">
-   
-    <div class="input-group">
-      <div class="input-group-addon">Filter:</div>
-      <input type="text" class="form-control" id="exampleInputAmount" placeholder="Amount">
-
-    </div>
-    </div>
-
- 
-</form></div>
-
+                        <form class="form-inline">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-addon">Filter:</div>
+                                    <input type="text" class="form-control" ng-model="zoneFilter" placeholder="Zone name">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                     <div class="panel-body ">
-                        <div ng-repeat="zone in zones" class="text-left row">
+                        <div ng-repeat=" zone in zones | filter : {title : zoneFilter} | offset: (currentPage - 1)*itemsPerPage | limitTo: itemsPerPage" class="text-left row">
                             {{zone.title}}
-                            <toggle-switch ng-model="switchStatus" class="pull-right"></toggle-switch>
+                            <toggle-switch ng-model="zone.permission" class="pull-right"></toggle-switch>
                             <hr>
                         </div>
                         <pagination total-items="totalItems" ng-model="currentPage" ng-change="pageChanged()" items-per-page="itemsPerPage"></pagination>
@@ -45,34 +43,60 @@
             <div class="col-md-8">
                 <form>
                     <div class="form-group">
-                        <label for="exampleInputEmail1">Firstname</label>
+                        <label>Firstname</label>
                         <input type="text" class="form-control" placeholder="Firstname" ng-model="emp.firstname">
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputEmail1">Lastname</label>
-                        <input type="text" class="form-control" placeholder="Enter email" ng-model="emp.lastname">
+                        <label>Lastname</label>
+                        <input type="text" class="form-control" placeholder="Lastname" ng-model="emp.lastname">
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputPassword1">Password</label>
-                        <input type="password" class="form-control" placeholder="Password">
+                        <label>Department</label>
+                        <select ng-model="emp.department" class="form-control">
+                            <option ng-repeat="d in departments" value="{{d}}">{{d}}</option>
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputFile">File input</label>
-                        <input type="file" id="exampleInputFile">
-                        <p class="help-block">Example block-level help text here.</p>
+                        <label>Contact</label>
+                        <input type="text" class="form-control" placeholder="Enter email" ng-model="emp.email">
+                        <input type="text" class="form-control" placeholder="Enter phone number" ng-model="emp.phone">
                     </div>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox"> Check me out
-                        </label>
+                    <div class="form-group">
+                        <div class="col-xs-5">
+                            <label>Gender</label>
+                            <br>
+                            <toggle-switch ng-model="switchStatus" on-label="Male" off-label="Female"></toggle-switch>
+                        </div>
+                        <div class="col-xs-7">
+                            <label>Tag number</label>
+                            <input type="text" class="form-control" placeholder="Enter tag number" ng-model="emp.tagNumber">
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-default">Submit</button>
-                    <p class="well well-sm">ahoooj</p>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <div class="form-group text-center">
+                        <div class="col-md-6">
+                            <label>Valid from</label>
+                            <datepicker ng-model="dt" min-date="emp.validFrom" show-weeks="true" class="well well-sm " custom-class="getDayClass(date, mode)"></datepicker>
+                        </div>
+                        <div class="col-md-6">
+                            <label>Valid until</label>
+                            <datepicker ng-model="dt" min-date="emp.validUntil" show-weeks="true" class="well well-sm" custom-class="getDayClass(date, mode)"></datepicker>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-default btn-lg btn-block">Submit</button>
+                    <div>
                 </form>
+                </div>
             </div>
         </div>
-        <div class="row">
-            <br>
-            <br>
-        </div>
     </div>
+    <div class="row">
+        <br>
+        <br>
+        <br>
+        <br>
+    </div>
+</div>

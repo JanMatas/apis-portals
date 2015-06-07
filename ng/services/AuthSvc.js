@@ -9,6 +9,9 @@ app.factory('AuthSvc', function($http, $cookies) {
     var initialState = true;
 
     return {
+        isAdmin: function() {
+            return role == "admin";
+        },
         initialState: function() {
             return initialState;
         },

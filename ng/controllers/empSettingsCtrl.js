@@ -1,12 +1,14 @@
 app.controller('EmpSettingsCtrl', function($scope, EmpSvc, ZonesSvc, $routeParams) {
-    $scope.totalItems = 50;
-    $scope.itemsPerPage = 5;
-    $scope.zonesReady = false;
+    $scope.totalItems = 0
+    $scope.itemsPerPage = 3;
+    $scope.zonesReady = true;
     $scope.id = "toggle-" + 1;
+    $scope.departments = ["Marketing", "Catalogue of currencies"]
+
     EmpSvc.fetch().success(function(data) {
 
         for (x in data) {
-
+            
             if (data[x].id == $routeParams.empId) {
 
                 $scope.emp = {
@@ -16,39 +18,34 @@ app.controller('EmpSettingsCtrl', function($scope, EmpSvc, ZonesSvc, $routeParam
                     img: '/images/emps/' + data[x].id + '.jpg',
                     email: data[x].email,
                     phone: data[x].phone,
-                    gender: data[x].firstname,
+                    gender: "Male",
                     department: data[x].department,
                     validFrom: data[x].validFrom,
-
+                    tagNumber: 75497502384
                 }
             }
 
         }
 
     })
-    var zones = []
+    $scope.zones = []
     ZonesSvc.fetch().success(function(data) {
 
         for (x in data) {
-            zones.push({
+            $scope.zones.push({
                 title: data[x].name,
 
             })
 
         }
-
-        $scope.totalItems = data.length;
-        if ($scope.totalItems > 0) {
-            $scope.zonesReady = true;
-        }
-        $scope.zones = zones.slice(($scope.currentPage - 1) * $scope.itemsPerPage, $scope.currentPage * $scope.itemsPerPage);
+        
+        $scope.totalItems = $scope.zones.length
+    
     })
-
+    
     $scope.zoneFilter = '';
-    $scope.pageChanged = function() {
-        $scope.zones = zones.slice(($scope.currentPage - 1) * $scope.itemsPerPage, $scope.currentPage * $scope.itemsPerPage)    
-    };
-    $scope.currentPage = 1;
+
+    $scope.currentPage = 0;
 
 
 

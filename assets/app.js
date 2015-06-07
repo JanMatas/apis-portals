@@ -79,12 +79,20 @@ app.config(function($routeProvider, USER_ROLES) {
                 authorizedRoles: [USER_ROLES.admin, USER_ROLES.editor]
             }
         })
-        .when('/profile/:empId', {
+        .when('/profileSettings/:empId', {
         	// Employee profile view
             controller: 'EmpSettingsCtrl',
             templateUrl: 'profileSettings.html',
             data : {
-                authorizedRoles: [USER_ROLES.admin, USER_ROLES.editor]
+                authorizedRoles: [USER_ROLES.admin]
+            }
+        })
+        .when('/profile/:empId', {
+            // Employee profile view
+            controller: 'EmpProfileCtrl',
+            templateUrl: 'profile.html',
+            data : {
+                authorizedRoles: [USER_ROLES.admin]
             }
         })
         .otherwise({
@@ -132,8 +140,9 @@ app.controller('EmpGridCtrl', function($scope, EmpSvc) {
 
 
 });
-app.controller('EmpProfileCtrl', function($scope, EmpSvc, TimeSvc, $routeParams) {
+app.controller('EmpProfileCtrl', function($scope, EmpSvc, TimeSvc, AuthSvc, $routeParams) {
 
+    $scope.showConfig = AuthSvc.isAdmin();
     EmpSvc.fetch().success(function(data) {
 
         for (x in data) {
@@ -200,14 +209,16 @@ app.controller('EmpProfileCtrl', function($scope, EmpSvc, TimeSvc, $routeParams)
 
 });
 app.controller('EmpSettingsCtrl', function($scope, EmpSvc, ZonesSvc, $routeParams) {
-    $scope.totalItems = 50;
-    $scope.itemsPerPage = 5;
-    $scope.zonesReady = false;
+    $scope.totalItems = 0
+    $scope.itemsPerPage = 3;
+    $scope.zonesReady = true;
     $scope.id = "toggle-" + 1;
+    $scope.departments = ["Marketing", "Catalogue of currencies"]
+
     EmpSvc.fetch().success(function(data) {
 
         for (x in data) {
-
+            
             if (data[x].id == $routeParams.empId) {
 
                 $scope.emp = {
@@ -217,39 +228,34 @@ app.controller('EmpSettingsCtrl', function($scope, EmpSvc, ZonesSvc, $routeParam
                     img: '/images/emps/' + data[x].id + '.jpg',
                     email: data[x].email,
                     phone: data[x].phone,
-                    gender: data[x].firstname,
+                    gender: "Male",
                     department: data[x].department,
                     validFrom: data[x].validFrom,
-
+                    tagNumber: 75497502384
                 }
             }
 
         }
 
     })
-    var zones = []
+    $scope.zones = []
     ZonesSvc.fetch().success(function(data) {
 
         for (x in data) {
-            zones.push({
+            $scope.zones.push({
                 title: data[x].name,
 
             })
 
         }
-
-        $scope.totalItems = data.length;
-        if ($scope.totalItems > 0) {
-            $scope.zonesReady = true;
-        }
-        $scope.zones = zones.slice(($scope.currentPage - 1) * $scope.itemsPerPage, $scope.currentPage * $scope.itemsPerPage);
+        
+        $scope.totalItems = $scope.zones.length
+    
     })
-
+    
     $scope.zoneFilter = '';
-    $scope.pageChanged = function() {
-        $scope.zones = zones.slice(($scope.currentPage - 1) * $scope.itemsPerPage, $scope.currentPage * $scope.itemsPerPage)    
-    };
-    $scope.currentPage = 1;
+
+    $scope.currentPage = 0;
 
 
 
@@ -529,6 +535,23 @@ app.controller('ZonesCtrl', function($scope, ZonesSvc) {
     })
     $scope.zoneFilter = '';
 });
+app.directive('onErrorSrc', function() {
+    return {
+        link: function(scope, element, attrs) {
+          element.bind('error', function() {
+            if (attrs.src != attrs.onErrorSrc) {
+              attrs.$set('src', attrs.onErrorSrc);
+            }
+          });
+        }
+    }
+});
+app.filter('offset', function() {
+  return function(input, start) {
+    start = parseInt(start, 10);
+    return input.slice(start);
+  };
+});
 app.factory('AuthSvc', function($http, $cookies) {
     var currentUser = null;
     var loggedIn = false;
@@ -540,6 +563,9 @@ app.factory('AuthSvc', function($http, $cookies) {
     var initialState = true;
 
     return {
+        isAdmin: function() {
+            return role == "admin";
+        },
         initialState: function() {
             return initialState;
         },

@@ -36,12 +36,20 @@ app.config(function($routeProvider, USER_ROLES) {
                 authorizedRoles: [USER_ROLES.admin, USER_ROLES.editor]
             }
         })
-        .when('/profile/:empId', {
+        .when('/profileSettings/:empId', {
         	// Employee profile view
             controller: 'EmpSettingsCtrl',
             templateUrl: 'profileSettings.html',
             data : {
-                authorizedRoles: [USER_ROLES.admin, USER_ROLES.editor]
+                authorizedRoles: [USER_ROLES.admin]
+            }
+        })
+        .when('/profile/:empId', {
+            // Employee profile view
+            controller: 'EmpProfileCtrl',
+            templateUrl: 'profile.html',
+            data : {
+                authorizedRoles: [USER_ROLES.admin]
             }
         })
         .otherwise({

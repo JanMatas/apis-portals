@@ -1,5 +1,6 @@
-app.controller('EmpProfileCtrl', function($scope, EmpSvc, TimeSvc, $routeParams) {
+app.controller('EmpProfileCtrl', function($scope, EmpSvc, TimeSvc, AuthSvc, $routeParams) {
 
+    $scope.showConfig = AuthSvc.isAdmin();
     EmpSvc.fetch().success(function(data) {
 
         for (x in data) {
