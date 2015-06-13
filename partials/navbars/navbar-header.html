@@ -1,17 +1,17 @@
 <nav class="navbar navbar-inverse navbar-fixed-top">
-    <div class="navbar-header col-xs-8">
+    <div class="navbar-header col-xs-12 col-sm-6">
         <a class="navbar-brand" href="/#/">Project APIS portals</a>
     </div>
-    <div ng-controller="NavbarCtrl" >
+    <div ng-controller="NavbarCtrl" class="col-xs-12 col-sm-6">
         <div class="container pull-right">
-            <div ng-if="loggedIn">
+            <div ng-if="loggedIn" style:"margin-top : 20px">
 
                 <p class="navbar-brand hidden-sm hidden-xs">Welcome,  {{currentUser}} </p>
 
-                <!--
+
                 <span>
 
-                <div class="btn-group" dropdown is-open="status.isopen">
+                <div class="btn-group navbar-button" dropdown is-open="status.isopen">
                     <button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle ng-disabled="disabled">
                         Choose building <span class="caret"></span>
                     </button>
@@ -22,10 +22,10 @@
                     </ul>
                 
                 </div>
-                -->
+                &nbsp;
                 <span>
 
-                    <button class="btn btn-primary pull-right" ng-click="logout()">Logout</button>
+                    <button class="btn btn-primary pull-right navbar-button" ng-click="logout()">Logout</button>
 
                 </span>
             </div>

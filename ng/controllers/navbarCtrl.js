@@ -13,4 +13,15 @@ app.controller('NavbarCtrl', function($scope,$rootScope, $location, AuthSvc) {
     	$rootScope.$emit('logout');
     	$location.path('/')
     }
+    $scope.buildings = [
+        {
+            id : 1,
+            name : "Main building"
+        },
+        {
+            id: 2,
+            name : 'Other building'
+        }
+    ]
+    $scope.building = 1
 });

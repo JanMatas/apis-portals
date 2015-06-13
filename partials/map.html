@@ -1,12 +1,21 @@
-<div class=" map">
+<div class="well well-sm" ng-show="configuration">
 
+        <button class="btn btn-primary btn-sm btn-sm"> Add portal </button>
+        <button class="btn btn-primary btn-sm"> Add zone </button>
+
+    <span class="pull-right">
+    	<button class="btn btn-primary btn-sm" ng-click="rearrange()"> Rearrange</button>
+        <button class="btn btn-primary btn-sm" ng-click="saveConfig()"> Save layout </button>
+    </span>
+
+</div>
+<div ng-class="!configuration ? 'map' : 'map-config'">
     <div class="full-size">
         <div id='mynetwork' class="full-size text-center">
             <table class="full-size">
-            	<!--TODO this is hacky-->
+                <!--TODO this is hacky-->
                 <td class="text-center full-size"><i class="fa fa-spinner fa-pulse fa-5x spinner-centered"></i></td>
             </table>
         </div>
     </div>
-</div>
 </div>

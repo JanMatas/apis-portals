@@ -307,12 +307,22 @@ var PORTAL_NODE_OFFSET = 10000;
 
 /** This is the controller for the map on home screen*/
 app.controller('MapCtrl', function($scope, $modal, MapSvc) {
-    $scope.name = name;
 
+
+    var colors = {
+        zone : '#E14F3F',
+        portal : {
+            disarmed: '#83FFFF',
+            armed: '#CCFF99',
+            disconnected: '#E6E6E6'
+        }
+    }
+
+    $scope.configuration = true
     var createData = function(createNetwork) {
-    	
+
         MapSvc.fetch(1).success(function(data) {
-        	//$scope.mapReady = true;
+            //$scope.mapReady = true;
             var nodes = [];
             var edges = [];
 
@@ -322,15 +332,9 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
                     nodes.push({
                         id: data.zones[n].id,
                         label: data.zones[n].name,
-                        physics: true,
-                        mass: 2,
-                        value: 100,
-                        color: '#E14F3F',
-                        shape: 'box',
-                        font: {
-                            size: 30
-                        }
-
+                        physics:true,
+                        color: colors.zone,
+                        shape: 'box'
                     })
                 } else {
                     nodes.push({
@@ -338,25 +342,33 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
                         label: data.zones[n].name,
                         x: data.zones[n].map_x,
                         y: data.zones[n].map_y,
-
-                        mass: 2,
-                        color: '#E14F3F',
+                        color: colors.zone,
                         shape: 'box'
                     })
 
                 }
             }
             for (p in data.portals) {
+                var color;
+                switch(data.portals[p].status) {
+                    case "disconnected" : 
+                        color = colors.portal.disconnected;
+                        break;
+                    case "armed" : 
+                        color = colors.portal.armed;
+                        break;
+                    case "disarmed" : 
+                        color = colors.portal.disarmed;
+                        break;                        
+                }
 
                 if (data.portals[p].map_x === null || data.portals[p].map_x === null) {
                     nodes.push({
                         id: data.portals[p].id + PORTAL_NODE_OFFSET,
                         label: data.portals[p].name,
-                        physics: true,
-                        font: {
-                            size: 20
-                        },
-                        color: '#FFFFA3',
+                        physics:true,
+                        color: color
+
 
                     })
                 } else {
@@ -365,7 +377,7 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
                         label: data.portals[p].name,
                         x: data.portals[p].map_x,
                         y: data.portals[p].map_y,
-                        color: '#FFFFA3'
+                        color: color
 
 
                     })
@@ -375,6 +387,7 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
 
                     from: data.portals[p].zoneFrom,
                     to: data.portals[p].id + PORTAL_NODE_OFFSET,
+                    color:'#E6E6E6'
 
                 })
 
@@ -382,7 +395,7 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
 
                     from: data.portals[p].id + PORTAL_NODE_OFFSET,
                     to: data.portals[p].zoneTo,
-
+                    color:'#E6E6E6'
                 })
 
             }
@@ -399,27 +412,27 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
 
         var edgesDataSet = new vis.DataSet(edges);
         var container = document.getElementById('mynetwork');
-        
 
-        
-        
+
+
+
         var data = {
             nodes: nodesDataSet,
             edges: edgesDataSet
         };
 
         options = {
-            
+
             interaction: {
                 dragView: false,
                 zoomView: false,
-                selectConnectedEdges : false
+                selectConnectedEdges: false
             },
 
             nodes: {
                 physics: false
             },
-            edges : {
+            edges: {
                 smooth: false
             }
         }
@@ -471,15 +484,7 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
             }
         });
 
-        /*
-        network.on('stabilized', function() {
-            $scope.saveConfig()
-            network.setOptions({
-                nodes: {
-                    fixed: true
-                }
-            })
-        })*/
+
 
 
     }
@@ -493,6 +498,34 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
         MapSvc.save(nodesPositions);
 
     }
+
+    $scope.rearrange = function() {
+        $scope.network.setOptions({
+            nodes : {
+                physics:true
+            },
+            edges : {
+                smooth:true
+            }
+        })
+
+        
+        $scope.network.on('stabilized', function() {
+            
+            $scope.network.setOptions({
+                nodes: {
+                    physics: false
+                },
+                edges: {
+                    smooth : false
+                }
+            })
+        })
+
+        console.log("test")
+
+    }
+
 
 
 });
@@ -511,6 +544,17 @@ app.controller('NavbarCtrl', function($scope,$rootScope, $location, AuthSvc) {
     	$rootScope.$emit('logout');
     	$location.path('/')
     }
+    $scope.buildings = [
+        {
+            id : 1,
+            name : "Main building"
+        },
+        {
+            id: 2,
+            name : 'Other building'
+        }
+    ]
+    $scope.building = 1
 });
 
 app.controller("PieCtrl", function($scope) {

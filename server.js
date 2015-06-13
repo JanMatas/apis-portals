@@ -3,7 +3,7 @@ var bodyParser = require('body-parser');
 var app = express();
 var config = require('./config')
 var favicon = require('serve-favicon');
-
+var webSocketServer = require('./websockets')
 var port = process.env.PORT || config.port;
 
 
@@ -26,7 +26,12 @@ app.use('/api/transaction', require('./controllers/api/transactionPortal')); //E
 app.use('/api/positionInfo', require('./controllers/api/positionInfo')); // Endpoint for position of employees
 app.use('/api/transactionInfo', require('./controllers/api/transactionInfo'))
 app.use('/api/timeInfo', require('./controllers/api/timeInfo'))
+app.use('/api/portal', require('./controllers/api/portal'))
 
+//Start  node server
 var server = app.listen(port, function() { //Starts the app on given port
     console.log('Server listening on', port)
 });
+
+//Attach websocket server
+webSocketServer.connect(server)

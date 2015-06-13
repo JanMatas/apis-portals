@@ -19,7 +19,9 @@
     "gulp-concat": "^2.5.2",
     "gulp-nodemon": "^2.0.3",
     "jwt-simple": "^0.3.0",
+    "lodash": "^3.9.3",
     "mysql": "^2.6.2",
-    "serve-favicon": "^2.2.1"
+    "serve-favicon": "^2.2.1",
+    "ws": "^0.7.2"
   }
 }
