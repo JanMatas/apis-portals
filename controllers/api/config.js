@@ -1,12 +1,23 @@
 var availableFields = {
-	emp : ["e.id","departmentId", "firstname", "lastname", "validFrom", "validTo", "email", "phone"]
-}
+    emp: {
+        id: "e.id",
+        departmentId: "d.id",
+        firstname: "e.firstname",
+        lastname: "e.lastname",
+        validFrom: "e.validFrom",
+        validTo: "e.validTo",
+        email: "e.email",
+        phone: "e.phone",
+        department: "d.name",
+        
+    }
+};
 
 var defaultFields = {
-	emp : ["e.id","firstname", "lastname"]
-}
+    emp: ["id", "firstname", "lastname"]
+};
 
 module.exports = {
-	availableFields : availableFields,
-	defaultFields : defaultFields
-}
+    availableFields: availableFields,
+    defaultFields: defaultFields
+};

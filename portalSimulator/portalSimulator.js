@@ -4,9 +4,9 @@ app.service('PortalSvc', function($http) {
     this.save = function(transaction) {
         return $http.post('/api/transaction', {
             transaction: transaction
-        })
-    }
-})
+        });
+    };
+});
 
 app.controller('AppCtrl', function($scope, PortalSvc) {
 
@@ -17,12 +17,12 @@ app.controller('AppCtrl', function($scope, PortalSvc) {
         //TODO implement hearthbeats
         console.log("Connected");
         $scope.isConnected = true;
-    }
+    };
 
     $scope.disconnect = function() {
-        console.log("Disconnected")
+        console.log("Disconnected");
         $scope.isConnected = false;
-    }
+    };
 
     $scope.save = function() {
         var transaction = {
@@ -32,7 +32,7 @@ app.controller('AppCtrl', function($scope, PortalSvc) {
             alarm: $scope.alarm,
             timestamp: Date.now(),
             direction: $scope.direction
-        }
-        PortalSvc.save(transaction)
-    }
-})
+        };
+        PortalSvc.save(transaction);
+    };
+});

@@ -104,13 +104,13 @@ app.config(function($routeProvider, USER_ROLES) {
 
         })
 })
-app.controller('EmpGridCtrl', function($scope, EmpSvc) {
-    $scope.departments = []
-    $scope.departmentFilter = ""
-    $scope.employeeFilter = ""
+app.controller('EmpGridCtrl', function($scope, EmpGridSvc) {
+    $scope.departments = [];
+    $scope.departmentFilter = "";
+    $scope.employeeFilter = "";
     var splitIntoDepartments = function(emps) {
         var department = [];
-        for (x in emps) {
+        for (var x in emps) {
 
             if (department[emps[x].department] === undefined) {
                 department[emps[x].department] = [];
@@ -120,26 +120,27 @@ app.controller('EmpGridCtrl', function($scope, EmpSvc) {
                 firstname: emps[x].firstname,
                 lastname: emps[x].lastname,
                 img: '/images/emps/' + emps[x].id + '.jpg'
-            })
+            });
         }
         return department;
-    }
+    };
 
-    EmpSvc.fetch().success(function(data) {
-        var departments = splitIntoDepartments(data)
-        for (d in departments) {
+    EmpGridSvc.fetch().success(function(data) {
+        var departments = splitIntoDepartments(data);
+        for (var d in departments) {
             $scope.departments.push({
                 department: d,
                 emps: departments[d]
-            })
+            });
 
 
         }
 
-    })
-
+    });
+    
 
 });
+
 app.controller('EmpProfileCtrl', function($scope, EmpSvc, TimeSvc, AuthSvc, $routeParams) {
 
     $scope.showConfig = AuthSvc.isAdmin();
@@ -575,23 +576,6 @@ app.controller('ZonesCtrl', function($scope, ZonesSvc) {
     })
     $scope.zoneFilter = '';
 });
-app.directive('onErrorSrc', function() {
-    return {
-        link: function(scope, element, attrs) {
-          element.bind('error', function() {
-            if (attrs.src != attrs.onErrorSrc) {
-              attrs.$set('src', attrs.onErrorSrc);
-            }
-          });
-        }
-    }
-});
-app.filter('offset', function() {
-  return function(input, start) {
-    start = parseInt(start, 10);
-    return input.slice(start);
-  };
-});
 app.factory('AuthSvc', function($http, $cookies) {
     var currentUser = null;
     var loggedIn = false;
@@ -663,11 +647,11 @@ app.factory('AuthSvc', function($http, $cookies) {
         }
     };
 })
-app.service('EmpSvc', function($http) {
+app.service('EmpGridSvc', function($http) {
     this.fetch = function() {
-        return $http.get('/api/employees')
-    }
-})
+        return $http.get('/api/employee?fields=department');
+    };
+});
 app.service('MapSvc', function($http) {
     this.fetch = function(buildingId) {
 
@@ -692,6 +676,23 @@ app.service('ZonesSvc', function($http) {
         return $http.get('/api/zones')
     }
 })
+app.directive('onErrorSrc', function() {
+    return {
+        link: function(scope, element, attrs) {
+          element.bind('error', function() {
+            if (attrs.src != attrs.onErrorSrc) {
+              attrs.$set('src', attrs.onErrorSrc);
+            }
+          });
+        }
+    }
+});
+app.filter('offset', function() {
+  return function(input, start) {
+    start = parseInt(start, 10);
+    return input.slice(start);
+  };
+});
 app.controller('MapPortalModalInstance', function($scope, $location, $modalInstance, $http, label, node) {
 
     $http.get('/api/transactionInfo/portal?portalId=' + node + '&limit=5').success(function(data) {

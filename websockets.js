@@ -1,28 +1,28 @@
-var ws = require('ws')
-var _ = require('lodash')
+var ws = require('ws');
+var _ = require('lodash');
 var portals = [];
 
 
 
 var authPortal = function(portalObj, body) {
     //Associate ID
-    portalObj.uuid = body
-    
+    portalObj.uuid = body;
+
     // Provide object with control fucntions
     portalObj.arm = function() {
         portalObj.status = "armed";
-        portalObj.ws.send("arm")
-    }
+        portalObj.ws.send("arm");
+    };
 
     portalObj.arm = function() {
         portalObj.status = "disarmed";
-        portalObj.ws.send("disarm")
-    }
-}
+        portalObj.ws.send("disarm");
+    };
+};
 
 var statusChange = function(portalObj, body) {
-    portalObj.status = body
-}
+    portalObj.status = body;
+};
 
 
 
@@ -32,7 +32,7 @@ var routes = [{
 }, {
     topic: "statusChange",
     f: statusChange
-}]
+}];
 
 
 
@@ -40,7 +40,7 @@ var routes = [{
 var connect = function(server) {
     var wss = new ws.Server({
         server: server
-    })
+    });
     wss.on('connection', function(ws) {
         portals.push({
             uuid: undefined,
@@ -49,46 +49,46 @@ var connect = function(server) {
 
         });
         ws.on('message', function(message) {
-            routeMessage(ws, message)
+            routeMessage(ws, message);
         });
-        ws.send("Recorded")
+        ws.send("Recorded");
         ws.on('close', function() {
-            console.log("disconnect")
+            console.log("disconnect");
 
             _.remove(portals, {
                 ws: ws
-            })
-            console.log(portals)
-        })
+            });
+            console.log(portals);
+        });
 
-    })
-}
+    });
+};
 
 module.exports = {
     connect: connect,
     portals: portals
-}
+};
 
 var routeMessage = function(ws, message) {
     try {
 
-        var msg = JSON.parse(message)
+        var msg = JSON.parse(message);
         var f = _.find(routes, {
             topic: msg.topic
         }).f;
 
-        if (f == undefined) {
-            throw "undefined topic"
+        if (f === undefined) {
+            throw "undefined topic";
         }
         portalObj = _.find(portals, {
             ws: ws
-        })
+        });
 
-        f(portalObj, msg.body)
+        f(portalObj, msg.body);
     } catch (err) {
         console.log("Unable to route:" + message + " " + err);
-        return
+        return;
     }
 
 
-}
+};

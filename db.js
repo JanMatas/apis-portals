@@ -23,13 +23,13 @@ var executeQuery = function(query, cb) {
     getConnection(function(err, connection) {
         // handle errors
         if (err) {
-            connection.destroy()
-            cb(err, undefined)
+            connection.destroy();
+            cb(err, undefined);
             return;
         }
         connection.on('error', function(err) {
-            connection.destroy()
-            cb(err, undefined)
+            connection.destroy();
+            cb(err, undefined);
             return;
         });
 
@@ -38,12 +38,12 @@ var executeQuery = function(query, cb) {
             cb(err, rows);
         });
 
-    })
+    });
 
-}
+};
 
 module.exports = {
     getConnection: getConnection,
     fetchData: executeQuery, //TODO remove this
-    executeQuery: executeQuery
-}
+    executeQuery : executeQuery
+};
