@@ -8,12 +8,13 @@ router.get('/',function(req, res, next){
 		}
 	}
 
-	query = "SELECT z.id, z.name, SUM(ts.timeInside) as timeSum"
-			+ " FROM TimeSpent ts RIGHT OUTER JOIN Zone z ON ts.zoneId=z.id" 
-			+ " WHERE ts.employeeId =" + req.query.employeeId
-			+ " AND ts.date<='" + req.query.endDate 
-			+ "' AND ts.date>='" +req.query.startDate 
-			+ "' GROUP BY z.id, z.name";
+	query = "SELECT z.id, z.name, SUM(ts.timeInside) as timeSum" +
+			" FROM TimeSpent ts RIGHT OUTER JOIN Zone z ON ts.zoneId=z.id" +
+			" WHERE ts.employeeId =" + req.query.employeeId +
+			" AND ts.date<='" + req.query.endDate  +
+			"' AND ts.date>='" +req.query.startDate  +
+			"' GROUP BY z.id, z.name"; 
+			
 	db.fetchData(query, function(err, rows) {
 		if(err) {
 			return next(err);
@@ -21,8 +22,8 @@ router.get('/',function(req, res, next){
 		
 		res.json(rows);
 
-	})
+	});
 
-})
+});
 
 module.exports = router;

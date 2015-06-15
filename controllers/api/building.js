@@ -1,15 +1,14 @@
 var router = require('express').Router();
 var db = require('../../db');
 var config = require('../../config');
-var _ = require('lodash')
+var _ = require('lodash');
 var ws = require('../../websockets.js');
-var jwt = require('jwt-simple')
-var authUtils = require('../../authUtils.js')
+var authUtils = require('../../authUtils.js');
 
 router.get('/:id', function(req, res, next) {
-	var username = authUtils.authReq(req)
-	if (username == undefined) {
-		return res.sendStatus(401)
+	var username = authUtils.authReq(req);
+	if (username === undefined) {
+		return res.sendStatus(401);
 	}
 
     query = "select * from building b JOIN user_building ub ON b.id = ub.buildingId and b.id=" + req.params.id + " where ub.username='" + username+"'";
@@ -20,14 +19,14 @@ router.get('/:id', function(req, res, next) {
         }
         res.json(building);
 
-    })
-})
+    });
+});
 
 
 router.get('/', function(req, res, next) {
-	var username = authUtils.authReq(req)
-	if (username == undefined) {
-		return res.sendStatus(401)
+	var username = authUtils.authReq(req);
+	if (username === undefined) {
+		return res.sendStatus(401);
 	}
 
     query = "select * from building b JOIN user_building ub ON b.id = ub.buildingId where ub.username='" + username+"'";
@@ -37,9 +36,9 @@ router.get('/', function(req, res, next) {
         }
         res.json(rows);
 
-    })
-})
+    });
+});
 
-router.get('/')
+router.get('/');
 
 module.exports = router;

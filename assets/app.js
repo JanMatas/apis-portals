@@ -141,42 +141,33 @@ app.controller('EmpGridCtrl', function($scope, EmpGridSvc) {
 
 });
 
-app.controller('EmpProfileCtrl', function($scope, EmpSvc, TimeSvc, AuthSvc, $routeParams) {
+app.controller('EmpProfileCtrl', function($scope, EmpProfileSvc, TimeSvc, AuthSvc, $routeParams) {
 
     $scope.showConfig = AuthSvc.isAdmin();
-    EmpSvc.fetch().success(function(data) {
+    EmpProfileSvc.fetch($routeParams.empId).success(function(data) {
+        $scope.emp = {
+            id: data[0].id,
+            firstname: data[0].firstname,
+            lastname: data[0].lastname,
+            img: '/images/emps/' + data[0].id + '.jpg',
+            email: data[0].email,
+            phone: data[0].phone,
+            gender: data[0].firstname,
+            department: data[0].department,
+            validFrom: data[0].validFrom,
 
-        for (x in data) {
+        };
+    });
 
-            if (data[x].id == $routeParams.empId) {
+    TimeSvc.fetch('2015-01-30', '2015-08-10', $routeParams.empId).success(function(data) {
 
-                $scope.emp = {
-                    id: data[x].id,
-                    firstname: data[x].firstname,
-                    lastname: data[x].lastname,
-                    img: '/images/emps/' + data[x].id + '.jpg',
-                    email: data[x].email,
-                    phone: data[x].phone,
-                    gender: data[x].firstname,
-                    department: data[x].department,
-                    validFrom: data[x].validFrom,
+        $scope.labels2 = [];
+        $scope.data2 = [];
 
-                }
-            }
 
-        }
-
-    })
-
-    TimeSvc.fetch('2015-01-30', '2015-08-10', $routeParams.empId).success( function(data) {
-    
-        $scope.labels2 = []
-        $scope.data2 = []
-
-        
-        for (d in data) {
-            $scope.labels2.push(data[d].name)
-            $scope.data2.push(data[d].timeSum)
+        for (var d in data) {
+            $scope.labels2.push(data[d].name);
+            $scope.data2.push(data[d].timeSum);
         }
 
     });
@@ -196,7 +187,7 @@ app.controller('EmpProfileCtrl', function($scope, EmpSvc, TimeSvc, AuthSvc, $rou
         $scope.chartTab2Show = true;
     };
     $scope.deselect2 = function() {
-   
+
         $scope.chartTab2Show = false;
     };
     $scope.select = function() {
@@ -209,57 +200,46 @@ app.controller('EmpProfileCtrl', function($scope, EmpSvc, TimeSvc, AuthSvc, $rou
 
 
 });
-app.controller('EmpSettingsCtrl', function($scope, EmpSvc, ZonesSvc, $routeParams) {
-    $scope.totalItems = 0
+app.controller('EmpSettingsCtrl', function($scope, EmpSettingsSvc, ZonesSvc, $routeParams) {
+    $scope.totalItems = 0;
     $scope.itemsPerPage = 3;
     $scope.zonesReady = true;
     $scope.id = "toggle-" + 1;
-    $scope.departments = ["Marketing", "Catalogue of currencies"]
 
-    EmpSvc.fetch().success(function(data) {
 
-        for (x in data) {
-            
-            if (data[x].id == $routeParams.empId) {
+    EmpSettingsSvc.fetch($routeParams.empId).success(function(data) {
+        $scope.emp = {
+            id: data[0].id,
+            firstname: data[0].firstname,
+            lastname: data[0].lastname,
+            img: '/images/emps/' + data[0].id + '.jpg',
+            email: data[0].email,
+            phone: data[0].phone,
+            gender: "Male",
+            department: data[0].department,
+            validFrom: data[0].validFrom,
+            tagNumber: 75497502384
+        };
 
-                $scope.emp = {
-                    id: data[x].id,
-                    firstname: data[x].firstname,
-                    lastname: data[x].lastname,
-                    img: '/images/emps/' + data[x].id + '.jpg',
-                    email: data[x].email,
-                    phone: data[x].phone,
-                    gender: "Male",
-                    department: data[x].department,
-                    validFrom: data[x].validFrom,
-                    tagNumber: 75497502384
-                }
-            }
+    });
 
-        }
-
-    })
-    $scope.zones = []
+    $scope.zones = [];
     ZonesSvc.fetch().success(function(data) {
-
-        for (x in data) {
+        for (var x in data) {
             $scope.zones.push({
                 title: data[x].name,
 
-            })
+            });
 
         }
-        
-        $scope.totalItems = $scope.zones.length
-    
-    })
-    
+
+        $scope.totalItems = $scope.zones.length;
+
+    });
+
     $scope.zoneFilter = '';
 
     $scope.currentPage = 0;
-
-
-
 });
 app.controller('LoginCtrl', function($scope,$location, $rootScope, AuthSvc) {
 
@@ -576,6 +556,23 @@ app.controller('ZonesCtrl', function($scope, ZonesSvc) {
     })
     $scope.zoneFilter = '';
 });
+app.directive('onErrorSrc', function() {
+    return {
+        link: function(scope, element, attrs) {
+          element.bind('error', function() {
+            if (attrs.src != attrs.onErrorSrc) {
+              attrs.$set('src', attrs.onErrorSrc);
+            }
+          });
+        }
+    }
+});
+app.filter('offset', function() {
+  return function(input, start) {
+    start = parseInt(start, 10);
+    return input.slice(start);
+  };
+});
 app.factory('AuthSvc', function($http, $cookies) {
     var currentUser = null;
     var loggedIn = false;
@@ -652,6 +649,16 @@ app.service('EmpGridSvc', function($http) {
         return $http.get('/api/employee?fields=department');
     };
 });
+app.service('EmpProfileSvc', function($http) {
+    this.fetch = function(id) {
+        return $http.get('/api/employee/' + id + '?fields=department,email,phone,validFrom');
+    };
+});
+app.service('EmpSettingsSvc', function($http) {
+    this.fetch = function(id) {
+        return $http.get('/api/employee/' + id + '?fields=department,email,phone,validFrom');
+    };
+});
 app.service('MapSvc', function($http) {
     this.fetch = function(buildingId) {
 
@@ -676,23 +683,6 @@ app.service('ZonesSvc', function($http) {
         return $http.get('/api/zones')
     }
 })
-app.directive('onErrorSrc', function() {
-    return {
-        link: function(scope, element, attrs) {
-          element.bind('error', function() {
-            if (attrs.src != attrs.onErrorSrc) {
-              attrs.$set('src', attrs.onErrorSrc);
-            }
-          });
-        }
-    }
-});
-app.filter('offset', function() {
-  return function(input, start) {
-    start = parseInt(start, 10);
-    return input.slice(start);
-  };
-});
 app.controller('MapPortalModalInstance', function($scope, $location, $modalInstance, $http, label, node) {
 
     $http.get('/api/transactionInfo/portal?portalId=' + node + '&limit=5').success(function(data) {

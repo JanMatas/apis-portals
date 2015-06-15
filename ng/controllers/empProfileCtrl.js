@@ -1,39 +1,30 @@
-app.controller('EmpProfileCtrl', function($scope, EmpSvc, TimeSvc, AuthSvc, $routeParams) {
+app.controller('EmpProfileCtrl', function($scope, EmpProfileSvc, TimeSvc, AuthSvc, $routeParams) {
 
     $scope.showConfig = AuthSvc.isAdmin();
-    EmpSvc.fetch().success(function(data) {
+    EmpProfileSvc.fetch($routeParams.empId).success(function(data) {
+        $scope.emp = {
+            id: data[0].id,
+            firstname: data[0].firstname,
+            lastname: data[0].lastname,
+            img: '/images/emps/' + data[0].id + '.jpg',
+            email: data[0].email,
+            phone: data[0].phone,
+            gender: data[0].firstname,
+            department: data[0].department,
+            validFrom: data[0].validFrom,
 
-        for (x in data) {
+        };
+    });
 
-            if (data[x].id == $routeParams.empId) {
+    TimeSvc.fetch('2015-01-30', '2015-08-10', $routeParams.empId).success(function(data) {
 
-                $scope.emp = {
-                    id: data[x].id,
-                    firstname: data[x].firstname,
-                    lastname: data[x].lastname,
-                    img: '/images/emps/' + data[x].id + '.jpg',
-                    email: data[x].email,
-                    phone: data[x].phone,
-                    gender: data[x].firstname,
-                    department: data[x].department,
-                    validFrom: data[x].validFrom,
+        $scope.labels2 = [];
+        $scope.data2 = [];
 
-                }
-            }
 
-        }
-
-    })
-
-    TimeSvc.fetch('2015-01-30', '2015-08-10', $routeParams.empId).success( function(data) {
-    
-        $scope.labels2 = []
-        $scope.data2 = []
-
-        
-        for (d in data) {
-            $scope.labels2.push(data[d].name)
-            $scope.data2.push(data[d].timeSum)
+        for (var d in data) {
+            $scope.labels2.push(data[d].name);
+            $scope.data2.push(data[d].timeSum);
         }
 
     });
@@ -53,7 +44,7 @@ app.controller('EmpProfileCtrl', function($scope, EmpSvc, TimeSvc, AuthSvc, $rou
         $scope.chartTab2Show = true;
     };
     $scope.deselect2 = function() {
-   
+
         $scope.chartTab2Show = false;
     };
     $scope.select = function() {
