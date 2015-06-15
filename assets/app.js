@@ -529,8 +529,10 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
 
 
 });
-app.controller('NavbarCtrl', function($scope,$rootScope, $location, AuthSvc) {
+app.controller('NavbarCtrl', function($scope,$rootScope, $http, $location, AuthSvc) {
     $scope.loggedIn = AuthSvc.isLoggedIn();
+
+
     $rootScope.$on('login', function(event) {
         $scope.loggedIn = AuthSvc.isLoggedIn();
         $scope.currentUser = AuthSvc.currentUser();
@@ -544,17 +546,11 @@ app.controller('NavbarCtrl', function($scope,$rootScope, $location, AuthSvc) {
     	$rootScope.$emit('logout');
     	$location.path('/')
     }
-    $scope.buildings = [
-        {
-            id : 1,
-            name : "Main building"
-        },
-        {
-            id: 2,
-            name : 'Other building'
-        }
-    ]
     $scope.building = 1
+
+    $http.get('/api/building').success(function(data) {
+        $scope.buildings = data
+    })
 });
 
 app.controller("PieCtrl", function($scope) {
@@ -750,7 +746,7 @@ var createDate = function(timestamp) {
     var d = new Date(t[0], t[1] - 1, t[2], t[3], t[4], t[5]);
     return d;
 }
-app.controller('MapZoneModalInstance', function($scope, $modalInstance, $location, $http, node, label) {
+app.controller('MapZoneModalInstance', function($scope, $modalInstance, $location, $http, $rootScope, node, label) {
     $scope.name = label;
     $scope.isEmp = true;
     $http.get('/api/positionInfo/zone?zoneId=' + node).success(function(data) {

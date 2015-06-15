@@ -27,6 +27,7 @@ app.use('/api/positionInfo', require('./controllers/api/positionInfo')); // Endp
 app.use('/api/transactionInfo', require('./controllers/api/transactionInfo'))
 app.use('/api/timeInfo', require('./controllers/api/timeInfo'))
 app.use('/api/portal', require('./controllers/api/portal'))
+app.use('/api/building', require('./controllers/api/building'))
 
 //Start  node server
 var server = app.listen(port, function() { //Starts the app on given port

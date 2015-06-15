@@ -13,7 +13,6 @@ var pool = mysql.createPool(config.db);
 	the function to be executed */
 var getConnection = function(callback) {
     pool.getConnection(function(err, connection) {
-
         callback(err, connection);
 
     });
@@ -44,7 +43,7 @@ var executeQuery = function(query, cb) {
 }
 
 module.exports = {
-    connection: getConnection,
+    getConnection: getConnection,
     fetchData: executeQuery, //TODO remove this
     executeQuery: executeQuery
 }

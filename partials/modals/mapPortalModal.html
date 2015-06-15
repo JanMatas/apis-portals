@@ -13,10 +13,10 @@
                         <a ng-click="profile(t.empId)"><img ng-src="{{t.img}}" class="img-responsive img-circle"></a>
                     </div>
                 </td>
-                <td class="col-xs-2">
-                    <p>{{ t.firstname }}</p>
+                <td class="col-xs-6">
+                    {{ t.firstname ++ " " ++ t.lastname}}
                 </td>
-                <td class="col-xs-3s">{{ t.lastname }}</td>
+
                 <td class="col-xs-4">{{ t.date | date:"dd.MM.yyyy HH:mm:ss"}}</td>
             </tr>
         </table>

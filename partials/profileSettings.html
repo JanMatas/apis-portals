@@ -62,12 +62,12 @@
                         <input type="text" class="form-control" placeholder="Enter phone number" ng-model="emp.phone">
                     </div>
                     <div class="form-group">
-                        <div class="col-xs-5">
+                        <div class="col-xs-6">
                             <label>Gender</label>
                             <br>
-                            <toggle-switch ng-model="switchStatus" on-label="Male" off-label="Female"></toggle-switch>
+                            <toggle-switch ng-model="switchStatus" on-label="Male" off-label="Female"> </toggle-switch>
                         </div>
-                        <div class="col-xs-7">
+                        <div class="col-xs-6">
                             <label>Tag number</label>
                             <input type="text" class="form-control" placeholder="Enter tag number" ng-model="emp.tagNumber">
                         </div>
@@ -77,11 +77,11 @@
                     <br>
                     <br>
                     <div class="form-group text-center">
-                        <div class="col-md-6">
+                        <div class="col-md-6  hidden-xs">
                             <label>Valid from</label>
                             <datepicker ng-model="dt" min-date="emp.validFrom" show-weeks="true" class="well well-sm " custom-class="getDayClass(date, mode)"></datepicker>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6  hidden-xs">
                             <label>Valid until</label>
                             <datepicker ng-model="dt" min-date="emp.validUntil" show-weeks="true" class="well well-sm" custom-class="getDayClass(date, mode)"></datepicker>
                         </div>

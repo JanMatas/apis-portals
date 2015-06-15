@@ -1,4 +1,4 @@
-app.controller('MapZoneModalInstance', function($scope, $modalInstance, $location, $http, node, label) {
+app.controller('MapZoneModalInstance', function($scope, $modalInstance, $location, $http, $rootScope, node, label) {
     $scope.name = label;
     $scope.isEmp = true;
     $http.get('/api/positionInfo/zone?zoneId=' + node).success(function(data) {

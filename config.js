@@ -9,6 +9,6 @@ module.exports = {
 		database: 'heroku_73648698f572409',
 		debug:false
 	},
-	authenticate:true
+	authenticate:false
 
 }

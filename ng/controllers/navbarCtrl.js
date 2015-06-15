@@ -1,5 +1,7 @@
-app.controller('NavbarCtrl', function($scope,$rootScope, $location, AuthSvc) {
+app.controller('NavbarCtrl', function($scope,$rootScope, $http, $location, AuthSvc) {
     $scope.loggedIn = AuthSvc.isLoggedIn();
+
+
     $rootScope.$on('login', function(event) {
         $scope.loggedIn = AuthSvc.isLoggedIn();
         $scope.currentUser = AuthSvc.currentUser();
@@ -13,15 +15,9 @@ app.controller('NavbarCtrl', function($scope,$rootScope, $location, AuthSvc) {
     	$rootScope.$emit('logout');
     	$location.path('/')
     }
-    $scope.buildings = [
-        {
-            id : 1,
-            name : "Main building"
-        },
-        {
-            id: 2,
-            name : 'Other building'
-        }
-    ]
     $scope.building = 1
+
+    $http.get('/api/building').success(function(data) {
+        $scope.buildings = data
+    })
 });

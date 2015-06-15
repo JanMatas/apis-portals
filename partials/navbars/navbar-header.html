@@ -4,32 +4,20 @@
     </div>
     <div ng-controller="NavbarCtrl" class="col-xs-12 col-sm-6">
         <div class="container pull-right">
-            <div ng-if="loggedIn" style:"margin-top : 20px">
-
-                <p class="navbar-brand hidden-sm hidden-xs">Welcome,  {{currentUser}} </p>
-
-
+            <div ng-if="loggedIn" style: "margin-top : 20px">
+                <p class="navbar-brand hidden-sm hidden-xs">Welcome, {{currentUser}} </p>
                 <span>
-
-                <div class="btn-group navbar-button" dropdown is-open="status.isopen">
-                    <button type="button" class="btn btn-primary dropdown-toggle" dropdown-toggle ng-disabled="disabled">
-                        Choose building <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li ng-repeat="choice in items">
-                            <a href>{{choice}}</a>
-                        </li>
-                    </ul>
-                
-                </div>
+                    <select class="btn btn-primary navbar-button">
+                        <option ng-repeat="building in buildings" value="{{building.id}}">
+                        {{building.name}}
+                        </option>
+                    </select>
                 &nbsp;
                 <span>
-
                     <button class="btn btn-primary pull-right navbar-button" ng-click="logout()">Logout</button>
 
                 </span>
             </div>
-
         </div>
     </div>
 </nav>
