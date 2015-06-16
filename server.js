@@ -25,7 +25,7 @@ app.use('/api/map', require('./controllers/api/map')); //Endpoint for map view -
 app.use('/api/transaction', require('./controllers/api/transactionPortal')); //Endpoint for saving transactions
 app.use('/api/positionInfo', require('./controllers/api/positionInfo')); // Endpoint for position of employees
 app.use('/api/transactionInfo', require('./controllers/api/transactionInfo'));
-app.use('/api/timeInfo', require('./controllers/api/timeInfo'));
+app.use('/api/time', require('./controllers/api/time'));
 app.use('/api/portal', require('./controllers/api/portal'));
 app.use('/api/building', require('./controllers/api/building'));
 

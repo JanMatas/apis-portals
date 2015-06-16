@@ -62,10 +62,10 @@ router.get('/zone', function(req, res, next) {
 			return next( err);
 		}
 		if (data == []) {
-			return res.send(204)
+			return res.send(204);
 		}
 		return res.json(data);
-	})
+	});
 });
 
 module.exports = router;

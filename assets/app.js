@@ -534,11 +534,6 @@ app.controller('NavbarCtrl', function($scope,$rootScope, $http, $location, AuthS
     })
 });
 
-app.controller("PieCtrl", function($scope) {
-    $scope.test = "ahoj";
-    $scope.labels = ["Download Sales", "In-Store Sales", "Mail-Order Sales"];
-    $scope.data = [300, 500, 100];
-});
 app.controller('ZonesCtrl', function($scope, ZonesSvc) {
     $scope.oneAtATime = true;
 
@@ -674,9 +669,9 @@ app.service('MapSvc', function($http) {
 app.service('TimeSvc', function($http) {
     this.fetch = function(startDate, endDate, empId) {
 
-        return $http.get('/api/timeInfo?startDate=' + startDate + '&endDate=' + endDate + '&employeeId=' + empId);
-    }
-})
+        return $http.get('/api/time?startDate=' + startDate + '&endDate=' + endDate + '&employeeId=' + empId);
+    };
+});
 
 app.service('ZonesSvc', function($http) {
     this.fetch = function() {

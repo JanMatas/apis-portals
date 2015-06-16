@@ -38,7 +38,8 @@ function processGetRequest(req, res, next) {
         requestedFields = req.query.fields.split(",");
 
         // Check if all the requested fields are available
-        if ((_.difference(requestedFields, availableFields))) {
+        if ((_.difference(requestedFields, availableFields)).length) {
+
             // Send bad request if not
             return res.sendStatus(400);
         }
@@ -67,14 +68,14 @@ function processGetRequest(req, res, next) {
     }
 
     // Fetch data from DB
-    db.fetchData(query, function(err, zones) {
+    db.fetchData(sql, function(err, rows) {
 
         if (err) {
             return res.send(500, err);
         }
         
         
-        return res.json(zones);
+        return res.json(rows);
     });
 
 }
