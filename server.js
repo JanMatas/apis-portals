@@ -28,6 +28,7 @@ app.use('/api/transactionInfo', require('./controllers/api/transactionInfo'));
 app.use('/api/time', require('./controllers/api/time'));
 app.use('/api/portal', require('./controllers/api/portal'));
 app.use('/api/building', require('./controllers/api/building'));
+app.use('/api/department', require('./controllers/api/department'));
 
 //Start  node server
 var server = app.listen(port, function() { //Starts the app on given port

@@ -5,7 +5,8 @@ app.controller('EmpSettingsCtrl', function($scope, EmpSettingsSvc, ZonesSvc, $ro
     $scope.id = "toggle-" + 1;
 
 
-    EmpSettingsSvc.fetch($routeParams.empId).success(function(data) {
+
+    EmpSettingsSvc.fetchEmployee($routeParams.empId).success(function(data) {
         $scope.emp = {
             id: data[0].id,
             firstname: data[0].firstname,
@@ -14,11 +15,17 @@ app.controller('EmpSettingsCtrl', function($scope, EmpSettingsSvc, ZonesSvc, $ro
             email: data[0].email,
             phone: data[0].phone,
             gender: "Male",
-            department: data[0].department,
+            department: data[0].departmentId,
             validFrom: data[0].validFrom,
             tagNumber: 75497502384
         };
 
+
+    });
+
+
+    EmpSettingsSvc.fetchDepartments().success(function(data) {
+        $scope.departments = data;
     });
 
     $scope.zones = [];

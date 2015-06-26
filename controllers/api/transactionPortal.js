@@ -4,7 +4,7 @@ var val = 0;
 var util = require('util');
 
 router.post('/', function (req, res, next) {
-	var t = req.body.transaction
+	var t = req.body.transaction;
 	db.connection(function (err, connection) {
 		if (err) {
 			connection.release();
@@ -13,7 +13,7 @@ router.post('/', function (req, res, next) {
 		connection.on('error', function (err) {
 			connection.release();
 			next(err);
-		})
+		});
 
 		query = "SELECT IF(STRCMP(t.direction, 'In'), p.zoneFrom, p.zoneTo) as zone ,"+
 					" UNIX_TIMESTAMP(timestamp) as timestamp" + 
@@ -33,26 +33,26 @@ router.post('/', function (req, res, next) {
 			}
 			
 			connection.query(query, function (err, portal) {
-				console.log("Portal: "+ util.inspect(portal[0].zone, false, null))
-				console.log("Trans: " + util.inspect(lastTrans[0], false, null))
+				console.log("Portal: "+ util.inspect(portal[0].zone, false, null));
+				console.log("Trans: " + util.inspect(lastTrans[0], false, null));
 
 				if(err) {
 					connection.release();
-					return next(err)
+					return next(err);
 				}
 				if (lastTrans.length > 0) {
 					if(lastTrans[0].zone != portal[0].zone) {
 
 						connection.release();
-						return next("Inconsistent data")
+						return next("Inconsistent data");
 					}
 				}
-			 	query = "INSERT INTO Transaction(employeeId, portalId, timestamp, direction, alarm) "
-					+ "VALUES (" + t.employeeId + ", " 
-					+ t.portalId +", " 
-					+ "FROM_UNIXTIME("+ t.timestamp +"), '" 
-					+ t.direction + "', "
-					+ t.alarm +")";
+			 	query = "INSERT INTO Transaction(employeeId, portalId, timestamp, direction, alarm) " +
+					 "VALUES (" + t.employeeId + ", " +
+					 t.portalId +", " +
+					 "FROM_UNIXTIME("+ t.timestamp +"), '" +
+					 t.direction + "', " +
+					 t.alarm +")";
 
 				connection.query(query, function(err, response) {
 					if (err) {
@@ -60,31 +60,31 @@ router.post('/', function (req, res, next) {
 						return next(err);
 					}
 					if(lastTrans[0]) {
-						query = "INSERT INTO TimeSpent"
-	  					+ " (employeeId, zoneId, date, timeInside)"
-						+ " VALUES (" + t.employeeId +  ", "
-							+ portal[0].zone + 
-							", CURDATE(), " 
-							+ (t.timestamp / 1000 - lastTrans[0].timestamp) +")"
-						+ " ON DUPLICATE KEY UPDATE"
-						+ " timeInside = timeInside + VALUES(timeInside)";
+						query = "INSERT INTO TimeSpent" +
+	  					 " (employeeId, zoneId, date, timeInside)" +
+						 " VALUES (" + t.employeeId +  ", " +
+							 portal[0].zone + 
+							", CURDATE(), "  +
+							 ((t.timestamp / 1000) - lastTrans[0].timestamp) +")" +
+						 " ON DUPLICATE KEY UPDATE" +
+						 " timeInside = timeInside + VALUES(timeInside)";
 						connection.query(query, function(err, response) {
 							if(err) {
-								connection.rollback()
+								connection.rollback();
 								connection.release();
-								return next(err)
+								return next(err);
 							}
-							connection.release()
+							connection.release();
 							
-						})
+						});
 					} else {
-						connection.release()
+						connection.release();
 					}
-					console.log("success")
-				})
-			})
-		})
-	})
+					console.log("success");
+				});
+			});
+		});
+	});
 });
 
 module.exports = router;

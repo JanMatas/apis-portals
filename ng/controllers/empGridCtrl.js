@@ -19,7 +19,7 @@ app.controller('EmpGridCtrl', function($scope, EmpGridSvc) {
         return department;
     };
 
-    EmpGridSvc.fetch().success(function(data) {
+    EmpGridSvc.fetchs().success(function(data) {
         var departments = splitIntoDepartments(data);
         for (var d in departments) {
             $scope.departments.push({

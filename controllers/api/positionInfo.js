@@ -1,8 +1,7 @@
 var connection = require('../../db');
 var router = require('express').Router();
-var jwt =require('jwt-simple')
-var db = require('../../db')
-var config = require('../../config')
+var db = require('../../db');
+var config = require('../../config');
 
 
 router.get('/employee', function(req, res, next) {
@@ -27,10 +26,10 @@ router.get('/employee', function(req, res, next) {
 			return res.send(500, err);
 		}
 		if (data == []) {
-			return res.send(204)
+			return res.send(204);
 		}
 		return res.json(data);
-	})
+	});
 });
 
 
