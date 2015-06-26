@@ -104,17 +104,6 @@ app.config(function($routeProvider, USER_ROLES) {
 
         })
 })
-app.directive('onErrorSrc', function() {
-    return {
-        link: function(scope, element, attrs) {
-          element.bind('error', function() {
-            if (attrs.src != attrs.onErrorSrc) {
-              attrs.$set('src', attrs.onErrorSrc);
-            }
-          });
-        }
-    }
-});
 app.controller('EmpGridCtrl', function($scope, EmpGridSvc) {
     $scope.departments = [];
     $scope.departmentFilter = "";
@@ -136,7 +125,7 @@ app.controller('EmpGridCtrl', function($scope, EmpGridSvc) {
         return department;
     };
 
-    EmpGridSvc.fetchs().success(function(data) {
+    EmpGridSvc.fetch().success(function(data) {
         var departments = splitIntoDepartments(data);
         for (var d in departments) {
             $scope.departments.push({
@@ -569,6 +558,17 @@ app.controller('ZonesCtrl', function($scope, ZonesSvc) {
     })
     $scope.zoneFilter = '';
 });
+app.directive('onErrorSrc', function() {
+    return {
+        link: function(scope, element, attrs) {
+          element.bind('error', function() {
+            if (attrs.src != attrs.onErrorSrc) {
+              attrs.$set('src', attrs.onErrorSrc);
+            }
+          });
+        }
+    }
+});
 app.filter('offset', function() {
   return function(input, start) {
     start = parseInt(start, 10);
@@ -683,7 +683,7 @@ app.service('MapSvc', function($http) {
 
 app.service('TimeSvc', function($http) {
     this.fetch = function(startDate, endDate, empId) {
-
+    	console.log('/api/time?startDate=' + startDate + '&endDate=' + endDate + '&employeeId=' + empId);
         return $http.get('/api/time?startDate=' + startDate + '&endDate=' + endDate + '&employeeId=' + empId);
     };
 });
