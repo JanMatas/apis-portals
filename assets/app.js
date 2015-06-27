@@ -287,12 +287,12 @@ app.controller('LoginCtrl', function($scope,$location, $rootScope, AuthSvc) {
 var PORTAL_NODE_OFFSET = 10000;
 
 /** This is the controller for the map on home screen*/
-app.controller('MapCtrl', function($scope, $modal, MapSvc) {
+app.controller('MapCtrl', function($scope, $modal, MapSvc, AuthSvc) {
 
-
+    var nodeIds = [];
     var colors = {
-        zone : '#E14F3F',
-        portal : {
+        zone: '#E14F3F',
+        portal: {
             disarmed: '#83FFFF',
             armed: '#CCFF99',
             disconnected: '#E6E6E6'
@@ -301,22 +301,24 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
 
     $scope.configuration = true
     var createData = function(createNetwork) {
-
-        MapSvc.fetch(1).success(function(data) {
+        console.log(AuthSvc.getArea())
+        MapSvc.fetch(AuthSvc.getArea()).success(function(data) {
             //$scope.mapReady = true;
             var nodes = [];
             var edges = [];
 
             for (n in data.zones) {
-
+                nodeIds.push(data.zones[n].id)
                 if (data.zones[n].map_x === null || data.zones[n].map_x === null) {
                     nodes.push({
                         id: data.zones[n].id,
                         label: data.zones[n].name,
-                        physics:true,
+                        physics: true,
                         color: colors.zone,
                         shape: 'box'
                     })
+
+
                 } else {
                     nodes.push({
                         id: data.zones[n].id,
@@ -330,28 +332,30 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
                 }
             }
             for (p in data.portals) {
+                nodeIds.push(data.portals[p].id + PORTAL_NODE_OFFSET);
                 var color;
-                switch(data.portals[p].status) {
-                    case "disconnected" : 
+                switch (data.portals[p].status) {
+                    case "disconnected":
                         color = colors.portal.disconnected;
                         break;
-                    case "armed" : 
+                    case "armed":
                         color = colors.portal.armed;
                         break;
-                    case "disarmed" : 
+                    case "disarmed":
                         color = colors.portal.disarmed;
-                        break;                        
+                        break;
                 }
 
                 if (data.portals[p].map_x === null || data.portals[p].map_x === null) {
                     nodes.push({
                         id: data.portals[p].id + PORTAL_NODE_OFFSET,
                         label: data.portals[p].name,
-                        physics:true,
+                        physics: true,
                         color: color
 
 
                     })
+
                 } else {
                     nodes.push({
                         id: data.portals[p].id + PORTAL_NODE_OFFSET,
@@ -368,7 +372,7 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
 
                     from: data.portals[p].zoneFrom,
                     to: data.portals[p].id + PORTAL_NODE_OFFSET,
-                    color:'#E6E6E6'
+                    color: '#E6E6E6'
 
                 })
 
@@ -376,19 +380,19 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
 
                     from: data.portals[p].id + PORTAL_NODE_OFFSET,
                     to: data.portals[p].zoneTo,
-                    color:'#E6E6E6'
+                    color: '#E6E6E6'
                 })
 
             }
 
 
-            createNetwork(nodes, edges);
+            createNetwork(nodes, edges, nodeIds);
 
         })
 
     }
 
-    var createNetwork = function(nodes, edges) {
+    var createNetwork = function(nodes, edges, nodeIds) {
         var nodesDataSet = new vis.DataSet(nodes)
 
         var edgesDataSet = new vis.DataSet(edges);
@@ -414,7 +418,7 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
                 physics: false
             },
             edges: {
-                smooth: false
+                smooth: true
             }
         }
 
@@ -465,7 +469,16 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
             }
         });
 
+        network.on('stabilized', function() {
 
+            for (n in nodeIds) {
+
+                $scope.nodesDataSet.update([{
+                    id: nodeIds[n],
+                    physics: false
+                }]);
+            }
+        })
 
 
     }
@@ -482,25 +495,39 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
 
     $scope.rearrange = function() {
         $scope.network.setOptions({
-            nodes : {
-                physics:true
-            },
-            edges : {
-                smooth:true
+
+            edges: {
+                smooth: true
             }
+
         })
 
-        
+        for (n in nodeIds) {
+
+            $scope.nodesDataSet.update([{
+                id: nodeIds[n],
+                x : 0,
+                y : 0,
+                physics: true
+            }]);
+        }
+
         $scope.network.on('stabilized', function() {
-            
+
             $scope.network.setOptions({
-                nodes: {
-                    physics: false
-                },
+
                 edges: {
-                    smooth : false
+                    smooth: false
                 }
             })
+            for (n in nodeIds) {
+
+                $scope.nodesDataSet.update([{
+                    id: nodeIds[n],
+
+                    physics: false
+                }]);
+            }
         })
 
         console.log("test")
@@ -510,7 +537,7 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc) {
 
 
 });
-app.controller('NavbarCtrl', function($scope,$rootScope, $http, $location, AuthSvc) {
+app.controller('NavbarCtrl', function($scope,$rootScope, $http, $route, $location, AuthSvc) {
     $scope.loggedIn = AuthSvc.isLoggedIn();
 
 
@@ -527,10 +554,17 @@ app.controller('NavbarCtrl', function($scope,$rootScope, $http, $location, AuthS
     	$rootScope.$emit('logout');
     	$location.path('/')
     }
-    $scope.building = 1
+    
 
+    $scope.updateBuilding = function (building) {
+
+        AuthSvc.setArea(building)
+        $route.reload();
+    }
     $http.get('/api/building').success(function(data) {
         $scope.buildings = data
+        $scope.building = {}
+        $scope.building.id = data[0].id
     })
 });
 
@@ -573,6 +607,7 @@ app.factory('AuthSvc', function($http, $cookies) {
     var loggedIn = false;
     var token = null;
     var role =  null;
+    var area = 1;
 
     // initMaybe it wasn't meant to work for mpm?ial state says we haven't logged in or out yet...
     // this tells us we are in public browsing
@@ -636,7 +671,15 @@ app.factory('AuthSvc', function($http, $cookies) {
             
             return this.isLoggedIn() && roles.indexOf(role) >= 0 || roles.indexOf("*") >= 0;
             
+        },
+        getArea : function() {
+            return area
+        },
+        setArea : function(newArea) {
+            area = newArea;
         }
+
+
     };
 })
 app.service('EmpGridSvc', function($http) {
@@ -656,7 +699,7 @@ app.service('EmpSettingsSvc', function($http) {
 });
 app.service('MapSvc', function($http) {
     this.fetch = function(buildingId) {
-
+    	console.log('/api/map?buildingID=' + buildingId)
         return $http.get('/api/map?buildingID=' + buildingId)
     }
     this.save = function(nodePositions) {

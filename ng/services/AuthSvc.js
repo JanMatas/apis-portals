@@ -3,6 +3,7 @@ app.factory('AuthSvc', function($http, $cookies) {
     var loggedIn = false;
     var token = null;
     var role =  null;
+    var area = 1;
 
     // initMaybe it wasn't meant to work for mpm?ial state says we haven't logged in or out yet...
     // this tells us we are in public browsing
@@ -66,6 +67,14 @@ app.factory('AuthSvc', function($http, $cookies) {
             
             return this.isLoggedIn() && roles.indexOf(role) >= 0 || roles.indexOf("*") >= 0;
             
+        },
+        getArea : function() {
+            return area
+        },
+        setArea : function(newArea) {
+            area = newArea;
         }
+
+
     };
 })

@@ -4,15 +4,13 @@
         <input type="text" class="form-control" placeholder="Employee lastname" ng-model="employeeFilter">
         <input type="text" class="form-control" placeholder="Department name" ng-model="departmentFilter">
     </div>
-
     <div class="row">
         <br>
     </div>
     <div ng-repeat="d in departments | filter: {department : departmentFilter}" class="container">
-
         <h1> Department: {{d.department}}</h1>
         <div ng-repeat="u in d.emps | filter: {lastname : employeeFilter} " class="col-lg-2 col-md-4 col-sm-6 col-xs-10 text-center">
-            <a ng-href="/#/profile/{{u.id}}"><img ng-src="{{u.img}}" class="img-thumbnail img-responsive img-circle imageClip"></a>
+            <a ng-href="/#/profile/{{u.id}}"><img ng-src="{{u.img}}" on-error-src="images/placeholders/placeholder.png" class="img-thumbnail img-responsive img-circle imageClip"></a>
             <h3>{{u.firstname}} <br> {{u.lastname}}</h3>
             <hr>
         </div>
