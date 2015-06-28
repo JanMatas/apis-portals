@@ -2,6 +2,7 @@ var router = require('express').Router();
 var db = require('../../db');
 var authUtils = require('../../authUtils');
 var apiUtils = require('./apiUtils');
+var squel = require('squel');
 
 var processGetRequest = function(req, res, next) {
 
@@ -14,21 +15,23 @@ var processGetRequest = function(req, res, next) {
         return res.sendStatus(401);
     }
 
-    var endpoint = "department";
-    colNames = apiUtils.getColumnNames(req, "department");
-    if (colNames === undefined) {
+
+    var fields = apiUtils.getFields(req, "department");
+    if (fields === undefined) {
         return res.sendStatus(400);
     }
 
-    if (id) {
-        query = "SELECT "+ colNames.join()+ " FROM department d JOIN user_building ub USING (buildingID) JOIN building b ON b.id = ub.buildingID WHERE ub.username ='" + username+ "' AND d.id =" + id;
 
-    } else {
-        query = "SELECT "+ colNames.join()+ " FROM department d JOIN user_building ub USING (buildingID) JOIN building b ON b.id = ub.buildingID WHERE ub.username ='" + username+ "'";
+    
+    var s = squel.select()
+        .fields(fields)
+        .from("sys_ostr");
+
+    if (id) {
+       s.where("sys_ostr.pk_ = " + id);
     }
 
-
-    db.fetchData(query, function(err, zones) {
+    db.fetchData(s.toString(), function(err, zones) {
 
         if (err) {
             return next(err);

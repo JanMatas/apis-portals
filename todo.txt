@@ -1,0 +1,4 @@
+Fix auth in :
+	department api 
+	employee api
+	map api

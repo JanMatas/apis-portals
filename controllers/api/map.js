@@ -1,18 +1,19 @@
 var connection = require('../../db');
 var router = require('express').Router();
-var jwt = require('jwt-simple')
-var db = require('../../db')
-var config = require('../../config')
+var jwt = require('jwt-simple');
+var db = require('../../db');
+var config = require('../../config');
 var ws = require('../../websockets.js');
-var squel = require('squel')
-var _ = require('lodash')
+var squel = require('squel');
+var _ = require('lodash');
 var apiUtils = require('./apiUtils');
+var authUtils = require("../../authUtils");
+
 router.get('/', function(req, res, next) {
 
-    if (config.authenticate) {
-        if (!req.auth) {
-            //return res.send(401);
-        }
+    var username = authUtils.authReq(req);
+    if (username === undefined) {
+        return res.sendStatus(401);
     }
 
     var fields = apiUtils.getFields(req, "map_zones");
@@ -22,15 +23,15 @@ router.get('/', function(req, res, next) {
         .fields(fields)
         .left_join('por_zone', null, 'por_zone.sys_area_pk_ = sys_area.pk_')
         .where('sys_area.lft = sys_area.rgt - 1')
-            .where('sys_area.lft BETWEEN ? AND ?',
-                squel.select()
-                .field("lft")
-                .from("sys_area")
-                .where("pk_ = ?", req.query.buildingID),
-                squel.select()
-                .field("rgt")
-                .from("sys_area")
-                .where("pk_ = ?", req.query.buildingID)
+        .where('sys_area.lft BETWEEN ? AND ?',
+            squel.select()
+            .field("lft")
+            .from("sys_area")
+            .where("pk_ = ?", req.query.buildingID),
+            squel.select()
+            .field("rgt")
+            .from("sys_area")
+            .where("pk_ = ?", req.query.buildingID)
         );
     console.log(fields);
 
@@ -38,13 +39,13 @@ router.get('/', function(req, res, next) {
 
 
     db.fetchData(s.toString(), function(err, zones) {
-        var zoneIds = []
+        var zoneIds = [];
         _.forEach(zones, function(zone) {
-            zoneIds.push(zone.id)
+            zoneIds.push(zone.id);
         });
 
-        console.log(zoneIds)
-        
+        console.log(zoneIds);
+
         fields = apiUtils.getFields(req, "map_portals");
 
 
@@ -56,7 +57,7 @@ router.get('/', function(req, res, next) {
                 .or("area_inp_pk_ in (" + zoneIds.join() + ")")
                 .or("area_out_pk_ in (" + zoneIds.join() + ")"))
             .toString();
-        console.log(query)
+        console.log(query);
 
         db.fetchData(query, function(err, portals) {
             if (err) {
@@ -67,14 +68,14 @@ router.get('/', function(req, res, next) {
                 return next("not found");
             }
             var portalObjects = ws.portals;
-            console.log(portalObjects)
-            for (p in portals) {
+            console.log(portalObjects);
+            for (var p in portals) {
 
                 var connectedPortal = _.find(portalObjects, {
                     uuid: portals[p].raspiId
-                })
+                });
 
-                if (connectedPortal == undefined) {
+                if (connectedPortal === undefined) {
                     portals[p].status = "disconnected";
                 } else {
                     portals[p].status = connectedPortal.status;
@@ -92,16 +93,24 @@ router.get('/', function(req, res, next) {
 
 
 router.post('/', function(req, res, next) {
-    if (config.auth) {
-        if (!req.headers['x-auth']) {
-            return res.send(401);
+    // Callback for databse insert
+    var saveCallback = function(err) {
+        if (err) {
+            console.log(err);
+            return res.send(500, err);
         }
-        var token = req.headers['x-auth'];
-        var auth = jwt.decode(token, config.secret);
+
+    };
+
+    
+    var username = authUtils.authReq(req);
+    if (username === undefined) {
+        return res.sendStatus(401);
     }
-    var nodePositions = req.body.nodePositions
-    console.log(nodePositions[8])
-    for (n in nodePositions) {
+
+    var nodePositions = req.body.nodePositions;
+
+    for (var n in nodePositions) {
         // make sure its a node, not an edge
         if (n < 100000) {
             squelMysql = squel.useFlavour('mysql');
@@ -115,7 +124,7 @@ router.post('/', function(req, res, next) {
                     .set("map_y", nodePositions[n].y)
                     .onDupUpdate("map_x", nodePositions[n].x)
                     .onDupUpdate("map_y", nodePositions[n].y)
-                    .toString()
+                    .toString();
 
             } else {
                 query = squelMysql.insert()
@@ -125,24 +134,18 @@ router.post('/', function(req, res, next) {
                     .set("map_y", nodePositions[n].y)
                     .onDupUpdate("map_x", nodePositions[n].x)
                     .onDupUpdate("map_y", nodePositions[n].y)
-                    .toString()
+                    .toString();
 
             }
 
-            db.executeQuery(query, function(err) {
-                if (err) {
-                    console.log(err)
-                    return res.send(500, err);
-                }
-
-            })
+            db.executeQuery(query, saveCallback);
         }
     }
-    res.send(201)
+    res.send(201);
 
 });
 
 
 
 
-module.exports = router
+module.exports = router;

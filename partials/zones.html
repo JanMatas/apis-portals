@@ -5,9 +5,6 @@
         <input type="text" class="form-control" placeholder="Zone name" ng-model="zoneFilter">
     </div>
     <br>
-    <accordion close-others="oneAtATime">
-        <accordion-group heading="{{group.title}}" ng-repeat="group in groups | filter: {title : zoneFilter}">
-            {{group.content}}
-        </accordion-group>
-    </accordion>
+    <abn-tree tree-data="example_treedata" ></abn-tree>
+
 </div>

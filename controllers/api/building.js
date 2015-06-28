@@ -4,7 +4,7 @@ var config = require('../../config');
 var _ = require('lodash');
 var ws = require('../../websockets.js');
 var authUtils = require('../../authUtils.js');
-var apiUtils  = require('./apiUtils')
+var apiUtils  = require('./apiUtils');
 var squel = require("squel");
 
 
@@ -28,7 +28,7 @@ function processGetRequest(req, res, next) {
         .from("sys_area")
         .where("sys_area.lft != sys_area.rgt - 1");
     if (id) {
-        s.where("sys_area.pk_ = " + id)
+        s.where("sys_area.pk_ = " + id);
     }
 
     

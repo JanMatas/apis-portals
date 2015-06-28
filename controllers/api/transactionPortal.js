@@ -4,7 +4,7 @@ var val = 0;
 var util = require('util');
 
 router.post('/', function (req, res, next) {
-	var t = req.body.transaction
+	var t = req.body.transaction;
 	db.connection(function (err, connection) {
 		if (err) {
 			connection.release();
@@ -13,7 +13,7 @@ router.post('/', function (req, res, next) {
 		connection.on('error', function (err) {
 			connection.release();
 			next(err);
-		})
+		});
 
 		query = "SELECT IF(STRCMP(t.direction, 'In'), p.zoneFrom, p.zoneTo) as zone ,"+
 					" UNIX_TIMESTAMP(timestamp) as timestamp" + 
@@ -70,21 +70,21 @@ router.post('/', function (req, res, next) {
 						+ " timeInside = timeInside + VALUES(timeInside)";
 						connection.query(query, function(err, response) {
 							if(err) {
-								connection.rollback()
+								connection.rollback();
 								connection.release();
-								return next(err)
+								return next(err);
 							}
-							connection.release()
+							connection.release();
 							
-						})
+						});
 					} else {
-						connection.release()
+						connection.release();
 					}
-					console.log("success")
-				})
-			})
-		})
-	})
+					console.log("success");
+				});
+			});
+		});
+	});
 });
 
 module.exports = router;

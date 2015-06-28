@@ -4,21 +4,26 @@ var jwt = require('jwt-simple');
 var config = require('../../config');
 var bcrypt = require('bcrypt');
 var db = require('../../db');
-
+var squel = require('squel');
 
 router.post('/', function (req, res, next) {
-	query = "SELECT username, password FROM User WHERE username = '" + req.body.username + "'";
-	db.fetchData(query, function(err, rows) {
+	var s = squel.select()
+		.fields(["loginname", "loginpass"])
+		.from("sys_user")
+		.where("loginname = '" + req.body.username + "'");
+
+
+	db.fetchData(s.toString(), function(err, rows) {
 		
 		if (err) {
 			return next(err);
 		}
-		if (rows.length == 0) {
+		if (rows.length === 0) {
 			return res.send(401);
 		}
 
 
-		bcrypt.compare(req.body.password, rows[0].password, function (err, valid) {
+		bcrypt.compare(req.body.password, rows[0].loginpass, function (err, valid) {
 			if (err) {
 				return next(err);
 			}
@@ -26,11 +31,11 @@ router.post('/', function (req, res, next) {
 
 				return res.send(401);
 			}
-			var token = jwt.encode({username: rows[0].username}, config.secret);
+			var token = jwt.encode({username: rows[0].loginname}, config.secret);
 			res.send(token);		
 		});
 
 	});
 });
 
-module.exports = router
+module.exports = router;

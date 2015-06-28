@@ -1,5 +1,5 @@
 //Frontend entry point
-var app = angular.module('app', ['ngRoute', 'chart.js', 'ui.bootstrap', 'ngCookies','toggle-switch']);
+var app = angular.module('app', ['ngRoute', 'chart.js', 'ui.bootstrap', 'ngCookies','toggle-switch', 'angularBootstrapNavTree']);
 
 app.run(function($rootScope, $location, AuthSvc, CONFIG) {
 
@@ -570,19 +570,21 @@ app.controller('NavbarCtrl', function($scope,$rootScope, $http, $route, $locatio
 
 app.controller('ZonesCtrl', function($scope, ZonesSvc) {
     $scope.oneAtATime = true;
-
+$scope.example_treedata = []
     $scope.groups = [
 
     ];
     ZonesSvc.fetch().success(function(data) {
 
-        for (x in data) {
+
+        $scope.example_treedata = data;
+        for (var x in data) {
             $scope.groups.push({
                 title: data[x].name,
                 content: data[x].description
-            })
+            });
         }
-    })
+    });
     $scope.zoneFilter = '';
 });
 app.directive('onErrorSrc', function() {
@@ -718,47 +720,47 @@ app.service('TimeSvc', function($http) {
 
 app.service('ZonesSvc', function($http) {
     this.fetch = function() {
-        return $http.get('/api/zones')
-    }
-})
+        return $http.get('/api/zone');
+    };
+});
 app.controller('MapPortalModalInstance', function($scope, $location, $modalInstance, $http, label, node) {
 
-    $http.get('/api/transactionInfo/portal?portalId=' + node + '&limit=5').success(function(data) {
+    $http.get('/api/transaction?portalId=' + node + '&limit=5').success(function(data) {
         $scope.transactions = [];
-        for (x in data) {
+        for (var x in data) {
             $scope.transactions.push({
                 empId: data[x].employeeId,
                 firstname: data[x].firstname,
                 lastname: data[x].lastname,
                 img: '/images/emps/' + data[x].employeeId + '.jpg',
                 date: data[x].timestamp * 1000
-            })
+            });
         }
-        $scope.isTrans = $scope.transactions.length != 0;
+        $scope.isTrans = $scope.transactions.length !== 0;
 
-    })
+    });
 
 
     $scope.name = label;
-    $scope.connection = "Established" // TODO implement this
-    $scope.status = "Armed" //TODO implement this
+    $scope.connection = "Established";// TODO implement this
+    $scope.status = "Armed";//TODO implement this
 
     $scope.armed = true;
 
     $scope.arm = function() {
-        $scope.status = "Armed"
+        $scope.status = "Armed";
         $scope.armed = true;
-    }
+    };
 
     $scope.disarm = function() {
-        $scope.status = "DisArmed"
+        $scope.status = "DisArmed";
         $scope.armed = false;
-    }
+    };
 
     $scope.changeConfig = function() {
         $modalInstance.dismiss('cancel');
         $window.location.href = '/#/options';
-    }
+    };
 
     $scope.cancel = function() {
         $modalInstance.dismiss('cancel');
@@ -766,7 +768,7 @@ app.controller('MapPortalModalInstance', function($scope, $location, $modalInsta
     $scope.profile = function(empId) {
         $modalInstance.dismiss('cancel');
         $location.path('/profile/' + empId);
-    }
+    };
 
 });
 
@@ -774,7 +776,7 @@ var createDate = function(timestamp) {
     var t = timestamp.split(/[- :]/);
     var d = new Date(t[0], t[1] - 1, t[2], t[3], t[4], t[5]);
     return d;
-}
+};
 app.controller('MapZoneModalInstance', function($scope, $modalInstance, $location, $http, $rootScope, node, label) {
     $scope.name = label;
     $scope.isEmp = true;
