@@ -4,7 +4,7 @@
 </div>
 <div class="modal-body">
     <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
-    <form>
+    <form ng-submit="ok()">
         <div class="form-group">
             <label>Username</label>
             <input class="form-control" type="text" ng-model="username">
@@ -13,10 +13,11 @@
             <label>Password</label>
             <input class="form-control" type="password" ng-model="password">
         </div>
-    </form>
+    
     <div class="modal-footer">
-        <button class="btn btn-primary btn" ng-click="ok()">Login </button>
+        <button type="submit" class="btn btn-primary btn">Login </button>
 
     </div>
+    </form>
 </div>
 </div>

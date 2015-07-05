@@ -25,6 +25,6 @@ app.controller('NavbarCtrl', function($scope,$rootScope, $http, $route, $locatio
     $http.get('/api/building').success(function(data) {
         $scope.buildings = data
         $scope.building = {}
-        $scope.building.id = data[0].id
+        $scope.building.id = data[0].id;
     })
 });

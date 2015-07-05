@@ -10,7 +10,7 @@ body {
 
     
     height: 100%;
-    margin: 0;
+
 }
 
 .profile-image-container {
@@ -19,6 +19,10 @@ body {
     padding-right: 20%;
 }
 
+.glyphicon.glyphicon-one-fine-dot {
+    margin-bottom: -.8em;
+    overflow: hidden;
+}
 .icon-container {
     position: relative;
     margin: 0 auto;
@@ -51,7 +55,7 @@ body {
 
 .container-body {
         margin-top: 65px;
-        margin-bottom: 80px;
+        margin-bottom: 200px;
         height : 85%;
 
 }
@@ -85,6 +89,11 @@ body {
 
 .center-block {
     float: none !important
+}
+
+.zones-panel {
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 table {

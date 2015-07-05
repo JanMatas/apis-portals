@@ -11,7 +11,7 @@ app.controller('EmpProfileCtrl', function($scope, EmpProfileSvc, TimeSvc, AuthSv
             phone: data[0].phone,
             gender: data[0].firstname,
             department: data[0].department,
-            validFrom: data[0].validFrom,
+
 
         };
     });
@@ -36,7 +36,7 @@ app.controller('EmpProfileCtrl', function($scope, EmpProfileSvc, TimeSvc, AuthSv
         [28, 48, 40, 19, 86, 27, 90]
     ];
 
-
+    $scope.chartTabShow = true;
 
     //TODO fix this
     $scope.select2 = function() {

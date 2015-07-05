@@ -1,10 +1,71 @@
-<div ng-controller="ZonesCtrl">
-    <h1>Zones</h1>
-    <div class="input-group">
-        <span class="input-group-addon" id="sizing-addon1">Filter: </span>
-        <input type="text" class="form-control" placeholder="Zone name" ng-model="zoneFilter">
+<!--
+ TODO - fix selected zones class
+-->
+<script type="text/ng-template" id="tree_renderer.html">
+    <div ng-if="!zone.hidden" class="text-left" style="margin-left : 15px">
+        <div ng-class="{'' : selectedZone.id === zone.id} " ng-click="selectZone(zone)">
+            <span ng-click="toggleZone(zone)">
+            <span ng-if="zone.children.length !== 0 && !zone.showChildren" class="glyphicon glyphicon-plus" ></span>
+            <span ng-if="zone.children.length !== 0 && zone.showChildren" class="glyphicon glyphicon-minus"></span>
+            <span ng-if="zone.children.length === 0" class="glyphicon glyphicon-one-fine-dot"></span>
+            </span>
+            {{zone.label}}
+        </div>
+        <hr>
+        <div ng-if="zone.children && zone.showChildren">
+            <div ng-repeat="zone in zone.children" ng-include="'tree_renderer.html'"></div>
+        </div>
     </div>
-    <br>
-    <abn-tree tree-data="example_treedata" ></abn-tree>
-
+</script>
+<div ng-controller="ZonesCtrl" class="container">
+    <h1>Zones</h1>
+    <div class="panel panel-default padded col-md-3">
+        <div class="panel-heading">
+            <h3 class="panel-title">Permissions:</h3>
+            <form class="form-inline">
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon">Filter:</div>
+                        <input type="text" class="form-control" ng-model="zoneFilter" ng-change="filter()" placeholder="Zone name">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="panel-body ">
+            <div ng-repeat=" zone in zones" class="text-left">
+                <div ng-if="!zone.hidden">
+                    <div ng-class="{'select' : selectedZone.id === zone.id}">
+                        <span ng-click="toggleZone(zone)">
+                            <span ng-if="zone.children && !zone.showChildren" class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                        <span ng-if="zone.children && zone.showChildren" class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+                        </span>
+                        <span ng-click="selectZone(zone)">
+                        {{zone.label}}
+                        </span>
+                    </div>
+                    <hr>
+                    <div ng-if="zone.showChildren">
+                    </div>
+                    <div ng-if="zone.showChildren">
+                        <div ng-repeat="zone in zone.children" ng-include="'tree_renderer.html'"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default col-md-8 col-md-offset-1">
+        <div class="panel-heading">
+            <h4>
+            	{{selectedZone.label}}
+            </h4>
+        </div>
+        <div class="panel-body">
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            </p>
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            </p>
+        </div>
+    </div>
 </div>

@@ -41,6 +41,9 @@ var processGetRequest = function(req, res, next) {
 
 };
 
+
+
+
 router.get('/:departmentId', processGetRequest);
 router.get('/', processGetRequest);
 

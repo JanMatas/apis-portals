@@ -4,9 +4,10 @@ var availableFields = {
         "employmentId" : "sys_employment.pk_",
         "firstname" : "sys_user.firstname",
         "lastname" : "sys_user.lastname",
-        "department" :  "sys_ostr.cname"
+        "department" :  "sys_ostr.cname",
+        "email" : "sys_user.email" ,
+        "phone" : "sys_user.phone",
 
-        
     },
     building : {
         "id" : "sys_area.pk_",

@@ -33,18 +33,18 @@ router.post('/', function (req, res, next) {
 			}
 			
 			connection.query(query, function (err, portal) {
-				console.log("Portal: "+ util.inspect(portal[0].zone, false, null))
-				console.log("Trans: " + util.inspect(lastTrans[0], false, null))
+				console.log("Portal: "+ util.inspect(portal[0].zone, false, null));
+				console.log("Trans: " + util.inspect(lastTrans[0], false, null));
 
 				if(err) {
 					connection.release();
-					return next(err)
+					return next(err);
 				}
 				if (lastTrans.length > 0) {
 					if(lastTrans[0].zone != portal[0].zone) {
 
 						connection.release();
-						return next("Inconsistent data")
+						return next("Inconsistent data");
 					}
 				}
 			 	query = "INSERT INTO Transaction(employeeId, portalId, timestamp, direction, alarm) "

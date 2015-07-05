@@ -1,17 +1,29 @@
+<script type="text/ng-template" id="zones_renderer.html">
+    <div ng-if="!zone.hidden" class="text-left" style="margin-left : 15px">
+        <span ng-click="toggleZone(zone)">
+            <span ng-if="zone.children.length !== 0 && !zone.showChildren" class="glyphicon glyphicon-plus" ></span>
+        <span ng-if="zone.children.length !== 0 && zone.showChildren" class="glyphicon glyphicon-minus"></span>
+        <span ng-if="zone.children.length === 0" class="glyphicon glyphicon-one-fine-dot"></span> {{zone.label}}
+        </span>
+        <toggle-switch ng-model="zone.permission" ng-click="togglePermission(zone)" class="pull-right"></toggle-switch>
+        <hr>
+        <div ng-if="zone.children && zone.showChildren">
+            <div ng-repeat="zone in zone.children" ng-include="'zones_renderer.html'"></div>
+        </div>
+    </div>
+</script>
 <div class="container">
     <div class="row">
         <div class="row">
             <div class="col-md-12 lead">
                 Employee profile settings
                 <hr>
-                
             </div>
         </div>
         <div class="row">
             <br>
             <div class="col-md-4 text-center">
                 <div class="profile-image-container">
-
                     <img class="img-thumbnail avatar img-responsive" ng-src="{{emp.img}}" on-error-src="http://google.com/favicon.ico" />
                     <div class="col-offset-4 centered text-left">
                     </div>
@@ -25,23 +37,33 @@
                             <div class="form-group">
                                 <div class="input-group">
                                     <div class="input-group-addon">Filter:</div>
-                                    <input type="text" class="form-control" ng-model="zoneFilter" placeholder="Zone name">
+                                    <input type="text" class="form-control" ng-model="zoneFilter" ng-change="filter()" placeholder="Zone name">
                                 </div>
                             </div>
                         </form>
                     </div>
                     <div class="panel-body ">
-                        <div ng-repeat=" zone in zones | filter : {title : zoneFilter} | offset: (currentPage - 1)*itemsPerPage | limitTo: itemsPerPage" class="text-left row">
-                            {{zone.title}}
-                            <toggle-switch ng-model="zone.permission" class="pull-right"></toggle-switch>
-                            <hr>
+                        <div ng-repeat=" zone in zones" class="text-left">
+                            <div ng-if="!zone.hidden">
+                                <span ng-click="toggleZone(zone)">
+                            <span ng-if="zone.children && !zone.showChildren" class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                                <span ng-if="zone.children && zone.showChildren" class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+                                <span ng-if="!zone.children" class="glyphicon glyphicon-fire" aria-hidden="true"></span> {{zone.label}}
+                                </span>
+                                <toggle-switch ng-model="zone.permission" ng-click="togglePermission(zone)" class="pull-right"></toggle-switch>
+                                <hr>
+                                <div ng-if="zone.showChildren">
+                                </div>
+                                <div ng-if="zone.showChildren">
+                                    <div ng-repeat="zone in zone.children" ng-include="'zones_renderer.html'"></div>
+                                </div>
+                            </div>
                         </div>
-                        <pagination total-items="totalItems" ng-model="currentPage" ng-change="pageChanged()" items-per-page="itemsPerPage"></pagination>
                     </div>
                 </div>
             </div>
             <div class="col-md-8">
-                <form>
+                <form ng-submit="saveData()">
                     <div class="form-group">
                         <label>Firstname</label>
                         <input type="text" class="form-control" placeholder="Firstname" ng-model="emp.firstname">

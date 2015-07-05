@@ -11,6 +11,10 @@ var squel = require('squel');
 router.get('/:empId', processGetRequest);
 router.get('/', processGetRequest);
 
+router.put('/:empId', processPostPut);
+router.post('/', processPostPut);
+
+
 
 
 
@@ -41,14 +45,32 @@ function processGetRequest(req, res, next) {
 
 
     var s = squel.select()
+        .distinct()
         .fields(fields)
+        // Get all the data about user
         .from("sys_user")
+        // His employment
         .join("sys_employment", null, "sys_user.pk_ = sys_employment.sys_user_pk_")
+        // Employment type
         .join("sys_employmenttype", null, "sys_employmenttype.pk_ = sys_employment.sys_employmenttype_pk_")
+        // Company
         .join("sys_company", null, "sys_company.pk_ = sys_employmenttype.sys_company_pk_")
-        .join("sys_ostr", null, "sys_employment.sys_ostr_pk_ = sys_ostr.pk_");
+        // Department
+        .join("sys_ostr", null, "sys_employment.sys_ostr_pk_ = sys_ostr.pk_")
+        
+        // Find employee permissions
+        .join("por_user_permission", "emp_permission", "sys_user.pk_ = emp_permission.sys_user_pk_")
 
 
+        .join("sys_user", "user", "user.loginname = '" + username + "'")      
+        .join("por_user_permission", "user_permission", "user.pk_ = user_permission.sys_user_pk_")
+        .where("user_permission.sys_area_pk_ = emp_permission.sys_area_pk_");
+
+        
+
+    if (id) {
+        s.where("sys_user.pk_ = " + id);
+    }
 
     console.log(s.toString());
 
@@ -58,11 +80,17 @@ function processGetRequest(req, res, next) {
     db.fetchData(s.toString(), function(err, rows) {
 
         if (err) {
-            return res.send(500, err);
+            return next(err);
         }
 
 
         return res.json(rows);
     });
+
+}
+
+
+function processPostPut(req, resp, next) {
+    console.log(req.body);
 
 }

@@ -2,11 +2,18 @@ var router = require('express').Router();
 var db = require('../../db');
 var config = require('../../config');
 var squel = require('squel');
+var authUtils = require('../../authUtils');
+
 router.get('/', function(req, res, next) {
     if (config.authenticate) {
         if (!req.auth) {
             return res.send(401);
         }
+    }
+    var username = authUtils.authReq(req);
+    if (username === undefined) {
+        // Not authenticated, return unauthorized
+        return res.sendStatus(401);
     }
 
     var s = squel.select()
@@ -19,7 +26,12 @@ router.get('/', function(req, res, next) {
         .group("child.pk_, child.cname")
         .order("child.lft");
 
-    db.fetchData(s.toString(), function(err, rows) {
+    var query = squel.select()
+        .from("por_user_permission")
+        .join(s, "areas", "areas.id = por_user_permission.sys_area_pk_")
+        .where("por_user_permission.username = '" + username +"'")
+
+    db.fetchData(query.toString(), function(err, rows) {
 
         if (err) {
             return next(err);

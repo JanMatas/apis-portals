@@ -7,7 +7,7 @@
             <div ng-if="loggedIn" style: "margin-top : 20px">
                 <p class="navbar-brand hidden-sm hidden-xs">Welcome, {{currentUser}} </p>
                 <span>
-                    <select class="btn btn-primary navbar-button" ng-model="building" ng-change="updateBuilding(building)">
+                    <select class="btn btn-primary navbar-button" ng-model="building.id" ng-change="updateBuilding(building)">
                         <option ng-repeat="building in buildings" value="{{building.id}}" >
                         {{building.name}}
                         </option>

@@ -2,6 +2,8 @@ var router = require('express').Router();
 var db = require('../../db');
 var config = require('../../config');
 router.get('/',function(req, res, next){
+	res.json([]);
+	/*
 	if(config.authenticate) {
 		if (!req.auth) {
 			return res.send(401);
@@ -23,7 +25,7 @@ router.get('/',function(req, res, next){
 		res.json(rows);
 
 	});
-
+	*/
 });
 
 module.exports = router;

@@ -3,6 +3,9 @@ var router = require('express').Router();
 var jwt =require('jwt-simple');
 var db = require('../../db');
 var config = require('../../config');
+var squel = require('squel');
+
+
 
 
 router.get('/employee', function(req, res, next) {
@@ -41,6 +44,26 @@ router.get('/zone', function(req, res, next) {
 		}
 	}
 
+	var users = squel.select()
+		.field("sys_user.pk_", "id")
+		.field("sys_user.firstname", "firstname")
+		.field("sys_user.lastname", "lastname")
+		.from("sys_user");
+
+	var employeeLastTransaction = squel.select()
+		.field("pk_", "id")
+		.from("sys_elog")
+		.where("sys_elog.sys_user_pk_ = sys_user.pk_")
+		.order("t_date", false)
+		.limit(1);
+
+	var employeeLastTransactions = squel.select()
+		.from("sys_user")
+		.join("sys_elog", null, "sys_elog.pk_ = (" + employeeLastTransaction.toString() + ")")
+		.join("sys_reader", null, "sys_reader.code = sys_elog.t_reader")
+
+
+	console.log(employeeLastTransactions.toString());
 	var query = 
 		"SELECT id, firstname, lastname " +
 		"FROM   (SELECT e.id, e.firstname, e.lastname,"+

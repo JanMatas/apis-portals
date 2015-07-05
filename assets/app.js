@@ -154,7 +154,7 @@ app.controller('EmpProfileCtrl', function($scope, EmpProfileSvc, TimeSvc, AuthSv
             phone: data[0].phone,
             gender: data[0].firstname,
             department: data[0].department,
-            validFrom: data[0].validFrom,
+
 
         };
     });
@@ -179,7 +179,7 @@ app.controller('EmpProfileCtrl', function($scope, EmpProfileSvc, TimeSvc, AuthSv
         [28, 48, 40, 19, 86, 27, 90]
     ];
 
-
+    $scope.chartTabShow = true;
 
     //TODO fix this
     $scope.select2 = function() {
@@ -200,7 +200,7 @@ app.controller('EmpProfileCtrl', function($scope, EmpProfileSvc, TimeSvc, AuthSv
 
 
 });
-app.controller('EmpSettingsCtrl', function($scope, EmpSettingsSvc, ZonesSvc, $routeParams) {
+app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSettingsSvc, ZonesSvc, $routeParams) {
     $scope.totalItems = 0;
     $scope.itemsPerPage = 3;
     $scope.zonesReady = true;
@@ -224,22 +224,93 @@ app.controller('EmpSettingsCtrl', function($scope, EmpSettingsSvc, ZonesSvc, $ro
     });
 
     $scope.zones = [];
+
     ZonesSvc.fetch().success(function(data) {
-        for (var x in data) {
-            $scope.zones.push({
-                title: data[x].name,
 
-            });
 
-        }
-
+        $scope.zones = data;
         $scope.totalItems = $scope.zones.length;
 
     });
 
-    $scope.zoneFilter = '';
+    $scope.toggleZone = function(zone) {
+        zone.showChildren = !zone.showChildren;
+    };
 
+    $scope.togglePermission = function(zone) {
+        // change the permission of all children
+        changeChildrenPermissions(zone, zone.permission);
+    };
+
+
+
+    $scope.zoneFilter = '';
     $scope.currentPage = 0;
+
+
+    /* 
+        Control of zones tree renderer
+    */
+    function hideChildren() {
+        for (var zone in $scope.zones) {
+            mapTree($scope.zones[zone], function(zone) {
+                zone.showChildren = false;
+            });
+        }
+    }
+
+
+    var hideAll = function() {
+        for (var zone in $scope.zones) {
+            mapTree($scope.zones[zone], function(zone) {
+                zone.hidden = true;
+
+            });
+        }
+    };
+
+    $scope.filter = function() {
+
+        hideAll();
+        for (var zone in $scope.zones) {
+            filterTree($scope.zones[zone]);
+        }
+        if ($scope.zoneFilter === '') {
+
+            hideChildren();
+        }
+    };
+
+    // Hides everything, that is not on the path to a node matching filter
+    function filterTree(root) {
+        var result = false;
+        
+        for (var i = 0; i < root.children.length; i++) {
+            if (filterTree(root.children[i])) {
+                result = true;
+            }
+        }
+        root.showChildren = result;
+        result = result || root.label.toLowerCase().indexOf($scope.zoneFilter.toLowerCase()) > -1;
+        if (result) {
+            root.hidden = false;
+        }
+        return result;
+    }
+
+    function changeChildrenPermissions(zone, permission) {
+        mapTree(zone, function(zone) {
+            zone.permission = permission;
+        });
+    }
+
+    function mapTree(root, func) {
+        func(root);
+        for (var i = 0; i < root.children.length; i++) {
+            mapTree(root.children[i], func);
+        }
+
+    }
 });
 app.controller('LoginCtrl', function($scope,$location, $rootScope, AuthSvc) {
 
@@ -564,28 +635,102 @@ app.controller('NavbarCtrl', function($scope,$rootScope, $http, $route, $locatio
     $http.get('/api/building').success(function(data) {
         $scope.buildings = data
         $scope.building = {}
-        $scope.building.id = data[0].id
+        $scope.building.id = data[0].id;
     })
 });
 
 app.controller('ZonesCtrl', function($scope, ZonesSvc) {
-    $scope.oneAtATime = true;
-$scope.example_treedata = []
-    $scope.groups = [
-
-    ];
+    $scope.zones = [];
+    $scope.selectedZone = null;
     ZonesSvc.fetch().success(function(data) {
 
 
-        $scope.example_treedata = data;
-        for (var x in data) {
-            $scope.groups.push({
-                title: data[x].name,
-                content: data[x].description
+        $scope.zones = data;
+        $scope.totalItems = $scope.zones.length;
+        $scope.selectedZone = data[0];
+    });
+
+    $scope.toggleZone = function(zone) {
+        zone.showChildren = !zone.showChildren;
+    };
+
+    $scope.togglePermission = function(zone) {
+        // change the permission of all children
+        changeChildrenPermissions(zone, zone.permission);
+    };
+
+
+
+    $scope.zoneFilter = '';
+    $scope.currentPage = 0;
+
+    var hideAll = function() {
+        for (var zone in $scope.zones) {
+            mapTree($scope.zones[zone], function(zone) {
+                zone.hidden = true;
+
             });
         }
-    });
-    $scope.zoneFilter = '';
+    };
+
+    function hideChildren() {
+        for (var zone in $scope.zones) {
+            mapTree($scope.zones[zone], function(zone) {
+                zone.showChildren = false;
+            });
+        }
+    }
+
+    $scope.filter = function() {
+
+        hideAll();
+        for (var zone in $scope.zones) {
+            filterTree($scope.zones[zone]);
+        }
+        if ($scope.zoneFilter === '') {
+
+            hideChildren();
+        }
+    };
+
+    $scope.selectZone = function(zone) {
+        $scope.selectedZone = zone;
+
+    };
+
+    // Hides everything, that is not on the path to a node matching filter
+    function filterTree(root) {
+        var result = false;
+        
+        for (var i = 0; i < root.children.length; i++) {
+            if (filterTree(root.children[i])) {
+                result = true;
+            }
+        }
+        root.showChildren = result;
+        result = result || root.label.toLowerCase().indexOf($scope.zoneFilter.toLowerCase()) > -1;
+        if (result) {
+            root.hidden = false;
+        }
+        return result;
+    }
+
+    function changeChildrenPermissions(zone, permission) {
+        mapTree(zone, function(zone) {
+            zone.permission = permission;
+        });
+    }
+
+    function mapTree(root, func) {
+        func(root);
+        for (var i = 0; i < root.children.length; i++) {
+            mapTree(root.children[i], func);
+        }
+
+    }
+
+
+
 });
 app.directive('onErrorSrc', function() {
     return {
@@ -691,12 +836,12 @@ app.service('EmpGridSvc', function($http) {
 });
 app.service('EmpProfileSvc', function($http) {
     this.fetch = function(id) {
-        return $http.get('/api/employee/' + id + '?fields=department,email,phone,validFrom');
+        return $http.get('/api/employee/' + id + '?fields=department,email,phone');
     };
 });
 app.service('EmpSettingsSvc', function($http) {
     this.fetch = function(id) {
-        return $http.get('/api/employee/' + id + '?fields=department,email,phone,validFrom');
+        return $http.get('/api/employee/' + id + '?fields=department,email,phone');
     };
 });
 app.service('MapSvc', function($http) {
