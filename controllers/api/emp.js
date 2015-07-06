@@ -11,8 +11,8 @@ var squel = require('squel');
 router.get('/:empId', processGetRequest);
 router.get('/', processGetRequest);
 
-router.put('/:empId', processPostPut);
-router.post('/', processPostPut);
+router.put('/:empId', processPutRequest);
+router.post('/', processPostRequest);
 
 
 
@@ -90,7 +90,11 @@ function processGetRequest(req, res, next) {
 }
 
 
-function processPostPut(req, resp, next) {
+function processPutRequest(req, resp, next) {
     console.log(req.body);
+}
 
+function processPostRequest(req, resp, next) {
+     console.log(req.body);
+     
 }

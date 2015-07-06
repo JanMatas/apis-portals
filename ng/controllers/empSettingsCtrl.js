@@ -1,11 +1,9 @@
-app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSettingsSvc, ZonesSvc, $routeParams) {
-    $scope.totalItems = 0;
-    $scope.itemsPerPage = 3;
-    $scope.zonesReady = true;
+app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, $routeParams) {
+
     $scope.id = "toggle-" + 1;
 
 
-    EmpSettingsSvc.fetch($routeParams.empId).success(function(data) {
+    EmpSvc.fetch($routeParams.empId).success(function(data) {
         $scope.emp = {
             id: data[0].id,
             firstname: data[0].firstname,
@@ -16,7 +14,7 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSettingsSvc, Zone
             gender: "Male",
             department: data[0].department,
             validFrom: data[0].validFrom,
-            tagNumber: 75497502384
+            tagNumber: data[0].tagNumber
         };
 
     });
@@ -31,6 +29,19 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSettingsSvc, Zone
 
     });
 
+    $scope.zoneFilter = '';
+
+    $scope.saveData = function () {
+
+        EmpSvc.put($scope.emp);
+    };
+
+
+    /* 
+        Control of zones tree renderer
+    */
+
+
     $scope.toggleZone = function(zone) {
         zone.showChildren = !zone.showChildren;
     };
@@ -40,15 +51,6 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSettingsSvc, Zone
         changeChildrenPermissions(zone, zone.permission);
     };
 
-
-
-    $scope.zoneFilter = '';
-    $scope.currentPage = 0;
-
-
-    /* 
-        Control of zones tree renderer
-    */
     function hideChildren() {
         for (var zone in $scope.zones) {
             mapTree($scope.zones[zone], function(zone) {
