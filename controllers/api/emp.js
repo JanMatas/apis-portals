@@ -72,8 +72,6 @@ function processGetRequest(req, res, next) {
         s.where("sys_user.pk_ = " + id);
     }
 
-    console.log(s.toString());
-
 
 
     // Fetch data from DB

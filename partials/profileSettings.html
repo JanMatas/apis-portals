@@ -30,7 +30,7 @@
                 </div>
                 <br>
                 <br>
-                <div class="panel panel-default padded" ng-show="zonesReady">
+                <div class="panel panel-default padded">
                     <div class="panel-heading">
                         <h3 class="panel-title">Permissions:</h3>
                         <form class="form-inline">
@@ -43,6 +43,7 @@
                         </form>
                     </div>
                     <div class="panel-body ">
+
                         <div ng-repeat=" zone in zones" class="text-left">
                             <div ng-if="!zone.hidden">
                                 <span ng-click="toggleZone(zone)">

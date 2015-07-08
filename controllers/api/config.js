@@ -45,7 +45,11 @@ var availableFields = {
         "timestamp" : "UNIX_TIMESTAMP(sys_elog.t_date)",
         "firstname" : "sys_user.firstname",
         "lastname" : "sys_user.lastname",
-        "employeeId" : "sys_user.pk_"
+        "employeeId" : "sys_user.pk_",
+        "zoneFromId" : "out.pk_",
+        "zoneToId" : "in.pk_",
+        "zoneFromName" : "out.cname",
+        "zoneToName" : "in.cname"
     }
 
 };

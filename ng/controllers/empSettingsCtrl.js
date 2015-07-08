@@ -25,6 +25,7 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, $r
 
 
         $scope.zones = data;
+       
         $scope.totalItems = $scope.zones.length;
 
     });

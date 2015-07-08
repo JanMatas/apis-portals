@@ -30,6 +30,10 @@ app.use('/api/portal', require('./controllers/api/portal'));
 app.use('/api/building', require('./controllers/api/building'));
 app.use('/api/department', require('./controllers/api/department'));
 
+// Endpoint for connection with portals
+
+app.use('/api/portal_endpoint', require('./controllers/api/portal_endpoint'));
+
 //Start  node server
 var server = app.listen(port, function() { //Starts the app on given port
     console.log('Server listening on', port);

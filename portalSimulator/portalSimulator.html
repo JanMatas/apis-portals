@@ -12,46 +12,17 @@
 <body ng-app='app' ng-controller='AppCtrl'>
     <form class="form-horizontal">
         <fieldset>
-            <!-- Multiple Radios (inline) -->
-            <div class="form-group">
-                <label class="col-md-4 control-label" for="buildingID">Building:</label>
-                <div class="col-md-4">
-                    <label class="radio-inline" for="buildingID-0">
-                        <input type="radio" name="buildingID" ng-model="buildingId" id="buildingID-0" value="1" checked="checked"> 1
-                    </label>
-                    <label class="radio-inline" for="buildingID-1">
-                        <input type="radio" name="buildingID" ng-model="buildingId" id="buildingID-1" value="2"> 2
-                    </label>
-                    <label class="radio-inline" for="buildingID-2">
-                        <input type="radio" name="buildingID" ng-model="buildingId" id="buildingID-2" value="3"> 3
-                    </label>
-                    <label class="radio-inline" for="buildingID-3">
-                        <input type="radio" name="buildingID" ng-model="buildingId" id="buildingID-3" value="4"> 4
-                    </label>
-                </div>
-            </div>
-            <!-- Select Basic -->
-            <div class="form-group">
-                <label class="col-md-4 control-label" for="portal">Portal:</label>
-                <div class="col-md-2">
-                    <select id="portal" ng-model="portalId" name="portal" class="form-control">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                        <option value="9">9</option>
-                        <option value="10">10</option>
-                        <option value="11">11</option>
-                    </select>
-                </div>
-            </div>
             <!-- Form Name -->
             <legend>Portal Simulator</legend>
             <!-- Button (Double) -->
+            <!-- Select Basic -->
+            <div class="form-group">
+                <label class="col-md-4 control-label" for="portal">Portal:</label>
+                <select ng-model="selectedPortal">
+                    <option ng-repeat="portal in portals" value="{{portal.id}}">{{portal.name}}</option>
+                </select>
+            </div>
+            <!--
             <div class="form-group">
                 <label class="col-md-4 control-label" for="disconnect"></label>
                 <div class="col-md-8">
@@ -60,6 +31,7 @@
                     <h4 ngIf>Status:  {{isConnected ? "CONNECTED": "DISCONNECTED"}} </h4>
                 </div>
             </div>
+            -->
             <!-- Multiple Checkboxes -->
             <div class="form-group">
                 <label class="col-md-4 control-label" for="alarm">Alarm:</label>
@@ -87,8 +59,9 @@
             <div class="form-group">
                 <label class="col-md-4 control-label" for="Employee: ">Employee:</label>
                 <div class="col-md-5">
-                    <input id="Employee: " name="Employee: " ng-model="employeeId" type="text" placeholder="EmployeeID" class="form-control input-md">
-                    <span class="help-block">Fill in the ID of an employee</span>
+                    <select ng-model="selectedEmployee">
+                        <option ng-repeat="employee in employees" value="{{employee.id}}">{{employee.firstname + " " + employee.lastname}}</option>
+                    </select>
                 </div>
             </div>
             <!-- Button (Double) -->

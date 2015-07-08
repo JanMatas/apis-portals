@@ -227,6 +227,7 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, $r
 
 
         $scope.zones = data;
+       
         $scope.totalItems = $scope.zones.length;
 
     });
@@ -592,7 +593,7 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc, AuthSvc) {
                 edges: {
                     smooth: false
                 }
-            })
+            });
             for (n in nodeIds) {
 
                 $scope.nodesDataSet.update([{
@@ -601,11 +602,11 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc, AuthSvc) {
                     physics: false
                 }]);
             }
-        })
+        });
 
-        console.log("test")
+;
 
-    }
+    };
 
 
 
@@ -631,12 +632,13 @@ app.controller('NavbarCtrl', function($scope,$rootScope, $http, $route, $locatio
 
     $scope.updateBuilding = function (building) {
 
-        AuthSvc.setArea(building)
+        AuthSvc.setArea(building.id);
+        console.log(building);
         $route.reload();
     }
     $http.get('/api/building').success(function(data) {
-        $scope.buildings = data
-        $scope.building = {}
+        $scope.buildings = data;
+        $scope.building = {};
         $scope.building.id = data[0].id;
     })
 });

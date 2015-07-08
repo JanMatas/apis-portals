@@ -19,12 +19,13 @@ app.controller('NavbarCtrl', function($scope,$rootScope, $http, $route, $locatio
 
     $scope.updateBuilding = function (building) {
 
-        AuthSvc.setArea(building)
+        AuthSvc.setArea(building.id);
+        console.log(building);
         $route.reload();
     }
     $http.get('/api/building').success(function(data) {
-        $scope.buildings = data
-        $scope.building = {}
+        $scope.buildings = data;
+        $scope.building = {};
         $scope.building.id = data[0].id;
     })
 });

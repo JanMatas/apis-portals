@@ -234,7 +234,7 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc, AuthSvc) {
                 edges: {
                     smooth: false
                 }
-            })
+            });
             for (n in nodeIds) {
 
                 $scope.nodesDataSet.update([{
@@ -243,11 +243,11 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc, AuthSvc) {
                     physics: false
                 }]);
             }
-        })
+        });
 
-        console.log("test")
+;
 
-    }
+    };
 
 
 
