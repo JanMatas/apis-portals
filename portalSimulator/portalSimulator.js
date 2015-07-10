@@ -2,9 +2,7 @@ var app = angular.module('app', []);
 
 app.service('TransactionSvc', function($http) {
     this.save = function(transaction) {
-        return $http.post('/api/portal_endpoint/transaction', {
-            transaction: transaction
-        });
+        return $http.post('/api/portal_endpoint/transaction/' + transaction.raspiId, transaction);
     };
 });
 
@@ -19,7 +17,7 @@ app.service('EmpSvc', function($http) {
 
 app.service('PortalSvc', function($http) {
     this.fetch = function(id) {
-        return $http.get('/api/portal/');
+        return $http.get('/api/portal?fields=raspiId');
     };
 });
 
@@ -50,12 +48,11 @@ app.controller('AppCtrl', function($scope, PortalSvc, EmpSvc, TransactionSvc) {
 
     $scope.save = function() {
         var transaction = {
-            employeeId: $scope.selectedEmployee,
-            portalId: $scope.selectedPortal,
-            timestamp: Date.now(),
+            tagId: $scope.selectedEmployee,
+            raspiId: $scope.selectedPortal,
             direction: $scope.direction
         };
-        console.log(transaction);
+
         TransactionSvc.save(transaction).success(function(data) {
             console.log(data);
         });

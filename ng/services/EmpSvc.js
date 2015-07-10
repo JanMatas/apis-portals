@@ -4,7 +4,7 @@ app.service('EmpSvc', function($http) {
     };
 
     this.create = function(data) {
-    	console.log("created");
+
     	return $http.post('/api/employee', data);
     };
 

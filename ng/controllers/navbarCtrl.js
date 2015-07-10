@@ -13,19 +13,19 @@ app.controller('NavbarCtrl', function($scope,$rootScope, $http, $route, $locatio
     $scope.logout = function() {
     	AuthSvc.logout();
     	$rootScope.$emit('logout');
-    	$location.path('/')
-    }
+    	$location.path('/');
+    };
     
 
     $scope.updateBuilding = function (building) {
 
         AuthSvc.setArea(building.id);
-        console.log(building);
+
         $route.reload();
-    }
+    };
     $http.get('/api/building').success(function(data) {
         $scope.buildings = data;
         $scope.building = {};
         $scope.building.id = data[0].id;
-    })
+    });
 });

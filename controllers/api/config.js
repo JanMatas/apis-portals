@@ -25,6 +25,7 @@ var availableFields = {
         "name" : "sys_reader.cname",
         "zoneTo" : "sys_reader.area_inp_pk_",
         "zoneFrom" : "sys_reader.area_out_pk_",
+        "raspiId" : "por_portal.raspiId"
     },
     map_zones : {
         "id" : "sys_area.pk_", 

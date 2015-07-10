@@ -371,18 +371,18 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc, AuthSvc) {
             armed: '#CCFF99',
             disconnected: '#E6E6E6'
         }
-    }
+    };
 
-    $scope.configuration = true
+    $scope.configuration = true;
     var createData = function(createNetwork) {
-        console.log(AuthSvc.getArea())
+
         MapSvc.fetch(AuthSvc.getArea()).success(function(data) {
             //$scope.mapReady = true;
             var nodes = [];
             var edges = [];
 
-            for (n in data.zones) {
-                nodeIds.push(data.zones[n].id)
+            for (var n in data.zones) {
+                nodeIds.push(data.zones[n].id);
                 if (data.zones[n].map_x === null || data.zones[n].map_x === null) {
                     nodes.push({
                         id: data.zones[n].id,
@@ -390,7 +390,7 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc, AuthSvc) {
                         physics: true,
                         color: colors.zone,
                         shape: 'box'
-                    })
+                    });
 
 
                 } else {
@@ -401,11 +401,11 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc, AuthSvc) {
                         y: data.zones[n].map_y,
                         color: colors.zone,
                         shape: 'box'
-                    })
+                    });
 
                 }
             }
-            for (p in data.portals) {
+            for (var p in data.portals) {
                 nodeIds.push(data.portals[p].id + PORTAL_NODE_OFFSET);
                 var color;
                 switch (data.portals[p].status) {
@@ -428,7 +428,7 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc, AuthSvc) {
                         color: color
 
 
-                    })
+                    });
 
                 } else {
                     nodes.push({
@@ -439,7 +439,7 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc, AuthSvc) {
                         color: color
 
 
-                    })
+                    });
 
                 }
                 edges.push({
@@ -448,26 +448,26 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc, AuthSvc) {
                     to: data.portals[p].id + PORTAL_NODE_OFFSET,
                     color: '#E6E6E6'
 
-                })
+                });
 
                 edges.push({
 
                     from: data.portals[p].id + PORTAL_NODE_OFFSET,
                     to: data.portals[p].zoneTo,
                     color: '#E6E6E6'
-                })
+                });
 
             }
 
 
             createNetwork(nodes, edges, nodeIds);
 
-        })
+        });
 
-    }
+    };
 
     var createNetwork = function(nodes, edges, nodeIds) {
-        var nodesDataSet = new vis.DataSet(nodes)
+        var nodesDataSet = new vis.DataSet(nodes);
 
         var edgesDataSet = new vis.DataSet(edges);
         var container = document.getElementById('mynetwork');
@@ -494,7 +494,7 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc, AuthSvc) {
             edges: {
                 smooth: true
             }
-        }
+        };
 
         var network = new vis.Network(container, data, options);
         $scope.network = network;
@@ -503,9 +503,9 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc, AuthSvc) {
 
         network.on('click', function(properties) {
 
-            if (properties.nodes.length != 0) {
+            if (properties.nodes.length !== 0) {
                 if (properties.nodes <= PORTAL_NODE_OFFSET) {
-                    var modalInstance = $modal.open({
+                    modalInstance = $modal.open({
 
                         templateUrl: 'modals/mapZoneModal.html',
                         controller: 'MapZoneModalInstance',
@@ -523,7 +523,7 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc, AuthSvc) {
                     });
 
                 } else {
-                    var modalInstance = $modal.open({
+                    modalInstance = $modal.open({
                         templateUrl: 'modals/mapPortalModal.html',
                         controller: 'MapPortalModalInstance',
                         size: 'lg',
@@ -545,19 +545,19 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc, AuthSvc) {
 
         network.on('stabilized', function() {
 
-            for (n in nodeIds) {
+            for (var n in nodeIds) {
 
                 $scope.nodesDataSet.update([{
                     id: nodeIds[n],
                     physics: false
                 }]);
             }
-        })
+        });
 
 
-    }
+    };
 
-    createData(createNetwork)
+    createData(createNetwork);
 
     var temp = [];
 
@@ -565,7 +565,7 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc, AuthSvc) {
         nodesPositions = $scope.network.getPositions();
         MapSvc.save(nodesPositions);
 
-    }
+    };
 
     $scope.rearrange = function() {
         $scope.network.setOptions({
@@ -574,9 +574,9 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc, AuthSvc) {
                 smooth: true
             }
 
-        })
+        });
 
-        for (n in nodeIds) {
+        for (var n in nodeIds) {
 
             $scope.nodesDataSet.update([{
                 id: nodeIds[n],
@@ -594,7 +594,7 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc, AuthSvc) {
                     smooth: false
                 }
             });
-            for (n in nodeIds) {
+            for (var n in nodeIds) {
 
                 $scope.nodesDataSet.update([{
                     id: nodeIds[n],
@@ -604,7 +604,6 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc, AuthSvc) {
             }
         });
 
-;
 
     };
 
@@ -626,21 +625,21 @@ app.controller('NavbarCtrl', function($scope,$rootScope, $http, $route, $locatio
     $scope.logout = function() {
     	AuthSvc.logout();
     	$rootScope.$emit('logout');
-    	$location.path('/')
-    }
+    	$location.path('/');
+    };
     
 
     $scope.updateBuilding = function (building) {
 
         AuthSvc.setArea(building.id);
-        console.log(building);
+
         $route.reload();
-    }
+    };
     $http.get('/api/building').success(function(data) {
         $scope.buildings = data;
         $scope.building = {};
         $scope.building.id = data[0].id;
-    })
+    });
 });
 
 app.controller('ZonesCtrl', function($scope, ZonesSvc) {
@@ -844,7 +843,7 @@ app.service('EmpSvc', function($http) {
     };
 
     this.create = function(data) {
-    	console.log("created");
+
     	return $http.post('/api/employee', data);
     };
 
@@ -854,15 +853,15 @@ app.service('EmpSvc', function($http) {
 });
 app.service('MapSvc', function($http) {
     this.fetch = function(buildingId) {
-    	console.log('/api/map?buildingID=' + buildingId)
-        return $http.get('/api/map?buildingID=' + buildingId)
-    }
+
+        return $http.get('/api/map?buildingID=' + buildingId);
+    };
     this.save = function(nodePositions) {
         return $http.post('api/map', {
             nodePositions: nodePositions
-        })
-    }
-})
+        });
+    };
+});
 
 app.service('TimeSvc', function($http) {
     this.fetch = function(startDate, endDate, empId) {

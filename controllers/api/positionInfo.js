@@ -63,7 +63,6 @@ router.get('/zone', function(req, res, next) {
 		.join("sys_reader", null, "sys_reader.code = sys_elog.t_reader")
 
 
-	console.log(employeeLastTransactions.toString());
 	var query = 
 		"SELECT id, firstname, lastname " +
 		"FROM   (SELECT e.id, e.firstname, e.lastname,"+

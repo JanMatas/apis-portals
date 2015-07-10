@@ -65,7 +65,7 @@ router.get('/', function(req, res, next) {
     });
 });
 
-router.get('/');
+
 
 module.exports = router;
 
@@ -87,6 +87,7 @@ function getPortalStatus(raspiId) {
 function getQuery(fields) {
 	var s = squel.select()
 		.fields(fields)
-		.from('sys_reader');
+		.from('sys_reader')
+        .join('por_portal', null, "sys_reader.pk_ = por_portal.sys_reader_pk_");
 	return s;
 }

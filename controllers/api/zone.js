@@ -29,7 +29,7 @@ router.get('/', function(req, res, next) {
     var query = squel.select()
         .from("por_user_permission")
         .join(s, "areas", "areas.id = por_user_permission.sys_area_pk_")
-        .where("por_user_permission.username = '" + username +"'")
+        .where("por_user_permission.username = '" + username +"'");
 
     db.fetchData(query.toString(), function(err, rows) {
 
@@ -50,7 +50,7 @@ function getChildren(rows, index, currentDepth) {
     var i = index;
     while (i < rows.length) {
         if (rows[i].id === 2) {
-            console.log(currentDepth);
+
         }
         if (rows[i].depth === currentDepth) {
 

@@ -89,10 +89,10 @@ function processGetRequest(req, res, next) {
 
 
 function processPutRequest(req, resp, next) {
-    console.log(req.body);
+
 }
 
 function processPostRequest(req, resp, next) {
-     console.log(req.body);
+
      
 }

@@ -33,8 +33,6 @@ router.post('/', function (req, res, next) {
 			}
 			
 			connection.query(query, function (err, portal) {
-				console.log("Portal: "+ util.inspect(portal[0].zone, false, null));
-				console.log("Trans: " + util.inspect(lastTrans[0], false, null));
 
 				if(err) {
 					connection.release();
@@ -80,7 +78,6 @@ router.post('/', function (req, res, next) {
 					} else {
 						connection.release();
 					}
-					console.log("success");
 				});
 			});
 		});

@@ -31,7 +31,6 @@ function processGetRequest(req, res, next) {
         s.where("sys_area.pk_ = " + id);
     }
 
-    console.log(s.toString());
     db.fetchData(s.toString(), function(err, data) {
         if (err) {
             return next(err);

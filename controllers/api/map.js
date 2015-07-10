@@ -33,7 +33,6 @@ router.get('/', function(req, res, next) {
             .from("sys_area")
             .where("pk_ = ?", req.query.buildingID)
         );
-    console.log(fields);
 
 
 
@@ -44,7 +43,6 @@ router.get('/', function(req, res, next) {
             zoneIds.push(zone.id);
         });
 
-        console.log(zoneIds);
 
         fields = apiUtils.getFields(req, "map_portals");
 
@@ -57,7 +55,6 @@ router.get('/', function(req, res, next) {
                 .or("area_inp_pk_ in (" + zoneIds.join() + ")")
                 .or("area_out_pk_ in (" + zoneIds.join() + ")"))
             .toString();
-        console.log(query);
 
         db.fetchData(query, function(err, portals) {
             if (err) {
@@ -68,7 +65,6 @@ router.get('/', function(req, res, next) {
                 return next("not found");
             }
             var portalObjects = ws.portals;
-            console.log(portalObjects);
             for (var p in portals) {
 
                 var connectedPortal = _.find(portalObjects, {
@@ -96,7 +92,6 @@ router.post('/', function(req, res, next) {
     // Callback for databse insert
     var saveCallback = function(err) {
         if (err) {
-            console.log(err);
             return res.send(500, err);
         }
 
