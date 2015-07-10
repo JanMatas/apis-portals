@@ -29,7 +29,7 @@ router.get('/permissions/:raspiId', function(req, res, next) {
 
 router.get('/settings/:raspiId', function(req, res, next) {
     var query = squel.select()
-        .fields(['data1', 'data2', 'data3', 'data4'])
+        .fields(['learning_history', 'thresholding', 'min_area', 'min_dist_to_create', 'max_dist_to_parse', 'shadow_thresh', 'frame_width', 'frame_height' ])
         .from("por_portal")
         .where('por_portal.sys_reader_pk_ = ' + req.params.raspiId);
 
