@@ -60,17 +60,19 @@ function processGetRequest(req, res, next) {
         
         // Find employee permissions
         .join("por_user_permission", "emp_permission", "sys_user.pk_ = emp_permission.sys_user_pk_")
-
-
         .join("sys_user", "user", "user.loginname = '" + username + "'")      
         .join("por_user_permission", "user_permission", "user.pk_ = user_permission.sys_user_pk_")
+        .order("sys_user.pk_")
         .where("user_permission.sys_area_pk_ = emp_permission.sys_area_pk_");
 
         
 
+
     if (id) {
         s.where("sys_user.pk_ = " + id);
     }
+
+
 
 
 

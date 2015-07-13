@@ -30,7 +30,7 @@
                 </div>
                 <br>
                 <br>
-                <div class="panel panel-default padded">
+                <div class="panel panel-default padded" ng-controller="zoneTreeCtrl">
                     <div class="panel-heading">
                         <h3 class="panel-title">Permissions:</h3>
                         <form class="form-inline">
@@ -44,7 +44,7 @@
                     </div>
                     <div class="panel-body ">
 
-                        <div ng-repeat=" zone in zones" class="text-left">
+                        <div ng-repeat=" zone in zones" class="text-left" >
                             <div ng-if="!zone.hidden">
                                 <span ng-click="toggleZone(zone)">
                             <span ng-if="zone.children && !zone.showChildren" class="glyphicon glyphicon-plus" aria-hidden="true"></span>

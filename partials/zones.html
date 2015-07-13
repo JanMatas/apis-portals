@@ -33,7 +33,7 @@
                 </div>
             </form>
         </div>
-        <div class="panel-body ">
+        <div class="panel-body " ng-controller="zoneTreeCtrl">
             <div ng-repeat=" zone in zones" class="text-left">
                 <div ng-if="!zone.hidden">
                     <div ng-class="{'select' : selectedZone.id === zone.id}">

@@ -44,6 +44,14 @@ app.config(function($routeProvider, USER_ROLES) {
                 authorizedRoles: [USER_ROLES.admin]
             }
         })
+        .when('/create', {
+            // Employee profile view
+            controller: 'EmpSettingsCtrl',
+            templateUrl: 'profileSettings.html',
+            data : {
+                authorizedRoles: [USER_ROLES.admin]
+            }
+        })
         .when('/profile/:empId', {
             // Employee profile view
             controller: 'EmpProfileCtrl',
