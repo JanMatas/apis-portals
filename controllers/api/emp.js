@@ -67,6 +67,7 @@ function processGetRequest(req, res, next) {
 
         
     if(apiUtils.hasField("allowedZones",req)) {
+        
         console.log("allowedZones");
     }
 

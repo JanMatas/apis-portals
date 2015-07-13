@@ -7,7 +7,7 @@ var availableFields = {
         "department" :  "sys_ostr.cname",
         "email" : "sys_user.email" ,
         "phone" : "sys_user.phone",
-        "allowedZones" : "por_user_permission.sys_area_pk_"
+        "allowedZones" : "user_permission.sys_area_pk_"
 
     },
     building : {
