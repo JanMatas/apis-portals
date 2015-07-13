@@ -37,7 +37,6 @@ router.get('/portal/:portalId', function(req, res, next) {
             return next(err);
         }
         res.json(rows);
-
     });
 });
 
@@ -56,6 +55,11 @@ router.get('/zone/:zoneId', function(req, res, next) {
         return res.sendStatus(400);
     }
 
+    var subZones = squel.select()
+        .field("child_pk_")
+        .from("por_subarea")
+        .where("parent_pk_ =" + req.params.zoneId);
+
     var s = squel.select()
         .fields(fields)
         .from("sys_elog")
@@ -63,7 +67,8 @@ router.get('/zone/:zoneId', function(req, res, next) {
         .join("sys_reader", null, "sys_elog.t_reader = sys_reader.code")
         .join("sys_area", "in", "sys_reader.area_inp_pk_ = in.pk_")
         .join("sys_area", "out", "sys_reader.area_out_pk_ = out.pk_")
-        .where("sys_reader.area_inp_pk_ = " + req.params.zoneId + " OR sys_reader.area_out_pk_ = " + req.params.zoneId);
+
+        .where("sys_reader.area_inp_pk_ in (" + subZones.toString() + ") OR sys_reader.area_out_pk_ in (" + subZones.toString() + ")");
     
     if (req.query.from !== undefined) {
         s.where("t_date > FROM_UNIXTIME(" + req.query.from + ")");
