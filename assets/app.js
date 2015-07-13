@@ -666,15 +666,17 @@ app.controller('zoneTreeCtrl', function($scope, $filter, EmpSvc, ZonesSvc, $rout
         }
     }
 });
-app.controller('ZonesCtrl', function($scope) {
-    $scope.panelReady = function() {
+app.controller('ZonesCtrl', function($scope, ZonesSvc) {
 
+    $scope.panelReady = function() {
         console.log($scope.selectedZone.id);
-    
     };
 
     $scope.zoneChange = function() {
-        //TODO reload data
+        ZonesSvc.fetchTransactions($scope.selectedZone.id).success(function(data) {
+        $scope.zoneTransactions = data;   
+        console.log(data);
+        });
     };
 });
 app.directive('onErrorSrc', function() {
@@ -815,6 +817,9 @@ app.service('TimeSvc', function($http) {
 app.service('ZonesSvc', function($http) {
     this.fetch = function() {
         return $http.get('/api/zone');
+    };
+    this.fetchTransactions = function(id) {
+        return $http.get('/api/transaction/zone/' + id);
     };
 });
 app.controller('MapPortalModalInstance', function($scope, $location, $modalInstance, $http, label, node) {
