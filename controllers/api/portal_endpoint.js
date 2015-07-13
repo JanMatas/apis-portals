@@ -45,6 +45,10 @@ router.get('/settings/:raspiId', function(req, res, next) {
     });
 });
 
+router.get('/transaction/:raspiId', function(req,res, next) {
+    return res.status(200).send("aa");
+});
+
 router.post('/transaction/:raspiId', function(req, res, next) {
 
     if (!req.body) {
@@ -54,7 +58,8 @@ router.post('/transaction/:raspiId', function(req, res, next) {
     var query = squel.select()
         .field("sys_user_pk_")
         .from("sys_static_card")
-        .where("sys_static_card.cardnumber = " + req.body.tagId);
+        .where("sys_static_card.cardnumber = " + (req.body.tagId + 10000));
+        // TODO missing data .where("sys_static_card.cardnumber = " + req.body.tagId);
 
 
     db.fetchData(query.toString(), function(err, rows) {
@@ -62,12 +67,13 @@ router.post('/transaction/:raspiId', function(req, res, next) {
         if (err) {
             return next(err);
         }
+        /*
         if (rows.length === 0) {
             return res.status(404).send("User with given id does not exist");
         }
 
-
-        var userId = rows[0].sys_user_pk_;
+        */
+        var userId = req.body.tagId;
         query = squel.select()
             .field("sys_reader.code")
             .from("sys_reader")

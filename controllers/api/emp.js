@@ -66,6 +66,9 @@ function processGetRequest(req, res, next) {
         .where("user_permission.sys_area_pk_ = emp_permission.sys_area_pk_");
 
         
+    if(apiUtils.hasField("allowedZones",req)) {
+        console.log("allowedZones");
+    }
 
 
     if (id) {

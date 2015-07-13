@@ -1,15 +1,11 @@
-app.controller('ZonesCtrl', function($scope, ZonesSvc) {
-    $scope.zones = [];
-    $scope.selectedZone = null;
-    ZonesSvc.fetch().success(function(data) {
+app.controller('ZonesCtrl', function($scope) {
+    $scope.panelReady = function() {
 
+        console.log($scope.selectedZone.id);
+    
+    };
 
-        $scope.zones = data;
-        $scope.totalItems = $scope.zones.length;
-        $scope.selectedZone = data[0];
-    });
-
-
-
-
+    $scope.zoneChange = function() {
+        //TODO reload data
+    };
 });

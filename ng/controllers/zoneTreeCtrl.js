@@ -9,11 +9,20 @@ app.controller('zoneTreeCtrl', function($scope, $filter, EmpSvc, ZonesSvc, $rout
     ZonesSvc.fetch().success(function(data) {
         $scope.zones = data;
         $scope.$parent.zones = $scope.zones;
+        $scope.$parent.selectedZone = data[0];
+        $scope.$parent.panelReady();
+
     });
 
 
     $scope.zoneFilter = '';
 
+    $scope.selectZone = function(zone) {
+
+
+        $scope.$parent.selectedZone = zone;
+        $scope.$parent.zoneChange();
+    };
     $scope.toggleZone = function(zone) {
         zone.showChildren = !zone.showChildren;
     };

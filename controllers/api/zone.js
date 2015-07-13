@@ -4,6 +4,7 @@ var config = require('../../config');
 var squel = require('squel');
 var authUtils = require('../../authUtils');
 
+
 router.get('/', function(req, res, next) {
     if (config.authenticate) {
         if (!req.auth) {
