@@ -5,6 +5,7 @@ var authUtils = require('../../authUtils');
 var apiConfig = require('./config');
 var mysql = require('mysql');
 var apiUtils = require('./apiUtils');
+var _ = require('lodash');
 
 var squel = require('squel');
 
@@ -24,7 +25,7 @@ module.exports = router;
 function processGetRequest(req, res, next) {
     // Get all available field names from config file
     availableFields = Object.keys(apiConfig.availableFields.emp);
-    
+
     var requestedFields;
 
     // Try to get ID, if undefined, it returns all visible employees
@@ -33,7 +34,7 @@ function processGetRequest(req, res, next) {
     // Get username from auth headers
     var username = authUtils.authReq(req);
     var fields = apiUtils.getFields(req, "emp");
-    
+
     if (username === undefined) {
         // Not authenticated, return unauthorized
         return res.sendStatus(401);
@@ -57,19 +58,15 @@ function processGetRequest(req, res, next) {
         .join("sys_company", null, "sys_company.pk_ = sys_employmenttype.sys_company_pk_")
         // Department
         .join("sys_ostr", null, "sys_employment.sys_ostr_pk_ = sys_ostr.pk_")
-        
         // Find employee permissions
         .join("por_user_permission", "emp_permission", "sys_user.pk_ = emp_permission.sys_user_pk_")
-        .join("sys_user", "user", "user.loginname = '" + username + "'")      
+        .join("sys_user", "user", "user.loginname = '" + username + "'")
         .join("por_user_permission", "user_permission", "user.pk_ = user_permission.sys_user_pk_")
         .order("sys_user.pk_")
         .where("user_permission.sys_area_pk_ = emp_permission.sys_area_pk_");
 
-        
-    if(apiUtils.hasField("allowedZones",req)) {
-        
-        console.log("allowedZones");
-    }
+
+
 
 
     if (id) {
@@ -87,8 +84,30 @@ function processGetRequest(req, res, next) {
             return next(err);
         }
 
+        // group allowed zones into an array
+        if (apiUtils.hasField("allowedZones", req)) {
+            var lastID = rows;
 
-        return res.json(rows);
+
+            var result = [];
+            for (var i in rows) {
+                if (lastID === undefined || rows[i].id != lastID) {
+                    newRow = rows[i];
+                    newRow.allowedZones = [newRow.allowedZones];
+                    result.push(newRow);
+                    lastID = rows[i].id;
+                } else {
+                    result[result.length - 1].allowedZones.push(rows[i].allowedZones);
+                }
+
+            }
+            return res.json(result);
+        } else {
+            return res.json(rows);
+        }
+
+
+        
     });
 
 }
@@ -100,5 +119,5 @@ function processPutRequest(req, resp, next) {
 
 function processPostRequest(req, resp, next) {
 
-     
+
 }

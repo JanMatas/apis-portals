@@ -1,5 +1,5 @@
 //Frontend entry point
-var app = angular.module('app', ['ngRoute', 'chart.js', 'ui.bootstrap', 'ngCookies','toggle-switch', 'angularBootstrapNavTree']);
+var app = angular.module('app', ['ngRoute', 'chart.js', 'ui.bootstrap', 'ngCookies','toggle-switch', 'angularBootstrapNavTree', 'ngLodash']);
 
 app.run(function($rootScope, $location, AuthSvc, CONFIG) {
 

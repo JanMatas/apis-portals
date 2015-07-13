@@ -45,7 +45,7 @@ var hasField = function (field, req) {
     if (!req.query.fields) {
         return false;
     }
-    return (req.query.fields.split("").indexOf(field) != -1);
+    return (req.query.fields.split(",").indexOf(field) != -1);
 };
 
 module.exports = {
