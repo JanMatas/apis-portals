@@ -666,7 +666,7 @@ app.controller('zoneTreeCtrl', function($scope, $filter, EmpSvc, ZonesSvc, $rout
         }
     }
 });
-app.controller('ZonesCtrl', function($scope, ZonesSvc) {
+app.controller('ZonesCtrl', function($scope, ZonesSvc, lodash) {
 
     $scope.panelReady = function() {
         console.log($scope.selectedZone.id);
@@ -674,8 +674,17 @@ app.controller('ZonesCtrl', function($scope, ZonesSvc) {
 
     $scope.zoneChange = function() {
         ZonesSvc.fetchTransactions($scope.selectedZone.id).success(function(data) {
-        $scope.zoneTransactions = data;   
-        console.log(data);
+
+         var result = lodash.chain(data)
+    		.groupBy("employeeId")
+  			.pairs()
+    		.map(function(currentItem) {
+       			 return lodash.object(lodash.zip([ "employeeId", "entries"], currentItem));
+   			})
+    		.value();
+        
+        console.log(result);
+        $scope.zoneTransactions = result;
         });
     };
 });
@@ -695,6 +704,21 @@ app.filter('offset', function() {
     start = parseInt(start, 10);
     return input.slice(start);
   };
+});
+app.filter('timestampToDate', function () {
+    return function (timestamp) {
+        var date = new Date(timestamp * 1000);
+        var dateObject = ('0' + date.getDate()).slice(-2) +'/'+ ('0' + (date.getMonth() + 1)).slice(-2) +'/'+ date.getFullYear();
+        return dateObject;
+    };
+});
+
+app.filter('timestampToTime', function () {
+    return function (timestamp) {
+        var date = new Date(timestamp * 1000);
+        var dateObject = date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
+        return dateObject;
+    };
 });
 app.factory('AuthSvc', function($http, $cookies) {
     var currentUser = null;
