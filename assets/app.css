@@ -96,6 +96,11 @@ body {
     margin-right: 10px;
 }
 
+.transaction{
+    margin-bottom: 6em;
+}
+
+
 table {
     table-layout: fixed;
 }

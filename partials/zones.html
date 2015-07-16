@@ -63,13 +63,23 @@
             </h4>
         </div>
         <div class="panel-body">
-            <p>
-                <div class="transactions" ng-repeat="employee in zoneTransactions">
-                <img class="img-thumbnail img-responsive img-circle imageClip" ng-src="/images/emps/{{employee.employeeId}}.jpg">
-                {{ employee.firstname }}
-                {{ employee.lastname }}
+            <div class="transaction col-md-12" ng-repeat="person in zoneTransactions  ">
+                <div class="col-md-4 pull-left">
+                    <img class="img-thumbnail img-responsive img-circle imageClip " ng-src="/images/emps/{{person.employeeId}}.jpg">
+                </div>
+                    <div class="col-md-8 pull-left">
+                        <h3>{{ person.entries[0].firstname }} {{ person.entries[0].lastname }}</h3>
+                            <table class="  table table-striped" >
+                                <thead><tr><th>Time</th><th>Date</th></tr></thead>
+                                    <tbody>
 
-            </p>
+                                        <tr ng-repeat="entry in person.entries"><td>{{ entry.timestamp | timestampToTime }}</td><td>{{ entry.timestamp | timestampToDate }}</td></tr>
+
+                                    </tbody>
+                                </table>
+                                
+                    </div>
+            </div>
         </div>
     </div>
 </div>
