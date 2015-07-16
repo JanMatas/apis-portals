@@ -1,6 +1,6 @@
 app.service('EmpSvc', function($http) {
-    this.fetch = function(id) {
-        return $http.get('/api/employee/' + id + '?fields=department,email,phone');
+    this.fetchEmp = function(id) {
+        return $http.get('/api/employee/' + id + '?fields=department,email,phone,allowedZones');
     };
 
     this.create = function(data) {

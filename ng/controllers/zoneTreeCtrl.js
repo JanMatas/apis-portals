@@ -4,13 +4,12 @@ app.controller('zoneTreeCtrl', function($scope, $filter, EmpSvc, ZonesSvc, $rout
         Control of zones tree renderer
     */
 
-    $scope.zones = [];
 
     ZonesSvc.fetch().success(function(data) {
         $scope.zones = data;
-        $scope.$parent.zones = $scope.zones;
+        //$scope.$parent.zones = $scope.zones;
         $scope.$parent.selectedZone = data[0];
-        $scope.$parent.panelReady();
+        //$scope.$parent.panelReady();
 
     });
 
@@ -21,7 +20,7 @@ app.controller('zoneTreeCtrl', function($scope, $filter, EmpSvc, ZonesSvc, $rout
 
 
         $scope.$parent.selectedZone = zone;
-        $scope.$parent.zoneChange();
+        //$scope.$parent.zoneChange();
     };
     $scope.toggleZone = function(zone) {
         zone.showChildren = !zone.showChildren;
@@ -30,7 +29,7 @@ app.controller('zoneTreeCtrl', function($scope, $filter, EmpSvc, ZonesSvc, $rout
     $scope.togglePermission = function(zone) {
         // change the permission of all children
         changeChildrenPermissions(zone, zone.permission);
-        $scope.$parent.zones = $scope.zones;
+        //$scope.$parent.zones = $scope.zones;
 
     };
 
