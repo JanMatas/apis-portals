@@ -1,6 +1,7 @@
 app.controller('MapPortalModalInstance', function($scope, $location, $modalInstance, $http, label, node) {
-
+    $scope.ready = false;
     $http.get('/api/transaction/portal/' + node + '?limit=5').success(function(data) {
+        $scope.ready = true;
         $scope.transactions = [];
         for (var x in data) {
             $scope.transactions.push({

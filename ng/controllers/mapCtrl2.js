@@ -7,6 +7,7 @@ app.controller('MapCtrl2', function($scope, $modal, MapSvc, AuthSvc, $rootScope,
     $scope.elements.nodes = [];
     $scope.elements.edges = [];
     $scope.editing = false;
+    $scope.ready = false;
     MapSvc.fetch(AuthSvc.getArea()).success(function(data) {
 
         for (var n in data.zones) {
@@ -71,7 +72,8 @@ app.controller('MapCtrl2', function($scope, $modal, MapSvc, AuthSvc, $rootScope,
 
         $rootScope.$broadcast('appChanged');
 
-        console.log(cy);
+        $scope.ready = true;
+
 
 
 
@@ -109,6 +111,11 @@ app.controller('MapCtrl2', function($scope, $modal, MapSvc, AuthSvc, $rootScope,
 
     $scope.doClick = function(id, label) {
 
+
+         
+        if ($scope.editing) {
+            return;
+        }
         if (id.charAt() === 'n') {
             modalInstance = $modal.open({
 
@@ -144,7 +151,7 @@ app.controller('MapCtrl2', function($scope, $modal, MapSvc, AuthSvc, $rootScope,
                 }
             });
         }
-    }
+    };
 
 
 

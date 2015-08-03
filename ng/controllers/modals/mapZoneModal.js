@@ -1,14 +1,17 @@
 app.controller('MapZoneModalInstance', function($scope, $modalInstance, $location, $http, $rootScope, node, label) {
     $scope.name = label;
     $scope.isEmp = true;
-    $http.get('/api/positionInfo/zone?zoneId=' + node).success(function(data) {
+    $scope.ready = false;
+    $http.get('/api/zone/' + node).success(function(data) {
         $scope.emps = [];
+        $scope.ready = true;
         for (var x in data) {
+
             $scope.emps.push({
-                id: data[x].id,
+                id: data[x].employeeId,
                 firstname: data[x].firstname,
                 lastname: data[x].lastname,
-                img: '/images/emps/' + data[x].id + '.jpg'
+                img: '/images/emps/' + data[x].employeeId + '.jpg'
             });
         }
         $scope.isEmp = $scope.emps.length !== 0;

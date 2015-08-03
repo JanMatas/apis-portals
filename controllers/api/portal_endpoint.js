@@ -21,7 +21,16 @@ router.get('/permissions/:raspiId', function(req, res, next) {
         if (err) {
             return next(err);
         }
-        return res.json(rows);
+        var data = {};
+        data.numberOfTags = rows.length;
+        for (var i in rows) {
+            
+            data["tag" + i] = rows[i].cardnumber;
+        
+        }
+   
+        res.json(data);
+
     });
 
 });
@@ -101,6 +110,7 @@ router.post('/transaction/:raspiId', function(req, res, next) {
              */
 
             query = squel.insert()
+  
                 .into("sys_elog")
                 .set("t_reader", readerId)
                 .set("t_date", date)

@@ -9,7 +9,7 @@ app.controller('zoneTreeCtrl', function($scope, $filter, EmpSvc, ZonesSvc, $rout
         $scope.zones = data;
         //$scope.$parent.zones = $scope.zones;
         $scope.$parent.selectedZone = data[0];
-        //$scope.$parent.panelReady();
+        $scope.$parent.panelReady();
 
     });
 

@@ -1,12 +1,11 @@
-<div >
- 
-        <cytoscape elements="elements" cy-click="doClick(id, label)"></cytoscape>
-
-
-                         <button ng-show="!editing" type="button" id="edit-button" class="btn btn-default" ng-click="edit()">
-                             <span class="glyphicon glyphicon-pencil"></span>
-                        </button>
-                         <button ng-show="editing" type="button" id="edit-button" class="btn btn-default" ng-click="save()">
-                             <span class="glyphicon glyphicon-ok"></span>
-                        </button>
+<div>
+    <cytoscape elements="elements" cy-click="doClick(id, label)"></cytoscape>
+           <div us-spinner ng-if="!ready">
+        </div>
+    <button ng-if="!editing" type="button" id="edit-button" class="btn btn-default" ng-click="edit()">
+        <span class="glyphicon glyphicon-pencil"></span>
+    </button>
+    <button ng-if="editing" type="button" id="edit-button" class="btn btn-default" ng-click="save()">
+        <span class="glyphicon glyphicon-ok"></span>
+    </button>
 </div>

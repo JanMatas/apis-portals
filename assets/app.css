@@ -1,12 +1,12 @@
 html,
 body {
-    min-width: 320px;
+    min-width: 400px;
 
     
     width: auto !important;
 
     
-    width: 320px;
+    width: 400px;
 
     
     
@@ -23,6 +23,16 @@ body {
     border: 2px solid black;
     position: relative;
     
+    display: block;
+}
+
+.test {
+    float: right
+}
+
+.img-list {
+    width: 30px;
+    height: 30px;
     display: block;
 }
 
@@ -108,32 +118,11 @@ body {
     margin-left: 10px;
     margin-right: 10px;
 }
-
-.transaction{
-    margin-top: 3em;
-}
-.transaction thead, tbody, tr, td, th { display: block; }
-
-.transaction tbody td, thead th {
-    width: 50%;
-    float: left;
+.table-body {
+    height: 150px;
+    overflow-y: scroll;
 }
 
-.transaction tr:after{
-    content: ' ';
-    display: block;
-    visibility: hidden;
-    clear: both;
-}
-.transaction tbody{
-   
-    height: 120px;
-    overflow-y: auto;
-}
-
-table {
-    table-layout: fixed;
-}
 
 
 @media (max-width: 768px) {

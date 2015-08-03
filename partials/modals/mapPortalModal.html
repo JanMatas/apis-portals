@@ -5,7 +5,9 @@
     <h3> Status : {{status}}</h3>
     <hr>
     <h3>Last transactions: </h3>
-    <div class="col-xs-12">
+        <div us-spinner ng-if="!ready">
+        </div>
+    <div class="col-xs-12" ng-if="ready">
         <table class="table table-striped ">
             <tr ng-repeat="t in transactions">
                 <td class="col-xs-2">

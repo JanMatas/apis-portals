@@ -17,8 +17,6 @@
         </div>
     </div>
 </script>
-
-
 <div ng-controller="ZonesCtrl" class="container">
     <h1>Zones</h1>
     <div class="panel panel-default padded col-md-3">
@@ -55,31 +53,76 @@
             </div>
         </div>
     </div>
-    
     <div class="panel panel-default col-md-8 col-md-offset-1">
         <div class="panel-heading">
-            <h4>
-            	{{selectedZone.label}}
+           <span> <h4 class="col-md-9">
+                {{selectedZone.label}}
             </h4>
+            <toggle-switch ng-model="viewPersons"  on-label="Table" off-label="Groups"></toggle-switch>
+
         </div>
         <div class="panel-body">
-            <div class="transaction container" ng-repeat="person in zoneTransactions  ">
+
+
+            <div ng-if="!viewPersons">
+                <table class="table table-striped col-xs-12 ">
+                    <thead>
+                        <tr>
+                            <th class="col-md-4">Employee</th>
+                            <th class="col-md-2">Time</th>
+                            <th class="col-md-2">Date</th>
+                            <th class="col-md-1">Dir</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="entry in transactions">
+                            <td >
+                                <a ng-href="/#/profile/{{person.entries[0].employeeId}}">
+                                    <img class="style="display: inline-block; width="30px" " img-list " ng-src="/images/emps/{{entry.employeeId}}.jpg">
+                                    <span>
+                                    {{entry.firstname + " " + entry.lastname}}
+                                    </span>
+                                </a></td>
+                            <td >{{ entry.timestamp | timestampToDate }}</td>
+                            <td >{{ entry.timestamp | timestampToTime }}</td>
+                            <td >In</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+
+
+            <div ng-if="viewPersons" class="transaction container" ng-repeat="person in zoneTransactions  ">
                 <div class="col-md-3  col-sm-3 col-xs-3">
                     <a ng-href="/#/profile/{{person.entries[0].employeeId}}">
-                    <img class="img-thumbnail img-responsive img-circle imageClip " ng-src="/images/emps/{{person.employeeId}}.jpg" >
+                        <img class="img-thumbnail img-responsive img-circle imageClip " ng-src="/images/emps/{{person.employeeId}}.jpg">
                     </a>
                 </div>
-                <div class="col-md-9 col-sm-12"> 
+                <div class="col-md-9 col-sm-12">
                     <h3>{{ person.entries[0].firstname }} {{ person.entries[0].lastname }}</h3>
-                    <table class="table table-striped "  >
-                        <thead><tr><th>Time</th><th>Date</th></tr></thead>
+                    <div class="table-body">
+                    <table class="table table-striped"  >
+
+                        <thead >
+                            <tr>
+                                <th>Time</th>
+                                <th>Date</th>
+                                <th>Direction</th>
+                            </tr>
+                        </thead>
+                       
                         <tbody >
-
-                            <tr ng-repeat="entry in person.entries"><td>{{ entry.timestamp | timestampToTime }}</td><td>{{ entry.timestamp | timestampToDate }}</td></tr>
-
-                         </tbody>
+                            <tr ng-repeat="entry in person.entries">
+                                <td>{{ entry.timestamp | timestampToTime }}</td>
+                                <td>{{ entry.timestamp | timestampToDate }}</td>
+                                <td>In</td>
+                            </tr>
+                        </tbody>
+                       
                     </table>
-                                
+                     </div>
                 </div>
             </div>
         </div>

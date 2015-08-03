@@ -1,5 +1,5 @@
 //Frontend entry point
-var app = angular.module('app', ['ngRoute', 'chart.js', 'ui.bootstrap', 'ngCookies','toggle-switch', 'angularBootstrapNavTree', 'ngLodash']);
+var app = angular.module('app', ['ngRoute','angularSpinner', 'chart.js', 'ui.bootstrap', 'ngCookies','toggle-switch', 'angularBootstrapNavTree', 'ngLodash']);
 
 app.run(function($rootScope, $location, AuthSvc, CONFIG) {
 
@@ -174,19 +174,44 @@ app.directive('cytoscape', function($rootScope) {
                     ready: function() {
                         window.cy = this;
                         cy.autolock(true);
-                        // giddy up...
+
                         cy.elements().unselectify();
+                        tappedBefore = null;
 
                         // Event listeners
                         // with sample calling to the controller function as passed as an attribute
                         cy.on('tap', 'node', function(e) {
                             var evtTarget = e.cyTarget;
                             var nodeId = evtTarget.id();
-   
-                            scope.cyClick({
-                                id: evtTarget.id(),
-                                label: evtTarget.json().data.name
+
+                            setTimeout(function() {
+                                tappedBefore = null;
+                            }, 100);
+                            if (!tappedBefore) {
+                                scope.cyClick({
+                                    id: evtTarget.id(),
+                                    label: evtTarget.json().data.name
+                                });
+                            }
+                            evtTarget.qtip({
+                                content: 'Hello!',
+                                position: {
+                                    my: 'top center',
+                                    at: 'top center'
+                                },
+                                style: {
+                                    classes: 'qtip-bootstrap',
+                                    tip: {
+                                        width: 16,
+                                        height: 8
+                                    }
+                                }
                             });
+                            tappedBefore = true;
+
+
+
+
                         });
 
                         // load the objects array
@@ -217,6 +242,140 @@ app.directive('onErrorSrc', function() {
           });
         }
     }
+});
+app.factory('AuthSvc', function($http, $cookies) {
+    var currentUser = null;
+    var loggedIn = false;
+    var token = null;
+    var role =  null;
+    var area = 1;
+
+    // initMaybe it wasn't meant to work for mpm?ial state says we haven't logged in or out yet...
+    // this tells us we are in public browsing
+    var initialState = true;
+
+    return {
+        isAdmin: function() {
+            return role == "admin";
+        },
+        initialState: function() {
+            return initialState;
+        },
+        login: function(username, password) {
+
+            return $http.post('api/session', {
+                username: username,
+                password: password
+            }).then(function(val) {
+            	
+                $cookies.username = username
+                $cookies.token = val.data
+                $cookies.isLoggedIn = 1
+            	currentUser = username;
+            	loggedIn = true;
+                token = val.data;
+                role = "admin"
+                $cookies.role = role;
+                $http.defaults.headers.common['X-Auth'] = val.data;
+                
+
+ 
+            })
+        },
+        logout: function() {
+            $cookies.username = null
+            $cookies.token = null
+            $cookies.isLoggedIn = null
+            $cookies.role = null
+            currentUser = null;
+            authorized = false;
+            token = null;
+            role = null;
+            loggedIn = false;
+
+        },
+        isLoggedIn: function() {
+            if ($cookies.isLoggedIn == 1) {
+                loggedIn = true;
+                token = $cookies.token;
+                $http.defaults.headers.common['X-Auth'] = token;
+                currentUser = $cookies.username;
+                role = $cookies.role;
+
+            }
+            return loggedIn;
+        },
+        currentUser: function() {
+            return currentUser;
+        },
+        isAuthorized: function(roles) {
+            
+            return this.isLoggedIn() && roles.indexOf(role) >= 0 || roles.indexOf("*") >= 0;
+            
+        },
+        getArea : function() {
+            return area
+        },
+        setArea : function(newArea) {
+            area = newArea;
+        }
+
+
+    };
+})
+app.service('DepartmentSvc', function($http) {
+    this.fetch = function(id) {
+        return $http.get('/api/department/');
+    };
+
+});
+app.service('EmpGridSvc', function($http) {
+    this.fetch = function() {
+        return $http.get('/api/employee?fields=department');
+    };
+});
+app.service('EmpSvc', function($http) {
+    this.fetchEmp = function(id) {
+
+    	console.log("id  : "  + id);
+        return $http.get('/api/employee/' + id + '?fields=department,email,phone,allowedZones');
+    };
+
+    this.create = function(data) {
+
+    	return $http.post('/api/employee', data);
+    };
+
+    this.update = function(data) {
+    	return $http.put('/api/employee/' + data.id, data);
+    };
+});
+app.service('MapSvc', function($http) {
+    this.fetch = function(buildingId) {
+
+        return $http.get('/api/map?buildingID=' + buildingId);
+    };
+    this.save = function(nodePositions) {
+        return $http.post('api/map', {
+            nodePositions: nodePositions
+        });
+    };
+});
+
+app.service('TimeSvc', function($http) {
+    this.fetch = function(startDate, endDate, empId) {
+
+        return $http.get('/api/time?startDate=' + startDate + '&endDate=' + endDate + '&employeeId=' + empId);
+    };
+});
+
+app.service('ZonesSvc', function($http) {
+    this.fetch = function() {
+        return $http.get('/api/zone');
+    };
+    this.fetchTransactions = function(id) {
+        return $http.get('/api/transaction/zone/' + id);
+    };
 });
 app.controller('EmpGridCtrl', function($scope, EmpGridSvc) {
     $scope.departments = [];
@@ -762,6 +921,7 @@ app.controller('MapCtrl2', function($scope, $modal, MapSvc, AuthSvc, $rootScope,
     $scope.elements.nodes = [];
     $scope.elements.edges = [];
     $scope.editing = false;
+    $scope.ready = false;
     MapSvc.fetch(AuthSvc.getArea()).success(function(data) {
 
         for (var n in data.zones) {
@@ -826,7 +986,8 @@ app.controller('MapCtrl2', function($scope, $modal, MapSvc, AuthSvc, $rootScope,
 
         $rootScope.$broadcast('appChanged');
 
-        console.log(cy);
+        $scope.ready = true;
+
 
 
 
@@ -864,6 +1025,11 @@ app.controller('MapCtrl2', function($scope, $modal, MapSvc, AuthSvc, $rootScope,
 
     $scope.doClick = function(id, label) {
 
+
+         
+        if ($scope.editing) {
+            return;
+        }
         if (id.charAt() === 'n') {
             modalInstance = $modal.open({
 
@@ -899,7 +1065,7 @@ app.controller('MapCtrl2', function($scope, $modal, MapSvc, AuthSvc, $rootScope,
                 }
             });
         }
-    }
+    };
 
 
 
@@ -949,7 +1115,7 @@ app.controller('zoneTreeCtrl', function($scope, $filter, EmpSvc, ZonesSvc, $rout
         $scope.zones = data;
         //$scope.$parent.zones = $scope.zones;
         $scope.$parent.selectedZone = data[0];
-        //$scope.$parent.panelReady();
+        $scope.$parent.panelReady();
 
     });
 
@@ -1040,25 +1206,34 @@ app.controller('zoneTreeCtrl', function($scope, $filter, EmpSvc, ZonesSvc, $rout
     }
 });
 app.controller('ZonesCtrl', function($scope, ZonesSvc, lodash) {
-
+    $scope.viewPersons = true;
     $scope.panelReady = function() {
         console.log($scope.selectedZone.id);
+        $scope.zoneChange()
     };
 
     $scope.zoneChange = function() {
-        ZonesSvc.fetchTransactions($scope.selectedZone.id).success(function(data) {
-          console.log(data)
-         var result = lodash.chain(data)
-    		.groupBy("employeeId")
-  			.pairs()
-    		.map(function(currentItem) {
-       			 return lodash.object(lodash.zip([ "employeeId", "entries"], currentItem));
-   			})
-    		.value();
         
-        console.log(result);
-        $scope.zoneTransactions = result;
+        ZonesSvc.fetchTransactions($scope.selectedZone.id).success(function(data) {
+            
+           
+
+                var result = lodash.chain(data)
+                    .groupBy("employeeId")
+                    .pairs()
+                    .map(function(currentItem) {
+                        return lodash.object(lodash.zip(["employeeId", "entries"], currentItem));
+                    })
+                    .value();
+
+                console.log(result);
+                $scope.zoneTransactions = result;
+          
+                $scope.transactions = data;
+            
+
         });
+
     };
 });
 app.filter('offset', function() {
@@ -1082,143 +1257,10 @@ app.filter('timestampToTime', function () {
         return dateObject;
     };
 });
-app.factory('AuthSvc', function($http, $cookies) {
-    var currentUser = null;
-    var loggedIn = false;
-    var token = null;
-    var role =  null;
-    var area = 1;
-
-    // initMaybe it wasn't meant to work for mpm?ial state says we haven't logged in or out yet...
-    // this tells us we are in public browsing
-    var initialState = true;
-
-    return {
-        isAdmin: function() {
-            return role == "admin";
-        },
-        initialState: function() {
-            return initialState;
-        },
-        login: function(username, password) {
-
-            return $http.post('api/session', {
-                username: username,
-                password: password
-            }).then(function(val) {
-            	
-                $cookies.username = username
-                $cookies.token = val.data
-                $cookies.isLoggedIn = 1
-            	currentUser = username;
-            	loggedIn = true;
-                token = val.data;
-                role = "admin"
-                $cookies.role = role;
-                $http.defaults.headers.common['X-Auth'] = val.data;
-                
-
- 
-            })
-        },
-        logout: function() {
-            $cookies.username = null
-            $cookies.token = null
-            $cookies.isLoggedIn = null
-            $cookies.role = null
-            currentUser = null;
-            authorized = false;
-            token = null;
-            role = null;
-            loggedIn = false;
-
-        },
-        isLoggedIn: function() {
-            if ($cookies.isLoggedIn == 1) {
-                loggedIn = true;
-                token = $cookies.token;
-                $http.defaults.headers.common['X-Auth'] = token;
-                currentUser = $cookies.username;
-                role = $cookies.role;
-
-            }
-            return loggedIn;
-        },
-        currentUser: function() {
-            return currentUser;
-        },
-        isAuthorized: function(roles) {
-            
-            return this.isLoggedIn() && roles.indexOf(role) >= 0 || roles.indexOf("*") >= 0;
-            
-        },
-        getArea : function() {
-            return area
-        },
-        setArea : function(newArea) {
-            area = newArea;
-        }
-
-
-    };
-})
-app.service('DepartmentSvc', function($http) {
-    this.fetch = function(id) {
-        return $http.get('/api/department/');
-    };
-
-});
-app.service('EmpGridSvc', function($http) {
-    this.fetch = function() {
-        return $http.get('/api/employee?fields=department');
-    };
-});
-app.service('EmpSvc', function($http) {
-    this.fetchEmp = function(id) {
-
-    	console.log("id  : "  + id);
-        return $http.get('/api/employee/' + id + '?fields=department,email,phone,allowedZones');
-    };
-
-    this.create = function(data) {
-
-    	return $http.post('/api/employee', data);
-    };
-
-    this.update = function(data) {
-    	return $http.put('/api/employee/' + data.id, data);
-    };
-});
-app.service('MapSvc', function($http) {
-    this.fetch = function(buildingId) {
-
-        return $http.get('/api/map?buildingID=' + buildingId);
-    };
-    this.save = function(nodePositions) {
-        return $http.post('api/map', {
-            nodePositions: nodePositions
-        });
-    };
-});
-
-app.service('TimeSvc', function($http) {
-    this.fetch = function(startDate, endDate, empId) {
-
-        return $http.get('/api/time?startDate=' + startDate + '&endDate=' + endDate + '&employeeId=' + empId);
-    };
-});
-
-app.service('ZonesSvc', function($http) {
-    this.fetch = function() {
-        return $http.get('/api/zone');
-    };
-    this.fetchTransactions = function(id) {
-        return $http.get('/api/transaction/zone/' + id);
-    };
-});
 app.controller('MapPortalModalInstance', function($scope, $location, $modalInstance, $http, label, node) {
-
+    $scope.ready = false;
     $http.get('/api/transaction/portal/' + node + '?limit=5').success(function(data) {
+        $scope.ready = true;
         $scope.transactions = [];
         for (var x in data) {
             $scope.transactions.push({
@@ -1278,14 +1320,17 @@ var createDate = function(timestamp) {
 app.controller('MapZoneModalInstance', function($scope, $modalInstance, $location, $http, $rootScope, node, label) {
     $scope.name = label;
     $scope.isEmp = true;
-    $http.get('/api/positionInfo/zone?zoneId=' + node).success(function(data) {
+    $scope.ready = false;
+    $http.get('/api/zone/' + node).success(function(data) {
         $scope.emps = [];
+        $scope.ready = true;
         for (var x in data) {
+
             $scope.emps.push({
-                id: data[x].id,
+                id: data[x].employeeId,
                 firstname: data[x].firstname,
                 lastname: data[x].lastname,
-                img: '/images/emps/' + data[x].id + '.jpg'
+                img: '/images/emps/' + data[x].employeeId + '.jpg'
             });
         }
         $scope.isEmp = $scope.emps.length !== 0;

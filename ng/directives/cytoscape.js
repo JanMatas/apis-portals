@@ -60,19 +60,44 @@ app.directive('cytoscape', function($rootScope) {
                     ready: function() {
                         window.cy = this;
                         cy.autolock(true);
-                        // giddy up...
+
                         cy.elements().unselectify();
+                        tappedBefore = null;
 
                         // Event listeners
                         // with sample calling to the controller function as passed as an attribute
                         cy.on('tap', 'node', function(e) {
                             var evtTarget = e.cyTarget;
                             var nodeId = evtTarget.id();
-   
-                            scope.cyClick({
-                                id: evtTarget.id(),
-                                label: evtTarget.json().data.name
+
+                            setTimeout(function() {
+                                tappedBefore = null;
+                            }, 100);
+                            if (!tappedBefore) {
+                                scope.cyClick({
+                                    id: evtTarget.id(),
+                                    label: evtTarget.json().data.name
+                                });
+                            }
+                            evtTarget.qtip({
+                                content: 'Hello!',
+                                position: {
+                                    my: 'top center',
+                                    at: 'top center'
+                                },
+                                style: {
+                                    classes: 'qtip-bootstrap',
+                                    tip: {
+                                        width: 16,
+                                        height: 8
+                                    }
+                                }
                             });
+                            tappedBefore = true;
+
+
+
+
                         });
 
                         // load the objects array
