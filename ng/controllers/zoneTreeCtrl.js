@@ -20,7 +20,7 @@ app.controller('zoneTreeCtrl', function($scope, $filter, EmpSvc, ZonesSvc, $rout
 
 
         $scope.$parent.selectedZone = zone;
-        //$scope.$parent.zoneChange();
+        $scope.$parent.zoneChange();
     };
     $scope.toggleZone = function(zone) {
         zone.showChildren = !zone.showChildren;

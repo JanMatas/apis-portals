@@ -1,6 +1,6 @@
 app.controller('MapPortalModalInstance', function($scope, $location, $modalInstance, $http, label, node) {
 
-    $http.get('/api/transaction?portalId=' + node + '&limit=5').success(function(data) {
+    $http.get('/api/transaction/portal/' + node + '?limit=5').success(function(data) {
         $scope.transactions = [];
         for (var x in data) {
             $scope.transactions.push({
@@ -17,11 +17,15 @@ app.controller('MapPortalModalInstance', function($scope, $location, $modalInsta
 
 
     $scope.name = label;
-    $scope.connection = "Established";// TODO implement this
-    $scope.status = "Armed";//TODO implement this
+    $scope.connection = "Established"; // TODO implement this
+    $scope.status = "Armed"; //TODO implement this
 
     $scope.armed = true;
 
+    $scope.$on("modal.closing", function() {
+
+        cy.nodes().unselect();
+    });
     $scope.arm = function() {
         $scope.status = "Armed";
         $scope.armed = true;
@@ -38,6 +42,7 @@ app.controller('MapPortalModalInstance', function($scope, $location, $modalInsta
     };
 
     $scope.cancel = function() {
+
         $modalInstance.dismiss('cancel');
     };
     $scope.profile = function(empId) {

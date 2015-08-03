@@ -9,8 +9,21 @@ body {
     width: 320px;
 
     
-    height: 100%;
+    
 
+}
+
+#edit-button {
+    position: absolute; top: 5px; right: -50px;
+}
+
+#cy {
+    height: 500px;
+    width: 100%;
+    border: 2px solid black;
+    position: relative;
+    
+    display: block;
 }
 
 .profile-image-container {
@@ -55,7 +68,7 @@ body {
 
 .container-body {
         margin-top: 65px;
-        margin-bottom: 200px;
+        margin-bottom: 60px;
         height : 85%;
 
 }

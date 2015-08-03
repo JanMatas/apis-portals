@@ -70,6 +70,7 @@ function processGetRequest(req, res, next) {
 
 
     if (id) {
+        console.log("id : " + id);
         s.where("sys_user.pk_ = " + id);
     }
 

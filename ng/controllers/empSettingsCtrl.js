@@ -2,7 +2,7 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, De
 
     $scope.id = "toggle-" + 1;
     $scope.zones = [];
-
+    console.log($routeParams);
     EmpSvc.fetchEmp($routeParams.empId).success(function(data) {
         $scope.emp = {
             id: data[0].id,
@@ -21,7 +21,6 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, De
         ZonesSvc.fetch().success(function(data) {
             $scope.zones = data;
             mapZones($scope.zones, function(zone) {
-
                 zone.permission = $scope.emp.allowedZones.indexOf(zone.id) >= 0;
 
             });
@@ -30,12 +29,7 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, De
     });
 
     DepartmentSvc.fetch().success(function(data) {
-        $scope.zones = data;
-        mapZones($scope.zones, function(zone) {
-
-            zone.permission = $scope.emp.allowedZones.indexOf(zone.id) >= 0;
-
-        });
+        console.log(data);
     });
 
 

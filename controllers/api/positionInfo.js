@@ -60,8 +60,10 @@ router.get('/zone', function(req, res, next) {
 	var employeeLastTransactions = squel.select()
 		.from("sys_user")
 		.join("sys_elog", null, "sys_elog.pk_ = (" + employeeLastTransaction.toString() + ")")
-		.join("sys_reader", null, "sys_reader.code = sys_elog.t_reader")
+		.join("sys_reader", null, "sys_reader.code = sys_elog.t_reader");
 
+	var q = squel.select()
+		.from
 
 	var query = 
 		"SELECT id, firstname, lastname " +

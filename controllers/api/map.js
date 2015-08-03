@@ -92,6 +92,7 @@ router.post('/', function(req, res, next) {
     // Callback for databse insert
     var saveCallback = function(err) {
         if (err) {
+            console.log(err)
             return res.send(500, err);
         }
 
@@ -106,37 +107,30 @@ router.post('/', function(req, res, next) {
     var nodePositions = req.body.nodePositions;
 
     for (var n in nodePositions) {
-        // make sure its a node, not an edge
-        if (n < 100000) {
-            squelMysql = squel.useFlavour('mysql');
-            var query = "";
-            if (n < 10000) {
-                //its a zone
-                query = squelMysql.insert()
-                    .into("por_zone")
-                    .set("sys_area_pk_", n)
-                    .set("map_x", nodePositions[n].x)
-                    .set("map_y", nodePositions[n].y)
-                    .onDupUpdate("map_x", nodePositions[n].x)
-                    .onDupUpdate("map_y", nodePositions[n].y)
-                    .toString();
-
-            } else {
-                query = squelMysql.insert()
-                    .into("por_portal")
-                    .set("sys_reader_pk_", n - 10000)
-                    .set("map_x", nodePositions[n].x)
-                    .set("map_y", nodePositions[n].y)
-                    .onDupUpdate("map_x", nodePositions[n].x)
-                    .onDupUpdate("map_y", nodePositions[n].y)
-                    .toString();
-
-            }
-
-            db.executeQuery(query, saveCallback);
+        type = nodePositions[n].id.charAt(0); 
+        id = nodePositions[n].id.slice(1);
+        squelMysql = squel.useFlavour('mysql');
+        var query = squelMysql.insert();
+        if (type === 'n') {
+            query.into("por_zone")
+                .set("sys_area_pk_", id);
+        } else {
+            query.into("por_portal")
+                .set("sys_reader_pk_", id);
         }
+
+        query = query.set("map_x", nodePositions[n].x)
+            .set("map_y", nodePositions[n].y)
+            .onDupUpdate("map_x", nodePositions[n].x)
+            .onDupUpdate("map_y", nodePositions[n].y)
+            .toString();
+
+
+
+        db.executeQuery(query, saveCallback);
+        
     }
-    res.send(201);
+    res.sendStatus(201);
 
 });
 

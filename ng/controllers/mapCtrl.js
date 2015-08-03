@@ -87,7 +87,8 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc, AuthSvc) {
 
                     from: data.portals[p].zoneFrom,
                     to: data.portals[p].id + PORTAL_NODE_OFFSET,
-                    color: '#E6E6E6'
+                    color: '#E6E6E6',
+                    width : 3
 
                 });
 
@@ -95,7 +96,8 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc, AuthSvc) {
 
                     from: data.portals[p].id + PORTAL_NODE_OFFSET,
                     to: data.portals[p].zoneTo,
-                    color: '#E6E6E6'
+                    color: '#E6E6E6',
+                    width : 3
                 });
 
             }

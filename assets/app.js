@@ -57,8 +57,8 @@ app.config(function($routeProvider, USER_ROLES) {
 
         .when('/map', {
             // Map view
-            controller: 'MapCtrl',
-            templateUrl: 'map.html',
+            controller: 'MapCtrl2',
+            templateUrl: 'map2.html',
             data : {
                 authorizedRoles: [USER_ROLES.admin, USER_ROLES.editor]
             }
@@ -112,6 +112,112 @@ app.config(function($routeProvider, USER_ROLES) {
 
         })
 })
+app.directive('cytoscape', function($rootScope) {
+    // graph visualisation by - https://github.com/cytoscape/cytoscape.js
+    return {
+        restrict: 'E',
+        template: '<div id="cy"></div>',
+        replace: true,
+        scope: {
+            // data objects to be passed as an attributes - for nodes and edges
+            elements: '=',
+
+            // controller function to be triggered when clicking on a node
+            cyClick: '&'
+        },
+        link: function(scope, element, attrs, fn) {
+
+            // graph  build
+            scope.doCy = function() { // will be triggered on an event broadcast
+
+                $('#cy').cytoscape({
+                    userZoomingEnabled: false,
+                    userPanningEnabled: false,
+                    layout: {
+                        name: 'preset',
+                        fit: true, // whether to fit the viewport to the graph
+                        ready: undefined, // callback on layoutready
+                        stop: undefined, // callback on layoutstop
+                        padding: 5 // the padding on fit
+                    },
+                    style: cytoscape.stylesheet()
+                        .selector('node')
+                        .css({
+                            'shape': 'data(typeShape)',
+                            'width': '150',
+                            'height': '50',
+                            'background-color': 'data(typeColor)',
+                            'content': 'data(name)',
+                            'text-valign': 'center',
+                            'color': 'white',
+                            'text-outline-width': 2,
+                            'text-outline-color': 'data(typeColor)'
+                        })
+                        .selector('edge')
+                        .css({
+                            'width': '4',
+                            'target-arrow-shape': 'triangle',
+                            'source-arrow-shape': 'triangle'
+                        })
+                        .selector(':selected')
+                        .css({
+                            'background-color': 'black',
+                            'line-color': 'black',
+                            'target-arrow-color': 'black',
+                            'source-arrow-color': 'black'
+                        })
+                        .selector('.faded')
+                        .css({
+                            'opacity': 0.65,
+                            'text-opacity': 0.65
+                        }),
+                    ready: function() {
+                        window.cy = this;
+                        cy.autolock(true);
+                        // giddy up...
+                        cy.elements().unselectify();
+
+                        // Event listeners
+                        // with sample calling to the controller function as passed as an attribute
+                        cy.on('tap', 'node', function(e) {
+                            var evtTarget = e.cyTarget;
+                            var nodeId = evtTarget.id();
+   
+                            scope.cyClick({
+                                id: evtTarget.id(),
+                                label: evtTarget.json().data.name
+                            });
+                        });
+
+                        // load the objects array
+                        // use cy.add() / cy.remove() with passed data to add or remove nodes and edges without rebuilding the graph
+                        // sample use can be adding a passed variable which will be broadcast on change
+
+                        cy.load(scope.elements);
+
+                    }
+                });
+
+            }; // end doCy()
+
+
+            $rootScope.$on('appChanged', function() {
+                scope.doCy();
+            });
+        }
+    };
+});
+app.directive('onErrorSrc', function() {
+    return {
+        link: function(scope, element, attrs) {
+          element.bind('error', function() {
+            if (attrs.src != attrs.onErrorSrc) {
+              attrs.$set('src', attrs.onErrorSrc);
+            }
+          });
+        }
+    }
+});
 app.controller('EmpGridCtrl', function($scope, EmpGridSvc) {
     $scope.departments = [];
     $scope.departmentFilter = "";
@@ -212,7 +318,7 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, De
 
     $scope.id = "toggle-" + 1;
     $scope.zones = [];
-
+    console.log($routeParams);
     EmpSvc.fetchEmp($routeParams.empId).success(function(data) {
         $scope.emp = {
             id: data[0].id,
@@ -231,7 +337,6 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, De
         ZonesSvc.fetch().success(function(data) {
             $scope.zones = data;
             mapZones($scope.zones, function(zone) {
-
                 zone.permission = $scope.emp.allowedZones.indexOf(zone.id) >= 0;
 
             });
@@ -240,12 +345,7 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, De
     });
 
     DepartmentSvc.fetch().success(function(data) {
-        $scope.zones = data;
-        mapZones($scope.zones, function(zone) {
-
-            zone.permission = $scope.emp.allowedZones.indexOf(zone.id) >= 0;
-
-        });
+        console.log(data);
     });
 
 
@@ -487,7 +587,8 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc, AuthSvc) {
 
                     from: data.portals[p].zoneFrom,
                     to: data.portals[p].id + PORTAL_NODE_OFFSET,
-                    color: '#E6E6E6'
+                    color: '#E6E6E6',
+                    width : 3
 
                 });
 
@@ -495,7 +596,8 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc, AuthSvc) {
 
                     from: data.portals[p].id + PORTAL_NODE_OFFSET,
                     to: data.portals[p].zoneTo,
-                    color: '#E6E6E6'
+                    color: '#E6E6E6',
+                    width : 3
                 });
 
             }
@@ -651,6 +753,159 @@ app.controller('MapCtrl', function($scope, $modal, MapSvc, AuthSvc) {
 
 
 });
+//Offset of portal node
+var PORTAL_NODE_OFFSET = 10000;
+
+/** This is the controller for the map on home screen*/
+app.controller('MapCtrl2', function($scope, $modal, MapSvc, AuthSvc, $rootScope, $window) {
+    $scope.elements = {}
+    $scope.elements.nodes = [];
+    $scope.elements.edges = [];
+    $scope.editing = false;
+    MapSvc.fetch(AuthSvc.getArea()).success(function(data) {
+
+        for (var n in data.zones) {
+
+            var newNode = {
+                group: 'nodes',
+                data: {
+                    id: 'n' + data.zones[n].id,
+                    name: data.zones[n].name,
+                    typeShape: "ellipse",
+                    typeColor: '#335577'
+                },
+                position: {
+                    x: data.zones[n].map_x + 300,
+                    y: data.zones[n].map_y + 300
+                },
+            };
+            $scope.elements.nodes.push(newNode);
+        }
+
+        for (var p in data.portals) {
+            var newNode = {
+                group: 'nodes',
+                data: {
+                    id: 'p' + data.portals[p].id,
+                    name: data.portals[p].name,
+                    typeShape: "rectangle",
+                    typeColor: '#aaaaaa',
+
+                },
+                position: {
+                    x: data.portals[p].map_x + 300,
+                    y: data.portals[p].map_y + 300
+                },
+
+            };
+
+            var edge1 = {
+                group: "edges",
+                data: {
+                    source: 'n' + data.portals[p].zoneFrom,
+                    target: 'p' + data.portals[p].id
+                }
+            };
+            $scope.elements.edges.push(edge1);
+            var edge2 = {
+                group: "edges",
+                data: {
+                    source: 'p' + data.portals[p].id,
+                    target: 'n' + data.portals[p].zoneTo
+                }
+            };
+
+
+            $scope.elements.nodes.push(newNode);
+
+
+            $scope.elements.edges.push(edge2);
+        }
+
+
+
+        $rootScope.$broadcast('appChanged');
+
+        console.log(cy);
+
+
+
+    });
+
+
+
+    // sample function to be called when clicking on an object in the chart
+    $scope.save = function() {
+
+        var nodes = cy.json().elements.nodes;
+        var data = [];
+
+        for (var n in nodes) {
+            var newData = {
+                id: nodes[n].data.id,
+                x: nodes[n].position.x,
+                y: nodes[n].position.y
+            };
+            data.push(newData);
+
+        }
+        MapSvc.save(data);
+
+        cy.autolock(true);
+        $scope.editing = false;
+
+
+    };
+    $scope.edit = function() {
+        cy.autolock(false);
+        $scope.editing = true;
+
+    };
+
+    $scope.doClick = function(id, label) {
+
+        if (id.charAt() === 'n') {
+            modalInstance = $modal.open({
+
+                templateUrl: 'modals/mapZoneModal.html',
+                controller: 'MapZoneModalInstance',
+                size: 'lg',
+                resolve: {
+                    node: function() {
+
+                        return id.slice(1);
+                    },
+                    label: function() {
+
+                        return label;
+                    }
+                }
+            });
+
+        } else {
+            modalInstance = $modal.open({
+                templateUrl: 'modals/mapPortalModal.html',
+                controller: 'MapPortalModalInstance',
+                size: 'lg',
+                resolve: {
+                    node: function() {
+
+                        return id.slice(1);
+                    },
+                    label: function() {
+
+                        return label;
+                    }
+                }
+            });
+        }
+    }
+
+
+
+
+
+});
 app.controller('NavbarCtrl', function($scope,$rootScope, $http, $route, $location, AuthSvc) {
     $scope.loggedIn = AuthSvc.isLoggedIn();
 
@@ -705,7 +960,7 @@ app.controller('zoneTreeCtrl', function($scope, $filter, EmpSvc, ZonesSvc, $rout
 
 
         $scope.$parent.selectedZone = zone;
-        //$scope.$parent.zoneChange();
+        $scope.$parent.zoneChange();
     };
     $scope.toggleZone = function(zone) {
         zone.showChildren = !zone.showChildren;
@@ -792,7 +1047,7 @@ app.controller('ZonesCtrl', function($scope, ZonesSvc, lodash) {
 
     $scope.zoneChange = function() {
         ZonesSvc.fetchTransactions($scope.selectedZone.id).success(function(data) {
-
+          console.log(data)
          var result = lodash.chain(data)
     		.groupBy("employeeId")
   			.pairs()
@@ -805,17 +1060,6 @@ app.controller('ZonesCtrl', function($scope, ZonesSvc, lodash) {
         $scope.zoneTransactions = result;
         });
     };
-});
-app.directive('onErrorSrc', function() {
-    return {
-        link: function(scope, element, attrs) {
-          element.bind('error', function() {
-            if (attrs.src != attrs.onErrorSrc) {
-              attrs.$set('src', attrs.onErrorSrc);
-            }
-          });
-        }
-    }
 });
 app.filter('offset', function() {
   return function(input, start) {
@@ -920,7 +1164,7 @@ app.factory('AuthSvc', function($http, $cookies) {
 })
 app.service('DepartmentSvc', function($http) {
     this.fetch = function(id) {
-        return $http.get('/api/employee/' + id + '?fields=department,email,phone,allowedZones');
+        return $http.get('/api/department/');
     };
 
 });
@@ -931,6 +1175,8 @@ app.service('EmpGridSvc', function($http) {
 });
 app.service('EmpSvc', function($http) {
     this.fetchEmp = function(id) {
+
+    	console.log("id  : "  + id);
         return $http.get('/api/employee/' + id + '?fields=department,email,phone,allowedZones');
     };
 
@@ -972,7 +1218,7 @@ app.service('ZonesSvc', function($http) {
 });
 app.controller('MapPortalModalInstance', function($scope, $location, $modalInstance, $http, label, node) {
 
-    $http.get('/api/transaction?portalId=' + node + '&limit=5').success(function(data) {
+    $http.get('/api/transaction/portal/' + node + '?limit=5').success(function(data) {
         $scope.transactions = [];
         for (var x in data) {
             $scope.transactions.push({
@@ -989,11 +1235,15 @@ app.controller('MapPortalModalInstance', function($scope, $location, $modalInsta
 
 
     $scope.name = label;
-    $scope.connection = "Established";// TODO implement this
-    $scope.status = "Armed";//TODO implement this
+    $scope.connection = "Established"; // TODO implement this
+    $scope.status = "Armed"; //TODO implement this
 
     $scope.armed = true;
 
+    $scope.$on("modal.closing", function() {
+
+        cy.nodes().unselect();
+    });
     $scope.arm = function() {
         $scope.status = "Armed";
         $scope.armed = true;
@@ -1010,6 +1260,7 @@ app.controller('MapPortalModalInstance', function($scope, $location, $modalInsta
     };
 
     $scope.cancel = function() {
+
         $modalInstance.dismiss('cancel');
     };
     $scope.profile = function(empId) {
@@ -1029,22 +1280,29 @@ app.controller('MapZoneModalInstance', function($scope, $modalInstance, $locatio
     $scope.isEmp = true;
     $http.get('/api/positionInfo/zone?zoneId=' + node).success(function(data) {
         $scope.emps = [];
-        for (x in data) {
+        for (var x in data) {
             $scope.emps.push({
                 id: data[x].id,
                 firstname: data[x].firstname,
                 lastname: data[x].lastname,
                 img: '/images/emps/' + data[x].id + '.jpg'
-            })
+            });
         }
-        $scope.isEmp = $scope.emps.length != 0;
-    })
+        $scope.isEmp = $scope.emps.length !== 0;
+    });
+
+    $scope.$on("modal.closing" ,function () {
+
+        cy.nodes().unselect();
+    });
+
     $scope.cancel = function() {
+
         $modalInstance.dismiss('cancel');
     };
     $scope.profile = function(empId) {
         $modalInstance.dismiss('cancel');
         $location.path('/profile/' + empId);
-    }
+    };
 
 });

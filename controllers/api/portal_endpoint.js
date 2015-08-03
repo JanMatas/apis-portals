@@ -50,7 +50,8 @@ router.get('/transaction/:raspiId', function(req,res, next) {
 });
 
 router.post('/transaction/:raspiId', function(req, res, next) {
-
+    console.log("transaction -> id: " + req.body.tagId + " dir: " +  
+         req.body.direction + " portal: " + req.params.raspiId);
     if (!req.body) {
         return res.status(403).send("No request body");
     }

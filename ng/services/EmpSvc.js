@@ -1,5 +1,7 @@
 app.service('EmpSvc', function($http) {
     this.fetchEmp = function(id) {
+
+    	console.log("id  : "  + id);
         return $http.get('/api/employee/' + id + '?fields=department,email,phone,allowedZones');
     };
 

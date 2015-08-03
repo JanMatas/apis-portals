@@ -14,8 +14,8 @@ app.config(function($routeProvider, USER_ROLES) {
 
         .when('/map', {
             // Map view
-            controller: 'MapCtrl',
-            templateUrl: 'map.html',
+            controller: 'MapCtrl2',
+            templateUrl: 'map2.html',
             data : {
                 authorizedRoles: [USER_ROLES.admin, USER_ROLES.editor]
             }
