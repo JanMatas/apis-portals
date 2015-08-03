@@ -1,5 +1,8 @@
 app.controller('ZonesCtrl', function($scope, ZonesSvc, lodash) {
     $scope.viewPersons = true;
+    $scope.fromTime = null;
+    $scope.toTime  = null;
+    console.log($scope.toTime)
     $scope.panelReady = function() {
         console.log($scope.selectedZone.id);
         $scope.zoneChange()
@@ -7,10 +10,10 @@ app.controller('ZonesCtrl', function($scope, ZonesSvc, lodash) {
 
     $scope.zoneChange = function() {
         
-        ZonesSvc.fetchTransactions($scope.selectedZone.id).success(function(data) {
+        ZonesSvc.fetchTransactions($scope.selectedZone.id, moment($scope.fromTime).unix(), moment($scope.toTime).unix()).success(function(data) {
             
            
-
+            console.log(data);
                 var result = lodash.chain(data)
                     .groupBy("employeeId")
                     .pairs()
@@ -19,7 +22,7 @@ app.controller('ZonesCtrl', function($scope, ZonesSvc, lodash) {
                     })
                     .value();
 
-                console.log(result);
+                
                 $scope.zoneTransactions = result;
           
                 $scope.transactions = data;
@@ -28,4 +31,6 @@ app.controller('ZonesCtrl', function($scope, ZonesSvc, lodash) {
         });
 
     };
+
+
 });

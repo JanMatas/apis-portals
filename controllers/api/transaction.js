@@ -74,12 +74,13 @@ router.get('/zone/:zoneId', function(req, res, next) {
         s.where("t_date > FROM_UNIXTIME(" + req.query.from + ")");
     }
     if (req.query.to !== undefined) {
+        console.log("TO : " + req.query.to)
         s.where("t_date < FROM_UNIXTIME(" + req.query.to + ")");
     }
     if (req.query.limit !== undefined) {
         s.limit(req.query.limit);
     }
-
+    console.log(s.toString())
     db.fetchData(s.toString(), function(err, rows) {
         if (err) {
             return next(err);

@@ -1,15 +1,16 @@
 app.filter('timestampToDate', function () {
     return function (timestamp) {
-        var date = new Date(timestamp * 1000);
-        var dateObject = ('0' + date.getDate()).slice(-2) +'/'+ ('0' + (date.getMonth() + 1)).slice(-2) +'/'+ date.getFullYear();
-        return dateObject;
+        var time = moment.unix(timestamp);
+       
+        return time.format("DD.MM");
     };
 });
 
 app.filter('timestampToTime', function () {
     return function (timestamp) {
-        var date = new Date(timestamp * 1000);
-        var dateObject = date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
-        return dateObject;
+        var time = moment.unix(timestamp);
+        
+
+        return time.format("hh:mm:ss");
     };
 });

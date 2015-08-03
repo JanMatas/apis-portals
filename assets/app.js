@@ -1,5 +1,13 @@
 //Frontend entry point
-var app = angular.module('app', ['ngRoute','angularSpinner', 'chart.js', 'ui.bootstrap', 'ngCookies','toggle-switch', 'angularBootstrapNavTree', 'ngLodash']);
+var app = angular.module('app', ['ngRoute','angularSpinner','datetimepicker', 'chart.js', 'ui.bootstrap', 'ngCookies','toggle-switch', 'angularBootstrapNavTree', 'ngLodash'])
+					.config([
+						'datetimepickerProvider',
+						function (datetimepickerProvider) {
+							datetimepickerProvider.setOptions({
+								locale: 'en'
+							});
+						}
+					]);
 
 app.run(function($rootScope, $location, AuthSvc, CONFIG) {
 
@@ -112,271 +120,6 @@ app.config(function($routeProvider, USER_ROLES) {
 
         })
 })
-app.directive('cytoscape', function($rootScope) {
-    // graph visualisation by - https://github.com/cytoscape/cytoscape.js
-    return {
-        restrict: 'E',
-        template: '<div id="cy"></div>',
-        replace: true,
-        scope: {
-            // data objects to be passed as an attributes - for nodes and edges
-            elements: '=',
-
-            // controller function to be triggered when clicking on a node
-            cyClick: '&'
-        },
-        link: function(scope, element, attrs, fn) {
-
-            // graph  build
-            scope.doCy = function() { // will be triggered on an event broadcast
-
-                $('#cy').cytoscape({
-                    userZoomingEnabled: false,
-                    userPanningEnabled: false,
-                    layout: {
-                        name: 'preset',
-                        fit: true, // whether to fit the viewport to the graph
-                        ready: undefined, // callback on layoutready
-                        stop: undefined, // callback on layoutstop
-                        padding: 5 // the padding on fit
-                    },
-                    style: cytoscape.stylesheet()
-                        .selector('node')
-                        .css({
-                            'shape': 'data(typeShape)',
-                            'width': '150',
-                            'height': '50',
-                            'background-color': 'data(typeColor)',
-                            'content': 'data(name)',
-                            'text-valign': 'center',
-                            'color': 'white',
-                            'text-outline-width': 2,
-                            'text-outline-color': 'data(typeColor)'
-                        })
-                        .selector('edge')
-                        .css({
-                            'width': '4',
-                            'target-arrow-shape': 'triangle',
-                            'source-arrow-shape': 'triangle'
-                        })
-                        .selector(':selected')
-                        .css({
-                            'background-color': 'black',
-                            'line-color': 'black',
-                            'target-arrow-color': 'black',
-                            'source-arrow-color': 'black'
-                        })
-                        .selector('.faded')
-                        .css({
-                            'opacity': 0.65,
-                            'text-opacity': 0.65
-                        }),
-                    ready: function() {
-                        window.cy = this;
-                        cy.autolock(true);
-
-                        cy.elements().unselectify();
-                        tappedBefore = null;
-
-                        // Event listeners
-                        // with sample calling to the controller function as passed as an attribute
-                        cy.on('tap', 'node', function(e) {
-                            var evtTarget = e.cyTarget;
-                            var nodeId = evtTarget.id();
-
-                            setTimeout(function() {
-                                tappedBefore = null;
-                            }, 100);
-                            if (!tappedBefore) {
-                                scope.cyClick({
-                                    id: evtTarget.id(),
-                                    label: evtTarget.json().data.name
-                                });
-                            }
-                            evtTarget.qtip({
-                                content: 'Hello!',
-                                position: {
-                                    my: 'top center',
-                                    at: 'top center'
-                                },
-                                style: {
-                                    classes: 'qtip-bootstrap',
-                                    tip: {
-                                        width: 16,
-                                        height: 8
-                                    }
-                                }
-                            });
-                            tappedBefore = true;
-
-
-
-
-                        });
-
-                        // load the objects array
-                        // use cy.add() / cy.remove() with passed data to add or remove nodes and edges without rebuilding the graph
-                        // sample use can be adding a passed variable which will be broadcast on change
-
-                        cy.load(scope.elements);
-
-                    }
-                });
-
-            }; // end doCy()
-
-
-            $rootScope.$on('appChanged', function() {
-                scope.doCy();
-            });
-        }
-    };
-});
-app.directive('onErrorSrc', function() {
-    return {
-        link: function(scope, element, attrs) {
-          element.bind('error', function() {
-            if (attrs.src != attrs.onErrorSrc) {
-              attrs.$set('src', attrs.onErrorSrc);
-            }
-          });
-        }
-    }
-});
-app.factory('AuthSvc', function($http, $cookies) {
-    var currentUser = null;
-    var loggedIn = false;
-    var token = null;
-    var role =  null;
-    var area = 1;
-
-    // initMaybe it wasn't meant to work for mpm?ial state says we haven't logged in or out yet...
-    // this tells us we are in public browsing
-    var initialState = true;
-
-    return {
-        isAdmin: function() {
-            return role == "admin";
-        },
-        initialState: function() {
-            return initialState;
-        },
-        login: function(username, password) {
-
-            return $http.post('api/session', {
-                username: username,
-                password: password
-            }).then(function(val) {
-            	
-                $cookies.username = username
-                $cookies.token = val.data
-                $cookies.isLoggedIn = 1
-            	currentUser = username;
-            	loggedIn = true;
-                token = val.data;
-                role = "admin"
-                $cookies.role = role;
-                $http.defaults.headers.common['X-Auth'] = val.data;
-                
-
- 
-            })
-        },
-        logout: function() {
-            $cookies.username = null
-            $cookies.token = null
-            $cookies.isLoggedIn = null
-            $cookies.role = null
-            currentUser = null;
-            authorized = false;
-            token = null;
-            role = null;
-            loggedIn = false;
-
-        },
-        isLoggedIn: function() {
-            if ($cookies.isLoggedIn == 1) {
-                loggedIn = true;
-                token = $cookies.token;
-                $http.defaults.headers.common['X-Auth'] = token;
-                currentUser = $cookies.username;
-                role = $cookies.role;
-
-            }
-            return loggedIn;
-        },
-        currentUser: function() {
-            return currentUser;
-        },
-        isAuthorized: function(roles) {
-            
-            return this.isLoggedIn() && roles.indexOf(role) >= 0 || roles.indexOf("*") >= 0;
-            
-        },
-        getArea : function() {
-            return area
-        },
-        setArea : function(newArea) {
-            area = newArea;
-        }
-
-
-    };
-})
-app.service('DepartmentSvc', function($http) {
-    this.fetch = function(id) {
-        return $http.get('/api/department/');
-    };
-
-});
-app.service('EmpGridSvc', function($http) {
-    this.fetch = function() {
-        return $http.get('/api/employee?fields=department');
-    };
-});
-app.service('EmpSvc', function($http) {
-    this.fetchEmp = function(id) {
-
-    	console.log("id  : "  + id);
-        return $http.get('/api/employee/' + id + '?fields=department,email,phone,allowedZones');
-    };
-
-    this.create = function(data) {
-
-    	return $http.post('/api/employee', data);
-    };
-
-    this.update = function(data) {
-    	return $http.put('/api/employee/' + data.id, data);
-    };
-});
-app.service('MapSvc', function($http) {
-    this.fetch = function(buildingId) {
-
-        return $http.get('/api/map?buildingID=' + buildingId);
-    };
-    this.save = function(nodePositions) {
-        return $http.post('api/map', {
-            nodePositions: nodePositions
-        });
-    };
-});
-
-app.service('TimeSvc', function($http) {
-    this.fetch = function(startDate, endDate, empId) {
-
-        return $http.get('/api/time?startDate=' + startDate + '&endDate=' + endDate + '&employeeId=' + empId);
-    };
-});
-
-app.service('ZonesSvc', function($http) {
-    this.fetch = function() {
-        return $http.get('/api/zone');
-    };
-    this.fetchTransactions = function(id) {
-        return $http.get('/api/transaction/zone/' + id);
-    };
-});
 app.controller('EmpGridCtrl', function($scope, EmpGridSvc) {
     $scope.departments = [];
     $scope.departmentFilter = "";
@@ -1207,6 +950,9 @@ app.controller('zoneTreeCtrl', function($scope, $filter, EmpSvc, ZonesSvc, $rout
 });
 app.controller('ZonesCtrl', function($scope, ZonesSvc, lodash) {
     $scope.viewPersons = true;
+    $scope.fromTime = null;
+    $scope.toTime  = null;
+    console.log($scope.toTime)
     $scope.panelReady = function() {
         console.log($scope.selectedZone.id);
         $scope.zoneChange()
@@ -1214,10 +960,10 @@ app.controller('ZonesCtrl', function($scope, ZonesSvc, lodash) {
 
     $scope.zoneChange = function() {
         
-        ZonesSvc.fetchTransactions($scope.selectedZone.id).success(function(data) {
+        ZonesSvc.fetchTransactions($scope.selectedZone.id, moment($scope.fromTime).unix(), moment($scope.toTime).unix()).success(function(data) {
             
            
-
+            console.log(data);
                 var result = lodash.chain(data)
                     .groupBy("employeeId")
                     .pairs()
@@ -1226,7 +972,7 @@ app.controller('ZonesCtrl', function($scope, ZonesSvc, lodash) {
                     })
                     .value();
 
-                console.log(result);
+                
                 $scope.zoneTransactions = result;
           
                 $scope.transactions = data;
@@ -1235,6 +981,139 @@ app.controller('ZonesCtrl', function($scope, ZonesSvc, lodash) {
         });
 
     };
+
+
+});
+app.directive('cytoscape', function($rootScope) {
+    // graph visualisation by - https://github.com/cytoscape/cytoscape.js
+    return {
+        restrict: 'E',
+        template: '<div id="cy"></div>',
+        replace: true,
+        scope: {
+            // data objects to be passed as an attributes - for nodes and edges
+            elements: '=',
+
+            // controller function to be triggered when clicking on a node
+            cyClick: '&'
+        },
+        link: function(scope, element, attrs, fn) {
+
+            // graph  build
+            scope.doCy = function() { // will be triggered on an event broadcast
+
+                $('#cy').cytoscape({
+                    userZoomingEnabled: false,
+                    userPanningEnabled: false,
+                    layout: {
+                        name: 'preset',
+                        fit: true, // whether to fit the viewport to the graph
+                        ready: undefined, // callback on layoutready
+                        stop: undefined, // callback on layoutstop
+                        padding: 5 // the padding on fit
+                    },
+                    style: cytoscape.stylesheet()
+                        .selector('node')
+                        .css({
+                            'shape': 'data(typeShape)',
+                            'width': '150',
+                            'height': '50',
+                            'background-color': 'data(typeColor)',
+                            'content': 'data(name)',
+                            'text-valign': 'center',
+                            'color': 'white',
+                            'text-outline-width': 2,
+                            'text-outline-color': 'data(typeColor)'
+                        })
+                        .selector('edge')
+                        .css({
+                            'width': '4',
+                            'target-arrow-shape': 'triangle',
+                            'source-arrow-shape': 'triangle'
+                        })
+                        .selector(':selected')
+                        .css({
+                            'background-color': 'black',
+                            'line-color': 'black',
+                            'target-arrow-color': 'black',
+                            'source-arrow-color': 'black'
+                        })
+                        .selector('.faded')
+                        .css({
+                            'opacity': 0.65,
+                            'text-opacity': 0.65
+                        }),
+                    ready: function() {
+                        window.cy = this;
+                        cy.autolock(true);
+
+                        cy.elements().unselectify();
+                        tappedBefore = null;
+
+                        // Event listeners
+                        // with sample calling to the controller function as passed as an attribute
+                        cy.on('tap', 'node', function(e) {
+                            var evtTarget = e.cyTarget;
+                            var nodeId = evtTarget.id();
+
+                            setTimeout(function() {
+                                tappedBefore = null;
+                            }, 100);
+                            if (!tappedBefore) {
+                                scope.cyClick({
+                                    id: evtTarget.id(),
+                                    label: evtTarget.json().data.name
+                                });
+                            }
+                            evtTarget.qtip({
+                                content: 'Hello!',
+                                position: {
+                                    my: 'top center',
+                                    at: 'top center'
+                                },
+                                style: {
+                                    classes: 'qtip-bootstrap',
+                                    tip: {
+                                        width: 16,
+                                        height: 8
+                                    }
+                                }
+                            });
+                            tappedBefore = true;
+
+
+
+
+                        });
+
+                        // load the objects array
+                        // use cy.add() / cy.remove() with passed data to add or remove nodes and edges without rebuilding the graph
+                        // sample use can be adding a passed variable which will be broadcast on change
+
+                        cy.load(scope.elements);
+
+                    }
+                });
+
+            }; // end doCy()
+
+
+            $rootScope.$on('appChanged', function() {
+                scope.doCy();
+            });
+        }
+    };
+});
+app.directive('onErrorSrc', function() {
+    return {
+        link: function(scope, element, attrs) {
+          element.bind('error', function() {
+            if (attrs.src != attrs.onErrorSrc) {
+              attrs.$set('src', attrs.onErrorSrc);
+            }
+          });
+        }
+    }
 });
 app.filter('offset', function() {
   return function(input, start) {
@@ -1244,17 +1123,159 @@ app.filter('offset', function() {
 });
 app.filter('timestampToDate', function () {
     return function (timestamp) {
-        var date = new Date(timestamp * 1000);
-        var dateObject = ('0' + date.getDate()).slice(-2) +'/'+ ('0' + (date.getMonth() + 1)).slice(-2) +'/'+ date.getFullYear();
-        return dateObject;
+        var time = moment.unix(timestamp);
+       
+        return time.format("DD.MM");
     };
 });
 
 app.filter('timestampToTime', function () {
     return function (timestamp) {
-        var date = new Date(timestamp * 1000);
-        var dateObject = date.getHours()+':'+date.getMinutes()+':'+date.getSeconds();
-        return dateObject;
+        var time = moment.unix(timestamp);
+        
+
+        return time.format("hh:mm:ss");
+    };
+});
+app.factory('AuthSvc', function($http, $cookies) {
+    var currentUser = null;
+    var loggedIn = false;
+    var token = null;
+    var role =  null;
+    var area = 1;
+
+    // initMaybe it wasn't meant to work for mpm?ial state says we haven't logged in or out yet...
+    // this tells us we are in public browsing
+    var initialState = true;
+
+    return {
+        isAdmin: function() {
+            return role == "admin";
+        },
+        initialState: function() {
+            return initialState;
+        },
+        login: function(username, password) {
+
+            return $http.post('api/session', {
+                username: username,
+                password: password
+            }).then(function(val) {
+            	
+                $cookies.username = username
+                $cookies.token = val.data
+                $cookies.isLoggedIn = 1
+            	currentUser = username;
+            	loggedIn = true;
+                token = val.data;
+                role = "admin"
+                $cookies.role = role;
+                $http.defaults.headers.common['X-Auth'] = val.data;
+                
+
+ 
+            })
+        },
+        logout: function() {
+            $cookies.username = null
+            $cookies.token = null
+            $cookies.isLoggedIn = null
+            $cookies.role = null
+            currentUser = null;
+            authorized = false;
+            token = null;
+            role = null;
+            loggedIn = false;
+
+        },
+        isLoggedIn: function() {
+            if ($cookies.isLoggedIn == 1) {
+                loggedIn = true;
+                token = $cookies.token;
+                $http.defaults.headers.common['X-Auth'] = token;
+                currentUser = $cookies.username;
+                role = $cookies.role;
+
+            }
+            return loggedIn;
+        },
+        currentUser: function() {
+            return currentUser;
+        },
+        isAuthorized: function(roles) {
+            
+            return this.isLoggedIn() && roles.indexOf(role) >= 0 || roles.indexOf("*") >= 0;
+            
+        },
+        getArea : function() {
+            return area
+        },
+        setArea : function(newArea) {
+            area = newArea;
+        }
+
+
+    };
+})
+app.service('DepartmentSvc', function($http) {
+    this.fetch = function(id) {
+        return $http.get('/api/department/');
+    };
+
+});
+app.service('EmpGridSvc', function($http) {
+    this.fetch = function() {
+        return $http.get('/api/employee?fields=department');
+    };
+});
+app.service('EmpSvc', function($http) {
+    this.fetchEmp = function(id) {
+
+    	console.log("id  : "  + id);
+        return $http.get('/api/employee/' + id + '?fields=department,email,phone,allowedZones');
+    };
+
+    this.create = function(data) {
+
+    	return $http.post('/api/employee', data);
+    };
+
+    this.update = function(data) {
+    	return $http.put('/api/employee/' + data.id, data);
+    };
+});
+app.service('MapSvc', function($http) {
+    this.fetch = function(buildingId) {
+
+        return $http.get('/api/map?buildingID=' + buildingId);
+    };
+    this.save = function(nodePositions) {
+        return $http.post('api/map', {
+            nodePositions: nodePositions
+        });
+    };
+});
+
+app.service('TimeSvc', function($http) {
+    this.fetch = function(startDate, endDate, empId) {
+
+        return $http.get('/api/time?startDate=' + startDate + '&endDate=' + endDate + '&employeeId=' + empId);
+    };
+});
+
+app.service('ZonesSvc', function($http) {
+    this.fetch = function() {
+        return $http.get('/api/zone');
+    };
+    this.fetchTransactions = function(id, from, to) {
+    	var url = '/api/transaction/zone/' + id + '?';
+    	if (from) {
+    		url = url + "&from=" + from;
+    	} 
+    	if (to) {
+    		url = url + "&to=" + to
+    	}
+        return $http.get(url );
     };
 });
 app.controller('MapPortalModalInstance', function($scope, $location, $modalInstance, $http, label, node) {

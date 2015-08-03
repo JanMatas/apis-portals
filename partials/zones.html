@@ -19,43 +19,63 @@
 </script>
 <div ng-controller="ZonesCtrl" class="container">
     <h1>Zones</h1>
-    <div class="panel panel-default padded col-md-3">
-        <div class="panel-heading">
-            <h3 class="panel-title">Permissions:</h3>
-            <form class="form-inline">
-                <div class="form-group">
-                    <div class="input-group">
-                        <div class="input-group-addon">Filter:</div>
-                        <input type="text" class="form-control" ng-model="zoneFilter" ng-change="filter()" placeholder="Zone name">
+    <div class="padded col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <form class="form-inline">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-addon">Filter:</div>
+                            <input type="text" class="form-control" ng-model="zoneFilter" ng-change="filter()" placeholder="Zone name">
+                        </div>
                     </div>
-                </div>
-            </form>
-        </div>
-        <div class="panel-body " ng-controller="zoneTreeCtrl">
-            <div ng-repeat=" zone in zones" class="text-left">
-                <div ng-if="!zone.hidden">
-                    <div ng-class="{'select' : selectedZone.id === zone.id}">
-                        <span ng-click="toggleZone(zone)">
+                </form>
+            </div>
+            <div class="panel-body " ng-controller="zoneTreeCtrl">
+                <div ng-repeat=" zone in zones" class="text-left">
+                    <div ng-if="!zone.hidden">
+                        <div ng-class="{'select' : selectedZone.id === zone.id}">
+                            <span ng-click="toggleZone(zone)">
                             <span ng-if="zone.children && !zone.showChildren" class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                        <span ng-if="zone.children && zone.showChildren" class="glyphicon glyphicon-minus" aria-hidden="true"></span>
-                        </span>
-                        <span ng-click="selectZone(zone)">
+                            <span ng-if="zone.children && zone.showChildren" class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+                            </span>
+                            <span ng-click="selectZone(zone)">
                         {{zone.label}}
                         </span>
-                    </div>
-                    <hr>
-                    <div ng-if="zone.showChildren">
-                    </div>
-                    <div ng-if="zone.showChildren">
-                        <div ng-repeat="zone in zone.children" ng-include="'tree_renderer.html'"></div>
+                        </div>
+                        <hr>
+                        <div ng-if="zone.showChildren">
+                        </div>
+                        <div ng-if="zone.showChildren">
+                            <div ng-repeat="zone in zone.children" ng-include="'tree_renderer.html'"></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Dates:
+            </div>
+            <form class="form form-horizontal" novalidate>
+                <div class="input-group padded">
+                    <span class="input-group-addon">
+                                        From:
+                                    </span>
+                    <input type="text" id="dt1" class="form-control input-sm" datetimepicker ng-model="fromTime" ng-change="zoneChange()" placeholder="..." name="time">
+                </div>
+                <div class="input-group padded">
+                    <span class="input-group-addon">
+                                        To:
+                                    </span>
+                    <input type="text" id="dt1" class="form-control input-sm" datetimepicker ng-model="toTime" ng-change="zoneChange()" placeholder="..." name="time">
+                </div>
+            </form>
+        </div>
     </div>
     <div class="panel panel-default col-md-8 col-md-offset-1">
         <div class="panel-heading">
-           <span> <h4 class="col-md-9">
+            <span> <h4 class="col-md-9">
                 {{selectedZone.label}}
             </h4>
             <toggle-switch ng-model="viewPersons"  on-label="Table" off-label="Groups"></toggle-switch>
@@ -82,49 +102,43 @@
                                     <span>
                                     {{entry.firstname + " " + entry.lastname}}
                                     </span>
-                                </a></td>
-                            <td >{{ entry.timestamp | timestampToDate }}</td>
-                            <td >{{ entry.timestamp | timestampToTime }}</td>
-                            <td >In</td>
-                        </tr>
-                    </tbody>
-                </table>
+            </a>
+            </td>
+            <td>{{ entry.timestamp | timestampToDate }}</td>
+            <td>{{ entry.timestamp | timestampToTime }}</td>
+            <td>In</td>
+            </tr>
+            </tbody>
+            </table>
+        </div>
+        <div ng-if="viewPersons" class="transaction container" ng-repeat="person in zoneTransactions  ">
+            <div class="col-md-3  col-sm-3 col-xs-3">
+                <a ng-href="/#/profile/{{person.entries[0].employeeId}}">
+                    <img class="img-thumbnail img-responsive img-circle imageClip " ng-src="/images/emps/{{person.employeeId}}.jpg">
+                </a>
             </div>
-
-
-
-
-            <div ng-if="viewPersons" class="transaction container" ng-repeat="person in zoneTransactions  ">
-                <div class="col-md-3  col-sm-3 col-xs-3">
-                    <a ng-href="/#/profile/{{person.entries[0].employeeId}}">
-                        <img class="img-thumbnail img-responsive img-circle imageClip " ng-src="/images/emps/{{person.employeeId}}.jpg">
-                    </a>
-                </div>
-                <div class="col-md-9 col-sm-12">
-                    <h3>{{ person.entries[0].firstname }} {{ person.entries[0].lastname }}</h3>
-                    <div class="table-body">
-                    <table class="table table-striped"  >
-
-                        <thead >
+            <div class="col-md-9 col-sm-12">
+                <h3>{{ person.entries[0].firstname }} {{ person.entries[0].lastname }}</h3>
+                <div class="table-body">
+                    <table class="table table-striped">
+                        <thead>
                             <tr>
                                 <th>Time</th>
                                 <th>Date</th>
                                 <th>Direction</th>
                             </tr>
                         </thead>
-                       
-                        <tbody >
+                        <tbody>
                             <tr ng-repeat="entry in person.entries">
                                 <td>{{ entry.timestamp | timestampToTime }}</td>
                                 <td>{{ entry.timestamp | timestampToDate }}</td>
                                 <td>In</td>
                             </tr>
                         </tbody>
-                       
                     </table>
-                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </div>
