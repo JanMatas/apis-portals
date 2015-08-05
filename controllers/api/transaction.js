@@ -7,7 +7,7 @@ var squel = require('squel');
 
 router.get('/portal/:portalId', function(req, res, next) {
 
-
+    
     var username = authUtils.authReq(req);
 
     if (username === undefined) {

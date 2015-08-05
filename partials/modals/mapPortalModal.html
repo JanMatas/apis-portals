@@ -4,10 +4,15 @@
 <div class="modal-body">
     <h3> Status : {{status}}</h3>
     <hr>
-    <h3>Last transactions: </h3>
-        <div us-spinner ng-if="!ready">
-        </div>
-    <div class="col-xs-12" ng-if="ready">
+    
+    <div us-spinner ng-if="!ready">
+    </div>
+    <tabset justified="true">
+        <tab heading="All transactions" select="tab('transactions')"></tab>
+       
+        <tab heading="Alarms" select="tab('alarms')"></tab>
+    </tabset>
+    <div class="col-xs-12 well" ng-if="ready && !alarms">
         <table class="table table-striped ">
             <tr ng-repeat="t in transactions">
                 <td class="col-xs-2">
@@ -18,10 +23,11 @@
                 <td class="col-xs-6">
                     {{ t.firstname ++ " " ++ t.lastname}}
                 </td>
-
                 <td class="col-xs-4">{{ t.date | date:"dd.MM.yyyy HH:mm:ss"}}</td>
             </tr>
         </table>
+    </div>
+    <div class="col-xs-12 well" ng-if="ready && alarms">
     </div>
 </div>
 <div class="modal-footer">

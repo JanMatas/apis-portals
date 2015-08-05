@@ -1,6 +1,7 @@
 <!--
  TODO - fix selected zones class
 -->
+
 <script type="text/ng-template" id="tree_renderer.html">
     <div ng-if="!zone.hidden" class="text-left" style="margin-left : 15px">
         <div ng-class="{'' : selectedZone.id === zone.id} " ng-click="selectZone(zone)">
@@ -17,8 +18,9 @@
         </div>
     </div>
 </script>
-<div ng-controller="ZonesCtrl" class="container">
-    <h1>Zones</h1>
+
+  </div>
+    <h1 >Zones</h1>
     <div class="padded col-md-3">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -62,13 +64,13 @@
                     <span class="input-group-addon">
                                         From:
                                     </span>
-                    <input type="text" id="dt1" class="form-control input-sm" datetimepicker ng-model="fromTime" ng-change="zoneChange()" placeholder="..." name="time">
+                    <input type="text" id="dt1" class="form-control input-sm" datetimepicker ng-model="fromTime" ng-change="zoneChangeCallback()" placeholder="..." name="time">
                 </div>
                 <div class="input-group padded">
                     <span class="input-group-addon">
                                         To:
                                     </span>
-                    <input type="text" id="dt1" class="form-control input-sm" datetimepicker ng-model="toTime" ng-change="zoneChange()" placeholder="..." name="time">
+                    <input type="text" id="dt1" class="form-control input-sm" datetimepicker ng-model="toTime" ng-change="zoneChangeCallback()" placeholder="..." name="time">
                 </div>
             </form>
         </div>
@@ -82,7 +84,9 @@
 
         </div>
         <div class="panel-body">
+                    <div us-spinner ng-if="!transactions" style="height:200px">
 
+        </div>
 
             <div ng-if="!viewPersons">
                 <table class="table table-striped col-xs-12 ">

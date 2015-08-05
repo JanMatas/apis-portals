@@ -7,7 +7,7 @@ var portals = [];
 var authPortal = function(portalObj, body) {
     //Associate ID
     portalObj.uuid = body;
-
+    console.log("Portal authed with id : " + body )
     // Provide object with control fucntions
     portalObj.arm = function() {
         portalObj.status = "armed";
@@ -42,23 +42,50 @@ var connect = function(server) {
         server: server
     });
     wss.on('connection', function(ws) {
+        ws.pong = true;
+        ws.on('message', function(message) {
+            if (message === "pong") {
+                ws.pong = true;
+            } else {
+                routeMessage(ws, message);
+            }
+        });
+        
         portals.push({
             uuid: undefined,
             ws: ws,
             status: "connected"
 
         });
-        ws.on('message', function(message) {
-            routeMessage(ws, message);
-        });
-        ws.send("Recorded");
+
+
+        //s.send("world");
+        ws.hearthbeat = setInterval(function() {
+            if (!ws.pong) {
+                console.log("No pong received");
+                
+                ws.close();
+            }
+
+            ws.send("ping", function ack(error) {
+                if (error) {
+                    console.log("ping failed : " + error);
+                    ws.close();
+                    clearInterval(ws.hearthbeat);
+                }
+
+            });
+            ws.pong = false;
+
+        }, 3000);
         ws.on('close', function() {
             console.log("disconnect");
-
+            /*
             _.remove(portals, {
                 ws: ws
             });
             console.log(portals);
+            */
         });
 
     });
@@ -89,6 +116,4 @@ var routeMessage = function(ws, message) {
         console.log("Unable to route:" + message + " " + err);
         return;
     }
-
-
 };

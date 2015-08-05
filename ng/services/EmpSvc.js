@@ -2,7 +2,7 @@ app.service('EmpSvc', function($http) {
     this.fetchEmp = function(id) {
 
     	console.log("id  : "  + id);
-        return $http.get('/api/employee/' + id + '?fields=department,email,phone,allowedZones');
+        return $http.get('/api/employee/' + id + '?fields=department,email,phone,allowedZones,departmentId,tagNumber');
     };
 
     this.create = function(data) {
@@ -11,6 +11,7 @@ app.service('EmpSvc', function($http) {
     };
 
     this.update = function(data) {
+
     	return $http.put('/api/employee/' + data.id, data);
     };
 });

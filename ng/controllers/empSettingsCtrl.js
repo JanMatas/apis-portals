@@ -1,9 +1,20 @@
 app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, DepartmentSvc, $routeParams) {
+    $scope.alerts = [];
+
+
+
+    $scope.closeAlert = function(index) {
+        $scope.alerts.splice(index, 1);
+    };
+
 
     $scope.id = "toggle-" + 1;
     $scope.zones = [];
-    console.log($routeParams);
+    DepartmentSvc.fetch().success(function(data) {
+        $scope.departments = data;
+    });
     EmpSvc.fetchEmp($routeParams.empId).success(function(data) {
+        console.log(data);
         $scope.emp = {
             id: data[0].id,
             firstname: data[0].firstname,
@@ -12,10 +23,12 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, De
             email: data[0].email,
             phone: data[0].phone,
             gender: "Male",
-            department: data[0].department,
+            department: data[0].departmentId,
             validFrom: data[0].validFrom,
+            validTo: data[0].validTo,
             tagNumber: data[0].tagNumber,
-            allowedZones: data[0].allowedZones
+            allowedZones: data[0].allowedZones,
+            
         };
 
         ZonesSvc.fetch().success(function(data) {
@@ -26,11 +39,10 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, De
             });
         });
 
+
     });
 
-    DepartmentSvc.fetch().success(function(data) {
-        console.log(data);
-    });
+
 
 
     function getAllowedZones() {
@@ -45,9 +57,29 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, De
 
     $scope.saveData = function() {
 
+        var fieldsToCheck = ["phone", "email", "firstname", "lastname", "department", "tagNumber"];
+        var wrongField = false;
+        for (var f in fieldsToCheck) {
+            if (!$scope.emp[fieldsToCheck[f]]) {
+                $scope.alerts.push({
+                    type: 'danger',
+                    msg: 'You forgot to enter ' + fieldsToCheck[f] + "."
+                });
+                wrongField = true;
+
+            }
+        }
 
 
-        //EmpSvc.put($scope.emp);
+        if (!wrongField) {
+            $scope.emp.allowedZones = [];
+            mapZones($scope.zones, function(zone) {
+                if(zone.permission) {
+                    $scope.emp.allowedZones.push(zone.id);
+                }
+            });
+            EmpSvc.update($scope.emp);
+        }
     };
 
 

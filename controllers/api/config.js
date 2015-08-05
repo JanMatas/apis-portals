@@ -7,7 +7,10 @@ var availableFields = {
         "department" :  "sys_ostr.cname",
         "email" : "sys_user.email" ,
         "phone" : "sys_user.phone",
-        "allowedZones" : "user_permission.sys_area_pk_"
+        "allowedZones" : "user_permission.sys_area_pk_",
+        "username" : "sys_user.loginname",
+        "departmentId" : "sys_ostr.pk_",
+        "tagNumber" : "sys_static_card.cardnumber"
 
     },
     building : {

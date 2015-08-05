@@ -12,6 +12,9 @@
     <div class="row">
         <br>
     </div>
+     <div us-spinner ng-show="!ready" style="height:300px">
+
+        </div>
     <div ng-repeat="d in departments | filter: {department : departmentFilter}" class="container">
         <h1> Department: {{d.department}}</h1>
         <div ng-repeat="u in d.emps | filter: {lastname : employeeFilter} " class="col-lg-2 col-md-4 col-sm-6 col-xs-10 text-center">

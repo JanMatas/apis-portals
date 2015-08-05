@@ -1,5 +1,7 @@
 app.controller('MapPortalModalInstance', function($scope, $location, $modalInstance, $http, label, node) {
     $scope.ready = false;
+    $scope.alarms = true;
+
     $http.get('/api/transaction/portal/' + node + '?limit=5').success(function(data) {
         $scope.ready = true;
         $scope.transactions = [];
@@ -11,12 +13,21 @@ app.controller('MapPortalModalInstance', function($scope, $location, $modalInsta
                 img: '/images/emps/' + data[x].employeeId + '.jpg',
                 date: data[x].timestamp * 1000
             });
+            _.partition()
         }
         $scope.isTrans = $scope.transactions.length !== 0;
 
     });
 
 
+
+    $scope.tab = function(type) {
+        if (type == "alarms") {
+            $scope.alarms = true;
+        } else {
+            $scope.alarms = false;
+        }
+    };
     $scope.name = label;
     $scope.connection = "Established"; // TODO implement this
     $scope.status = "Armed"; //TODO implement this
