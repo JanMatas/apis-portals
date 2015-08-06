@@ -6,13 +6,13 @@ var squel = require('squel');
 router.get('/permissions/:raspiId', function(req, res, next) {
     var query = squel.select()
         .distinct()
-        .field("sys_static_card.cardnumber")
+        .field("sys_user.tag")
         .from("sys_reader")
         //Get all users allowed to go to both zones
         .join("por_user_permission", "in", "sys_reader.area_inp_pk_ = in.sys_area_pk_")
         .join("por_user_permission", "out", "sys_reader.area_out_pk_ = out.sys_area_pk_")
         .join("sys_user", null, "sys_user.pk_ = in.sys_user_pk_")
-        .join("sys_static_card", null, "sys_static_card.sys_user_pk_ = sys_user.pk_")
+
         .where("sys_reader.pk_ = " + req.params.raspiId);
 
     // Fetch data from DB
@@ -39,8 +39,8 @@ router.get('/permissions/:raspiId', function(req, res, next) {
 router.get('/settings/:raspiId', function(req, res, next) {
     var query = squel.select()
         .fields(['learning_history', 'thresholding', 'min_area', 'min_dist_to_create', 'max_dist_to_parse', 'shadow_thresh', 'frame_width', 'frame_height' ])
-        .from("por_portal")
-        .where('por_portal.sys_reader_pk_ = ' + req.params.raspiId);
+        .from("sys_reader")
+        .where('sys_reader.sys_reader_pk_ = ' + req.params.raspiId);
 
     // Fetch data from DB
     db.fetchData(query.toString(), function(err, rows) {
@@ -64,11 +64,13 @@ router.post('/transaction/:raspiId', function(req, res, next) {
     if (!req.body) {
         return res.status(403).send("No request body");
     }
+
+
     // get user pk_
     var query = squel.select()
-        .field("sys_user_pk_")
-        .from("sys_static_card")
-        .where("sys_static_card.cardnumber = " + (req.body.tagId + 10000));
+        .field("pk_", "id")
+        .from("sys_user")
+        .where("sys_user.tag = " + req.body.tagId);
         // TODO missing data .where("sys_static_card.cardnumber = " + req.body.tagId);
 
 
@@ -77,18 +79,20 @@ router.post('/transaction/:raspiId', function(req, res, next) {
         if (err) {
             return next(err);
         }
-        /*
-        if (rows.length === 0) {
+        
+        if (rows.length === 0 && req.body.alarm !== "alarm" ) {
             return res.status(404).send("User with given id does not exist");
+        } 
+        if (req.body.alarm !== "alarm") {
+            var userId = rows[0].id;
         }
-
-        */
-        var userId = req.body.tagId;
+        console.log(rows)
+        
         query = squel.select()
-            .field("sys_reader.code")
+            .field("sys_reader.pk_")
             .from("sys_reader")
-            .join("por_portal", null, "por_portal.sys_reader_pk_ = sys_reader.pk_")
-            .where("por_portal.raspiId = " + req.params.raspiId);
+
+            .where("sys_reader.raspiId = " + req.params.raspiId);
 
         db.fetchData(query.toString(), function(err, rows) {
 
@@ -100,7 +104,7 @@ router.post('/transaction/:raspiId', function(req, res, next) {
                 return res.status(404).send("Portal with given raspiId does not exist");
 
             }
-            var readerId = rows[0].code;
+            var readerId = rows[0].pk_;
             var date = req.body.timestamp;
             if (!date) {
                 date = new Date().toISOString().slice(0, 19).replace('T', ' ');
@@ -115,9 +119,15 @@ router.post('/transaction/:raspiId', function(req, res, next) {
                 .set("t_reader", readerId)
                 .set("t_date", date)
                 .set("ss6", req.body.direction)
-                .set("sys_user_pk_", userId);
+            if (userId) {
+                query.set("sys_user_pk_", userId);
+            }
+            if(req.body.alarm) {
+                query.set("ss5","alarm")
+            }
+            
 
-
+            console.log(query.toString())
             db.executeQuery(query.toString(), function(err, data) {
 
                 if (err) {

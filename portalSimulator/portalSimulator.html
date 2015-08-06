@@ -60,7 +60,7 @@
                 <label class="col-md-4 control-label" for="Employee: ">Employee:</label>
                 <div class="col-md-5">
                     <select ng-model="selectedEmployee">
-                        <option ng-repeat="employee in employees" value="{{employee.id}}">{{employee.firstname + " " + employee.lastname}}</option>
+                        <option ng-repeat="employee in employees" value="{{employee.tag}}">{{employee.firstname + " " + employee.lastname}}</option>
                     </select>
                 </div>
             </div>

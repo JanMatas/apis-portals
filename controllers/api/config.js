@@ -1,16 +1,16 @@
 var availableFields = {
     emp: {
         "id" : "sys_user.pk_",
-        "employmentId" : "sys_employment.pk_",
+
         "firstname" : "sys_user.firstname",
         "lastname" : "sys_user.lastname",
         "department" :  "sys_ostr.cname",
         "email" : "sys_user.email" ,
         "phone" : "sys_user.phone",
-        "allowedZones" : "user_permission.sys_area_pk_",
-        "username" : "sys_user.loginname",
+        "allowedZones" : "emp_permission.sys_area_pk_",
+        "tag" : "sys_user.tag",
         "departmentId" : "sys_ostr.pk_",
-        "tagNumber" : "sys_static_card.cardnumber"
+        "tagNumber" : "sys_user.tag"
 
     },
     building : {
@@ -20,7 +20,7 @@ var availableFields = {
     department : {
         "id" : "sys_ostr.pk_",
         "name" : "sys_ostr.cname",
-        "sname" : "sys_ostr.shortname"
+     
 
 
     },
@@ -29,21 +29,21 @@ var availableFields = {
         "name" : "sys_reader.cname",
         "zoneTo" : "sys_reader.area_inp_pk_",
         "zoneFrom" : "sys_reader.area_out_pk_",
-        "raspiId" : "por_portal.raspiId"
+        "raspiId" : "sys_reader.raspiId"
     },
     map_zones : {
         "id" : "sys_area.pk_", 
         "name" : "sys_area.cname",
-        "map_x" : "por_zone.map_x",
-        "map_y" : "por_zone.map_y"
+        "map_x" : "sys_area.map_x",
+        "map_y" : "sys_area.map_y"
     },
     map_portals : {
         "id" : "sys_reader.pk_", 
         "name" : "sys_reader.cname",
-        "map_x" : "por_portal.map_x",
+        "map_x" : "sys_reader.map_x",
         "zoneTo" : "sys_reader.area_inp_pk_",
         "zoneFrom" : "sys_reader.area_out_pk_",
-        "map_y" : "por_portal.map_y"
+        "map_y" : "sys_reader.map_y"
     },
     transaction : {
         "id" : "sys_elog.pk_",
@@ -54,7 +54,8 @@ var availableFields = {
         "zoneFromId" : "out.pk_",
         "zoneToId" : "in.pk_",
         "zoneFromName" : "out.cname",
-        "zoneToName" : "in.cname"
+        "zoneToName" : "in.cname",
+        "alarm" : "sys_elog.ss5"
     }
 
 };
@@ -66,7 +67,7 @@ var defaultFields = {
     portal : ["id", "name"],
     map_zones : ["id", "name", "map_x", "map_y"],
     map_portals : ["id", "name", "map_x", "map_y", "zoneFrom", "zoneTo"],
-    transaction : ["id", "firstname", "lastname", "timestamp", "employeeId"]
+    transaction : ["id", "firstname", "lastname", "timestamp", "employeeId", "alarm"]
 };
 
 module.exports = {

@@ -9,7 +9,7 @@ app.service('TransactionSvc', function($http) {
 
 app.service('EmpSvc', function($http) {
     this.fetch = function(id) {
-        return $http.get('/api/employee/');
+        return $http.get('/api/employee?fields=tag');
     };
 });
 
@@ -51,7 +51,11 @@ app.controller('AppCtrl', function($scope, PortalSvc, EmpSvc, TransactionSvc) {
             tagId: $scope.selectedEmployee,
             raspiId: $scope.selectedPortal,
             direction: $scope.direction
+
         };
+        if ($scope.alarm) {
+            transaction.alarm = "alarm";
+        }
 
         TransactionSvc.save(transaction).success(function(data) {
             console.log(data);

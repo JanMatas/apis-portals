@@ -29,8 +29,8 @@ router.get('/', function(req, res, next) {
 
     var query = squel.select()
         .from("por_user_permission")
-        .join(s, "areas", "areas.id = por_user_permission.sys_area_pk_")
-        .where("por_user_permission.username = '" + username +"'");
+        //.join(s, "areas", "areas.id = por_user_permission.sys_area_pk_")
+        //.where("por_user_permission.username = '" + username +"'");
 
 
     function getChildren(rows, index, currentDepth) {
@@ -53,7 +53,7 @@ router.get('/', function(req, res, next) {
         return children;
     }
 
-    db.fetchData(query.toString(), function(err, rows) {
+    db.fetchData(s.toString(), function(err, rows) {
 
         if (err) {
             return next(err);
@@ -105,6 +105,7 @@ router.get('/:zoneId', function(req, res, next) {
         
 
     var employeeCurrentZone  = squel.select()
+ 
         .field("IF(STRCMP(employee_last_transaction.direction, 'In'), in.pk_, out.pk_)", "current_zone")
         .field("employee_last_transaction.direction","direction" )
         .field("sys_user.pk_", "employeeId")
@@ -112,13 +113,13 @@ router.get('/:zoneId', function(req, res, next) {
         .field("sys_user.lastname", "lastname")
         .from(empLastTransaction, "employee_last_transaction")
         .join("sys_user", null, "employee_last_transaction.employeeId = sys_user.pk_")
-        .join("sys_reader", null, "employee_last_transaction.t_reader = sys_reader.code")
+        .join("sys_reader", null, "employee_last_transaction.t_reader = sys_reader.pk_")
         .join("sys_area", "in", "sys_reader.area_inp_pk_ = in.pk_")
         .join("sys_area", "out", "sys_reader.area_out_pk_ = out.pk_");
    
 
 
-    var query = squel.select()
+    var query = squel.select()   .distinct()
         .field("employeeId")
         .field("firstname")
         .field("lastname")
@@ -126,7 +127,7 @@ router.get('/:zoneId', function(req, res, next) {
         .from("por_user_permission")
         .join(s, "areas", "areas.id = por_user_permission.sys_area_pk_")
         .join(employeeCurrentZone, "current_zone", "areas.id = current_zone")
-        .where("por_user_permission.username = '" + username +"'")
+        //.where("por_user_permission.username = '" + username +"'")
         .where("areas.id ='" + req.params.zoneId +"'" );
 
    

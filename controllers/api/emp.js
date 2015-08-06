@@ -50,21 +50,18 @@ function processGetRequest(req, res, next) {
         .fields(fields)
         // Get all the data about user
         .from("sys_user")
-        // His employment
-        .join("sys_employment", null, "sys_user.pk_ = sys_employment.sys_user_pk_")
+        
+   
         // Employment type
-        //.join("sys_employmenttype", null, "sys_employmenttype.pk_ = sys_employment.sys_employmenttype_pk_")
-        // Company
-        //.join("sys_company", null, "sys_company.pk_ = sys_employmenttype.sys_company_pk_")
+        .join("sys_employmenttype", null, "sys_employmenttype.pk_ = sys_user.sys_employmenttype_pk_")
+       
         // Department
-        .join("sys_ostr", null, "sys_employment.sys_ostr_pk_ = sys_ostr.pk_")
+        .join("sys_ostr", null, "sys_user.sys_ostr_pk_ = sys_ostr.pk_")
         // Find employee permissions
-        .join("por_user_permission", "emp_permission", "sys_user.pk_ = emp_permission.sys_user_pk_")
-        .join("sys_user", "user", "user.loginname = '" + username + "'")
-        .join("por_user_permission", "user_permission", "user.pk_ = user_permission.sys_user_pk_")
-        //.join("sys_static_card", null, "sys_static_card.sys_user_pk_ = sys_user.pk_")
-        .order("sys_user.pk_")
-        .where("user_permission.sys_area_pk_ = emp_permission.sys_area_pk_");
+        .left_join("por_user_permission", "emp_permission", "sys_user.pk_ = emp_permission.sys_user_pk_")
+
+        .order("sys_user.pk_");
+        //.where("user_permission.sys_area_pk_ = emp_permission.sys_area_pk_");
 
 
         console.log(s.toString());
@@ -149,18 +146,8 @@ function processPutRequest(req, resp, next) {
         .set("lastname", req.body.lastname)
         
         .where("pk_ = " + req.body.id);
-    var cardQuery = squelMysql.insert()
 
-        .into("sys_static_card")
-        .set("cardnumber")
-        .set("sys_user_pk_", req.body.id)
-
-        .onDupUpdate("sys_user_pk_", req.body.id);
-
-    var empQuery = squelMysql.update()
-        .table("sys_employment")
-        .set("sys_ostr_pk", req.body.departmentId)
-        .where("sys_user_pk_ = " + req.body.id );
+ 
 
 
 
@@ -189,14 +176,7 @@ function processPutRequest(req, resp, next) {
                             });
                         }
 
-                        connection.query(cardQuery.toString(), function(err, result) {
-                            if (err) {
-                                connection.rollback(function() {
-                                    next(err);
-                                });
-                            }
-
-
+ 
                             connection.commit(function(err) {
                                 if (err) {
                                     connection.rollback(function() {
@@ -204,7 +184,7 @@ function processPutRequest(req, resp, next) {
                                     });
                                 }
                                 console.log('success!');
-                            });
+                           
                         });
                     });
                 });

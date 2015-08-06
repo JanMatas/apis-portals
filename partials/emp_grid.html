@@ -12,15 +12,16 @@
     <div class="row">
         <br>
     </div>
-     <div us-spinner ng-show="!ready" style="height:300px">
-
-        </div>
+    <div us-spinner ng-show="!ready" style="height:300px">
+    </div>
     <div ng-repeat="d in departments | filter: {department : departmentFilter}" class="container">
-        <h1> Department: {{d.department}}</h1>
-        <div ng-repeat="u in d.emps | filter: {lastname : employeeFilter} " class="col-lg-2 col-md-4 col-sm-6 col-xs-10 text-center">
-            <a ng-href="/#/profile/{{u.id}}"><img ng-src="{{u.img}}" on-error-src="images/placeholders/placeholder.png" class="img-thumbnail img-responsive img-circle imageClip"></a>
-            <h3>{{u.firstname}} <br> {{u.lastname}}</h3>
-            <hr>
+        <div ng-if="d.emps.length > 0">
+            <h1> Department: {{d.department}}</h1>
+            <div ng-repeat="u in d.emps | filter: {lastname : employeeFilter} " class="col-lg-2 col-md-4 col-sm-6 col-xs-10 text-center">
+                <a ng-href="/#/profile/{{u.id}}"><img ng-src="{{u.img}}" on-error-src="images/placeholders/placeholder.png" class="img-thumbnail img-responsive img-circle imageClip"></a>
+                <h3>{{u.firstname}} <br> {{u.lastname}}</h3>
+                <hr>
+            </div>
         </div>
     </div>
 </div>

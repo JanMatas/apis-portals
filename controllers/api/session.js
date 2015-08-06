@@ -8,9 +8,9 @@ var squel = require('squel');
 
 router.post('/', function (req, res, next) {
 	var s = squel.select()
-		.fields(["loginname", "loginpass"])
-		.from("sys_user")
-		.where("loginname = '" + req.body.username + "'");
+		.fields(["username", "password"])
+		.from("por_admin")
+		.where("username = '" + req.body.username + "'");
 
 
 	db.fetchData(s.toString(), function(err, rows) {
@@ -23,7 +23,7 @@ router.post('/', function (req, res, next) {
 		}
 
 
-		bcrypt.compare(req.body.password, rows[0].loginpass, function (err, valid) {
+		bcrypt.compare(req.body.password, rows[0].password, function (err, valid) {
 			if (err) {
 				return next(err);
 			}
@@ -31,7 +31,7 @@ router.post('/', function (req, res, next) {
 
 				return res.send(401);
 			}
-			var token = jwt.encode({username: rows[0].loginname}, config.secret);
+			var token = jwt.encode({username: rows[0].username}, config.secret);
 			res.send(token);		
 		});
 

@@ -1347,21 +1347,38 @@ app.service('ZonesSvc', function($http) {
 });
 app.controller('MapPortalModalInstance', function($scope, $location, $modalInstance, $http, label, node) {
     $scope.ready = false;
-    $scope.alarms = true;
+    $scope.alarmTab = true;
 
     $http.get('/api/transaction/portal/' + node + '?limit=5').success(function(data) {
         $scope.ready = true;
         $scope.transactions = [];
+        $scope.alarms = [];
+
         for (var x in data) {
-            $scope.transactions.push({
-                empId: data[x].employeeId,
-                firstname: data[x].firstname,
-                lastname: data[x].lastname,
-                img: '/images/emps/' + data[x].employeeId + '.jpg',
-                date: data[x].timestamp * 1000
-            });
-            _.partition()
+            console.log(data)
+            if (data[x].alarm === 'alarm') {
+                if (data[x].employeeId === "null") {
+                    console.log("£")
+                }
+                $scope.alarms.push({
+                    empId: data[x].employeeId === null ? undefined : data[x].employeeId,
+                    firstname: data[x].firstname === null ? "uknown" : data[x].firstname,
+                    lastname: data[x].lastname === null ? "uknown" : data[x].lastname,
+                    img: data[x].employeeId === null ? undefined : '/images/emps/' + data[x].employeeId + '.jpg',
+                    date: data[x].timestamp * 1000
+                });
+            } else {
+                $scope.transactions.push({
+                    empId: data[x].employeeId,
+                    firstname: data[x].firstname,
+                    lastname: data[x].lastname,
+                    img: '/images/emps/' + data[x].employeeId + '.jpg',
+                    date: data[x].timestamp * 1000
+                });
+            }
+
         }
+        console.log($scope.alarms)
         $scope.isTrans = $scope.transactions.length !== 0;
 
     });
@@ -1370,9 +1387,9 @@ app.controller('MapPortalModalInstance', function($scope, $location, $modalInsta
 
     $scope.tab = function(type) {
         if (type == "alarms") {
-            $scope.alarms = true;
+            $scope.alarmTab = true;
         } else {
-            $scope.alarms = false;
+            $scope.alarmTab = false;
         }
     };
     $scope.name = label;
