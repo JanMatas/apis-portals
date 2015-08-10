@@ -1,7 +1,6 @@
 module.exports = {
 	secret: 'supersecretkey',
 	port: 3000,
-/*
 	db: {
 		connectionLimit : 10,
 		host :'us-cdbr-iron-east-02.cleardb.net',
@@ -10,7 +9,7 @@ module.exports = {
 		database: 'heroku_73648698f572409',
 		debug:false
 	},
-	*/
+	/*
 	
 	db: {
 		connectionLimit : 10,
@@ -20,7 +19,7 @@ module.exports = {
 		database: 'brany',
 		debug:false
 	},
-	
+	*/
 	authenticate:false
 	
 };
