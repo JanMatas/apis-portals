@@ -1362,8 +1362,8 @@ app.controller('MapPortalModalInstance', function($scope, $location, $modalInsta
                 }
                 $scope.alarms.push({
                     empId: data[x].employeeId === null ? undefined : data[x].employeeId,
-                    firstname: data[x].firstname === null ? "uknown" : data[x].firstname,
-                    lastname: data[x].lastname === null ? "uknown" : data[x].lastname,
+                    firstname: data[x].firstname === null ? "Not" : data[x].firstname,
+                    lastname: data[x].lastname === null ? "recorded" : data[x].lastname,
                     img: data[x].employeeId === null ? undefined : '/images/emps/' + data[x].employeeId + '.jpg',
                     date: data[x].timestamp * 1000
                 });

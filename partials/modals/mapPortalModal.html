@@ -34,7 +34,7 @@
                     <div >
 
                         <a ng-if="t.img" ng-click="profile(t.empId)"><img ng-src="{{t.img}}" class="img-responsive img-circle"></a>
-                        <img ng-if="t.img" ng-src="{{t.img}}" class="img-responsive img-circle"> 
+                        <img ng-if="!t.img" ng-src="images/placeholders/placeholder.png" class="img-responsive img-circle"> 
                     </div>
                 </td>
                 <td class="col-xs-6">
