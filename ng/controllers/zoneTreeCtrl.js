@@ -1,15 +1,15 @@
 app.controller('zoneTreeCtrl', function($scope, $filter, EmpSvc, ZonesSvc, $routeParams) {
 
-    /* 
+    /*
         Control of zones tree renderer
     */
 
 
     ZonesSvc.fetch().success(function(data) {
         $scope.zones = data;
-        //$scope.$parent.zones = $scope.zones;
-        $scope.$parent.selectedZone = data[0];
-        $scope.$parent.panelReadyCallback();
+
+        $scope.$parent.zoneChangeCallback(data[0])
+
 
     });
 
@@ -19,8 +19,8 @@ app.controller('zoneTreeCtrl', function($scope, $filter, EmpSvc, ZonesSvc, $rout
     $scope.selectZone = function(zone) {
 
 
-        $scope.$parent.selectedZone = zone;
-        $scope.$parent.zoneChangeCallback();
+
+        $scope.$parent.zoneChangeCallback(zone);
     };
     $scope.toggleZone = function(zone) {
         zone.showChildren = !zone.showChildren;
@@ -73,7 +73,7 @@ app.controller('zoneTreeCtrl', function($scope, $filter, EmpSvc, ZonesSvc, $rout
             }
         }
         root.showChildren = result;
-        result = result || root.label.toLowerCase().indexOf($scope.zoneFilter.toLowerCase()) > -1;
+        result = result || root.name.toLowerCase().indexOf($scope.zoneFilter.toLowerCase()) > -1;
         if (result) {
             root.hidden = false;
         }

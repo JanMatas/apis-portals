@@ -19,7 +19,7 @@ router.get('/', function(req, res, next) {
 
     var s = squel.select()
         .field("child.pk_", "id")
-        .field("child.cname", "label")
+        .field("child.cname", "name")
         .field("COUNT(parent.pk_) - 1", "depth")
         .from("sys_area", "child")
         .cross_join("sys_area", "parent")
@@ -43,8 +43,8 @@ router.get('/', function(req, res, next) {
 
                 rows[i].children = getChildren(rows, i + 1, currentDepth + 1);
                 children.push(rows[i]);
-               
-                
+
+
             } else if (rows[i].depth < currentDepth) {
                 return children;
             }
@@ -98,14 +98,14 @@ router.get('/:zoneId', function(req, res, next) {
         .field("sys_elog.pk_")
         .field("sys_elog.ss6", "direction")
         .field("sys_elog.t_reader", "t_reader")
-        
-        
+
+
         .from("sys_elog")
         .where("(sys_elog.sys_user_pk_, sys_elog.t_date) IN ? ", empLastTransId)
-        
+
 
     var employeeCurrentZone  = squel.select()
- 
+
         .field("IF(STRCMP(employee_last_transaction.direction, 'In'), in.pk_, out.pk_)", "current_zone")
         .field("employee_last_transaction.direction","direction" )
         .field("sys_user.pk_", "employeeId")
@@ -116,7 +116,7 @@ router.get('/:zoneId', function(req, res, next) {
         .join("sys_reader", null, "employee_last_transaction.t_reader = sys_reader.pk_")
         .join("sys_area", "in", "sys_reader.area_inp_pk_ = in.pk_")
         .join("sys_area", "out", "sys_reader.area_out_pk_ = out.pk_");
-   
+
 
 
     var query = squel.select()   .distinct()
@@ -130,7 +130,7 @@ router.get('/:zoneId', function(req, res, next) {
         //.where("por_user_permission.username = '" + username +"'")
         .where("areas.id ='" + req.params.zoneId +"'" );
 
-   
+
     console.log(query.toString())
     db.fetchData(query.toString(), function(err, rows) {
 
@@ -146,4 +146,3 @@ router.get('/:zoneId', function(req, res, next) {
 
 
 module.exports = router;
-

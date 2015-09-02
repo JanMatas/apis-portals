@@ -3,23 +3,13 @@ module.exports = {
 	port: 3000,
 	db: {
 		connectionLimit : 10,
-		host :'us-cdbr-iron-east-02.cleardb.net',
-		user :'b369ac359b0a33',
-		password: '1839ba5b',
-		database: 'heroku_73648698f572409',
-		debug:false
-	},
-	/*
-	
-	db: {
-		connectionLimit : 10,
-		host :'localhost',
-		user :'root',
+		host :'mysql51.websupport.sk',
+		port : 3309,
+		user :'apis_portals',
 		password: '092468',
-		database: 'brany',
+		database: 'apis_portals',
 		debug:false
 	},
-	*/
 	authenticate:false
-	
+
 };

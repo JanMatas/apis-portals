@@ -20,7 +20,7 @@ app.config(function($routeProvider, USER_ROLES) {
                 authorizedRoles: [USER_ROLES.admin, USER_ROLES.editor]
             }
         })
-        .when('/zones', {
+        .when('/transactions', {
         	// Zones list view
             controller: 'ZonesCtrl',
             templateUrl: 'zones.html',

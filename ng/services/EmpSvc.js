@@ -14,4 +14,5 @@ app.service('EmpSvc', function($http) {
 
     	return $http.put('/api/employee/' + data.id, data);
     };
+
 });

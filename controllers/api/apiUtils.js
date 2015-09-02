@@ -20,7 +20,6 @@ var getFields = function(req, endpoint) {
 
             // Send bad request if not
 
-
             return undefined;
         }
     } else {

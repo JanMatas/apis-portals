@@ -27,11 +27,10 @@ app.controller('EmpGridCtrl', function($scope, EmpGridSvc) {
                 department: d,
                 emps: departments[d]
             });
-
-
         }
-
     });
-    
+    EmpGridSvc.fetch().error(function(err) {
+        console.log(err)
+    });
 
 });

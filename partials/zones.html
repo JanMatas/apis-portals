@@ -6,11 +6,11 @@
     <div ng-if="!zone.hidden" class="text-left" style="margin-left : 15px">
         <div ng-class="{'' : selectedZone.id === zone.id} " ng-click="selectZone(zone)">
             <span ng-click="toggleZone(zone)">
-            <span ng-if="zone.children.length !== 0 && !zone.showChildren" class="glyphicon glyphicon-plus" ></span>
-            <span ng-if="zone.children.length !== 0 && zone.showChildren" class="glyphicon glyphicon-minus"></span>
-            <span ng-if="zone.children.length === 0" class="glyphicon glyphicon-one-fine-dot"></span>
+                <span ng-if="zone.children.length !== 0 && !zone.showChildren" class="glyphicon glyphicon-plus"></span>
+                <span ng-if="zone.children.length !== 0 && zone.showChildren" class="glyphicon glyphicon-minus"></span>
+                <span ng-if="zone.children.length === 0" class="glyphicon glyphicon-one-fine-dot"></span>
             </span>
-            {{zone.label}}
+            {{zone.name}}
         </div>
         <hr>
         <div ng-if="zone.children && zone.showChildren">
@@ -19,103 +19,132 @@
     </div>
 </script>
 
-  </div>
-    <h1 >Zones</h1>
-    <div class="padded col-md-3">
-        <div class="panel panel-default">
+</div>
+<h1>Zones</h1>
+<div class="padded col-md-3">
+    <div class="padded text-right">
+        <toggle-switch ng-model="showZones" on-label="Zones" off-label="Portals"> </toggle-switch>
+    </div>
+    <div ng-show="showZones" class="panel panel-default">
+        <div class="panel-heading">
+            <form class="form-inline">
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon">Filter:</div>
+                        <input type="text" class="form-control" ng-model="zoneFilter" ng-change="filter()" placeholder="Zone name">
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="panel-body " ng-controller="zoneTreeCtrl">
+            <div ng-repeat=" zone in zones" class="text-left">
+                <div ng-if="!zone.hidden">
+                    <div ng-class="{'select' : selectedZone.id === zone.id}">
+                        <span ng-click="toggleZone(zone)">
+                            <span ng-if="zone.children && !zone.showChildren" class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                            <span ng-if="zone.children && zone.showChildren" class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+                        </span>
+                        <span ng-click="selectZone(zone)">
+                            {{zone.name}}
+                        </span>
+                    </div>
+                    <hr>
+                    <div ng-if="zone.showChildren">
+                    </div>
+                    <div ng-if="zone.showChildren">
+                        <div ng-repeat="zone in zone.children" ng-include="'tree_renderer.html'"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div ng-show="!showZones" class="panel panel-default">
             <div class="panel-heading">
                 <form class="form-inline">
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-addon">Filter:</div>
-                            <input type="text" class="form-control" ng-model="zoneFilter" ng-change="filter()" placeholder="Zone name">
+                            <input type="text" class="form-control" ng-model="portalFilter" placeholder="Portal name">
                         </div>
                     </div>
                 </form>
             </div>
-            <div class="panel-body " ng-controller="zoneTreeCtrl">
-                <div ng-repeat=" zone in zones" class="text-left">
-                    <div ng-if="!zone.hidden">
-                        <div ng-class="{'select' : selectedZone.id === zone.id}">
-                            <span ng-click="toggleZone(zone)">
-                            <span ng-if="zone.children && !zone.showChildren" class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                            <span ng-if="zone.children && zone.showChildren" class="glyphicon glyphicon-minus" aria-hidden="true"></span>
-                            </span>
-                            <span ng-click="selectZone(zone)">
-                        {{zone.label}}
-                        </span>
-                        </div>
-                        <hr>
-                        <div ng-if="zone.showChildren">
-                        </div>
-                        <div ng-if="zone.showChildren">
-                            <div ng-repeat="zone in zone.children" ng-include="'tree_renderer.html'"></div>
-                        </div>
-                    </div>
-                </div>
+
+        <div class="panel-body ">
+            <div ng-repeat="portal in portals" ng-click="portalChangeCallback(portal)" class="text-left">
+                {{portal.name}}
+                <hr>
             </div>
         </div>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                Dates:
-            </div>
-            <form class="form form-horizontal" novalidate>
-                <div class="input-group padded">
-                    <span class="input-group-addon">
-                                        From:
-                                    </span>
-                    <input type="text" id="dt1" class="form-control input-sm" datetimepicker ng-model="fromTime" ng-change="zoneChangeCallback()" placeholder="..." name="time">
-                </div>
-                <div class="input-group padded">
-                    <span class="input-group-addon">
-                                        To:
-                                    </span>
-                    <input type="text" id="dt1" class="form-control input-sm" datetimepicker ng-model="toTime" ng-change="zoneChangeCallback()" placeholder="..." name="time">
-                </div>
-            </form>
         </div>
     </div>
-    <div class="panel panel-default col-md-8 col-md-offset-1">
+    <div class="panel panel-default">
         <div class="panel-heading">
-            <span> <h4 class="col-md-9">
-                {{selectedZone.label}}
+            Dates:
+        </div>
+        <form class="form form-horizontal" novalidate>
+            <div class="input-group padded">
+                <span class="input-group-addon">
+                    From:
+                </span>
+                <input type="text" id="dt1" class="form-control input-sm" datetimepicker ng-model="fromTime" ng-change="zoneChangeCallback()" placeholder="..." name="time">
+            </div>
+            <div class="input-group padded">
+                <span class="input-group-addon">
+                    To:
+                </span>
+                <input type="text" id="dt1" class="form-control input-sm" datetimepicker ng-model="toTime" ng-change="zoneChangeCallback()" placeholder="..." name="time">
+            </div>
+        </form>
+    </div>
+</div>
+<div class="panel panel-default col-md-8 col-md-offset-1">
+    <div class="panel-heading">
+        <span>
+            <h4 ng-show="showZones" class="col-md-9">
+                {{selectedZone.name}}
             </h4>
-            <toggle-switch ng-model="viewPersons"  on-label="Table" off-label="Groups"></toggle-switch>
+            <h4 ng-show="!showZones" class="col-md-9">
+                {{selectedPortal.name}}
+            </h4>
+            <toggle-switch ng-model="viewPersons" on-label="Table" off-label="Groups"></toggle-switch>
+
+    </div>
+    <div class="panel-body">
+        <div us-spinner ng-if="!transactions" style="height:200px">
 
         </div>
-        <div class="panel-body">
-                    <div us-spinner ng-if="!transactions" style="height:200px">
 
-        </div>
-
-            <div ng-if="!viewPersons">
-                <table class="table table-striped col-xs-12 ">
-                    <thead>
-                        <tr>
-                            <th class="col-md-4">Employee</th>
-                            <th class="col-md-2">Time</th>
-                            <th class="col-md-2">Date</th>
-                            <th class="col-md-1">Dir</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="entry in transactions">
-                            <td >
-                                <a ng-href="/#/profile/{{person.entries[0].employeeId}}">
-                                    <img class="style="display: inline-block; width="30px" " img-list " ng-src="/images/emps/{{entry.employeeId}}.jpg">
-                                    <span>
+        <div ng-if="!viewPersons">
+            <table class="table table-striped col-xs-12 ">
+                <thead>
+                    <tr>
+                        <th class="col-md-4">Employee</th>
+                        <th class="col-md-2">Time</th>
+                        <th class="col-md-2">Date</th>
+                        <th class="col-md-1">Dir</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="entry in transactions">
+                        <td>
+                            <a ng-href="/#/profile/{{person.entries[0].id}}">
+                                <img class="style=" display: inline-block; width="30px" " img-list " ng-src="/images/emps/{{entry.employeeId}}.jpg">
+                                <span>
                                     {{entry.firstname + " " + entry.lastname}}
-                                    </span>
-            </a>
-            </td>
-            <td>{{ entry.timestamp | timestampToDate }}</td>
-            <td>{{ entry.timestamp | timestampToTime }}</td>
-            <td>In</td>
-            </tr>
-            </tbody>
+                                </span>
+                            </a>
+                        </td>
+                        <td>{{ entry.timestamp | timestampToDate }}</td>
+                        <td>{{ entry.timestamp | timestampToTime }}</td>
+                        <td>In</td>
+                    </tr>
+                </tbody>
             </table>
         </div>
-        <div ng-if="viewPersons" class="transaction container" ng-repeat="person in zoneTransactions  ">
+        <div ng-if="viewPersons" class="transaction container" ng-repeat="person in personTransactions  ">
             <div class="col-md-3  col-sm-3 col-xs-3">
                 <a ng-href="/#/profile/{{person.entries[0].employeeId}}">
                     <img class="img-thumbnail img-responsive img-circle imageClip " ng-src="/images/emps/{{person.employeeId}}.jpg">

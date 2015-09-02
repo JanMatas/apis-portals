@@ -1,4 +1,4 @@
-app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, DepartmentSvc, $routeParams) {
+app.controller('EmpSettingsCtrl', function($scope, $filter, $window, Upload, EmpSvc, ZonesSvc, DepartmentSvc, $routeParams) {
     $scope.alerts = [];
 
 
@@ -13,42 +13,50 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, De
     DepartmentSvc.fetch().success(function(data) {
         $scope.departments = data;
     });
-    EmpSvc.fetchEmp($routeParams.empId).success(function(data) {
-        console.log(data);
-        $scope.emp = {
-            id: data[0].id,
-            firstname: data[0].firstname,
-            lastname: data[0].lastname,
-            img: '/images/emps/' + data[0].id + '.jpg',
-            email: data[0].email,
-            phone: data[0].phone,
-            gender: "Male",
-            department: data[0].departmentId,
-            validFrom: data[0].validFrom,
-            validTo: data[0].validTo,
-            tagNumber: data[0].tagNumber,
-            allowedZones: data[0].allowedZones,
-            
-        };
-
+    // Put some image on until the page loads
+    $scope.emp = {
+        img: 'images/placeholders/placeholder.png'
+    }
+    if ($routeParams.empId == 'new') {
         ZonesSvc.fetch().success(function(data) {
             $scope.zones = data;
-            mapZones($scope.zones, function(zone) {
-                zone.permission = $scope.emp.allowedZones.indexOf(zone.id) >= 0;
-
-            });
         });
 
+    } else {
+        EmpSvc.fetchEmp($routeParams.empId).success(function(data) {
+            console.log(data);
+            $scope.emp = {
+                id: data[0].id,
+                firstname: data[0].firstname,
+                lastname: data[0].lastname,
+                img: '/images/emps/' + data[0].id + '.jpg',
+                email: data[0].email,
+                phone: data[0].phone,
+                gender: "Male",
+                department: data[0].departmentId,
+                validFrom: data[0].validFrom,
+                validTo: data[0].validTo,
+                tagNumber: data[0].tagNumber,
+                allowedZones: data[0].allowedZones,
 
-    });
+            };
 
+            ZonesSvc.fetch().success(function(data) {
+                $scope.zones = data;
+                mapZones($scope.zones, function(zone) {
+                    zone.permission = $scope.emp.allowedZones.indexOf(zone.id) >= 0;
 
+                });
+            });
+        });
+    }
 
 
     function getAllowedZones() {
         var allowedZones = [];
         mapZones($scope.zones, function(zone) {
             if (zone.permission) {
+
                 allowedZones.push(zone.id);
             }
         });
@@ -57,8 +65,10 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, De
 
     $scope.saveData = function() {
 
-        var fieldsToCheck = ["phone", "email", "firstname", "lastname", "department", "tagNumber"];
+        var fieldsToCheck = ["phone", "email", "firstname", "lastname", "department", "tagNumber", "allowedZones"];
         var wrongField = false;
+        $scope.emp.allowedZones = getAllowedZones()
+
         for (var f in fieldsToCheck) {
             if (!$scope.emp[fieldsToCheck[f]]) {
                 $scope.alerts.push({
@@ -70,6 +80,14 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, De
             }
         }
 
+        if ($scope.emp.allowedZones.length === 0) {
+            $scope.alerts.push({
+                type: 'danger',
+                msg: 'Employee must have permission to enter at least one zone'
+            });
+            wrongField = true;
+        }
+
 
         if (!wrongField) {
             $scope.emp.allowedZones = [];
@@ -78,8 +96,29 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, De
                     $scope.emp.allowedZones.push(zone.id);
                 }
             });
-            EmpSvc.update($scope.emp);
+            var uploadObject = {
+
+
+                data: $scope.emp,
+                file: $scope.file
+            }
+
+            if (!$scope.emp.id) {
+                uploadObject.url= '/api/employee/'
+                uploadObject.method = 'POST'
+            } else {
+                uploadObject.url= '/api/employee/' + $scope.emp.id,
+                uploadObject.method = 'PUT'
+            }
+            console.log(uploadObject)
+            Upload.upload(uploadObject);
+
+
+            //$window.location = "/#/employees"
+
+            console.log("redirect")
         }
+
     };
 
 
@@ -87,8 +126,6 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, De
     $scope.zoneFilter = '';
 
     $scope.selectZone = function(zone) {
-
-
         $scope.$parent.selectedZone = zone;
         //$scope.$parent.zoneChange();
     };
@@ -145,7 +182,7 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, De
             }
         }
         root.showChildren = result;
-        result = result || root.label.toLowerCase().indexOf($scope.zoneFilter.toLowerCase()) > -1;
+        result = result || root.name.toLowerCase().indexOf($scope.zoneFilter.toLowerCase()) > -1;
         if (result) {
             root.hidden = false;
         }

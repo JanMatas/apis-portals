@@ -46,11 +46,12 @@ var connect = function(server) {
         ws.on('message', function(message) {
             if (message === "pong") {
                 ws.pong = true;
+                console.log("pong")
             } else {
                 routeMessage(ws, message);
             }
         });
-        
+
         portals.push({
             uuid: undefined,
             ws: ws,
@@ -63,7 +64,7 @@ var connect = function(server) {
         ws.hearthbeat = setInterval(function() {
             if (!ws.pong) {
                 console.log("No pong received");
-                
+
                 ws.close();
             }
 
@@ -78,6 +79,7 @@ var connect = function(server) {
             ws.pong = false;
 
         }, 3000);
+
         ws.on('close', function() {
             console.log("disconnect");
             /*
@@ -116,4 +118,5 @@ var routeMessage = function(ws, message) {
         console.log("Unable to route:" + message + " " + err);
         return;
     }
+
 };

@@ -1,5 +1,5 @@
 //Frontend entry point
-var app = angular.module('app', ['ngRoute','angularSpinner','datetimepicker', 'chart.js', 'ui.bootstrap', 'ngCookies','toggle-switch', 'angularBootstrapNavTree', 'ngLodash'])
+var app = angular.module('app', ['ngRoute','angularSpinner','datetimepicker', 'chart.js', 'ui.bootstrap', 'ngCookies','toggle-switch', 'angularBootstrapNavTree', 'ngLodash', 'ngFileUpload'])
 					.config([
 						'datetimepickerProvider',
 						function (datetimepickerProvider) {
@@ -71,7 +71,7 @@ app.config(function($routeProvider, USER_ROLES) {
                 authorizedRoles: [USER_ROLES.admin, USER_ROLES.editor]
             }
         })
-        .when('/zones', {
+        .when('/transactions', {
         	// Zones list view
             controller: 'ZonesCtrl',
             templateUrl: 'zones.html',
@@ -120,6 +120,7 @@ app.config(function($routeProvider, USER_ROLES) {
 
         })
 })
+
 app.controller('EmpGridCtrl', function($scope, EmpGridSvc) {
     $scope.departments = [];
     $scope.departmentFilter = "";
@@ -149,12 +150,11 @@ app.controller('EmpGridCtrl', function($scope, EmpGridSvc) {
                 department: d,
                 emps: departments[d]
             });
-
-
         }
-
     });
-    
+    EmpGridSvc.fetch().error(function(err) {
+        console.log(err)
+    });
 
 });
 
@@ -217,7 +217,7 @@ app.controller('EmpProfileCtrl', function($scope, EmpSvc, TimeSvc, AuthSvc, $rou
 
 
 });
-app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, DepartmentSvc, $routeParams) {
+app.controller('EmpSettingsCtrl', function($scope, $filter, $window, Upload, EmpSvc, ZonesSvc, DepartmentSvc, $routeParams) {
     $scope.alerts = [];
 
 
@@ -232,42 +232,50 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, De
     DepartmentSvc.fetch().success(function(data) {
         $scope.departments = data;
     });
-    EmpSvc.fetchEmp($routeParams.empId).success(function(data) {
-        console.log(data);
-        $scope.emp = {
-            id: data[0].id,
-            firstname: data[0].firstname,
-            lastname: data[0].lastname,
-            img: '/images/emps/' + data[0].id + '.jpg',
-            email: data[0].email,
-            phone: data[0].phone,
-            gender: "Male",
-            department: data[0].departmentId,
-            validFrom: data[0].validFrom,
-            validTo: data[0].validTo,
-            tagNumber: data[0].tagNumber,
-            allowedZones: data[0].allowedZones,
-            
-        };
-
+    // Put some image on until the page loads
+    $scope.emp = {
+        img: 'images/placeholders/placeholder.png'
+    }
+    if ($routeParams.empId == 'new') {
         ZonesSvc.fetch().success(function(data) {
             $scope.zones = data;
-            mapZones($scope.zones, function(zone) {
-                zone.permission = $scope.emp.allowedZones.indexOf(zone.id) >= 0;
-
-            });
         });
 
+    } else {
+        EmpSvc.fetchEmp($routeParams.empId).success(function(data) {
+            console.log(data);
+            $scope.emp = {
+                id: data[0].id,
+                firstname: data[0].firstname,
+                lastname: data[0].lastname,
+                img: '/images/emps/' + data[0].id + '.jpg',
+                email: data[0].email,
+                phone: data[0].phone,
+                gender: "Male",
+                department: data[0].departmentId,
+                validFrom: data[0].validFrom,
+                validTo: data[0].validTo,
+                tagNumber: data[0].tagNumber,
+                allowedZones: data[0].allowedZones,
 
-    });
+            };
 
+            ZonesSvc.fetch().success(function(data) {
+                $scope.zones = data;
+                mapZones($scope.zones, function(zone) {
+                    zone.permission = $scope.emp.allowedZones.indexOf(zone.id) >= 0;
 
+                });
+            });
+        });
+    }
 
 
     function getAllowedZones() {
         var allowedZones = [];
         mapZones($scope.zones, function(zone) {
             if (zone.permission) {
+
                 allowedZones.push(zone.id);
             }
         });
@@ -276,8 +284,10 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, De
 
     $scope.saveData = function() {
 
-        var fieldsToCheck = ["phone", "email", "firstname", "lastname", "department", "tagNumber"];
+        var fieldsToCheck = ["phone", "email", "firstname", "lastname", "department", "tagNumber", "allowedZones"];
         var wrongField = false;
+        $scope.emp.allowedZones = getAllowedZones()
+
         for (var f in fieldsToCheck) {
             if (!$scope.emp[fieldsToCheck[f]]) {
                 $scope.alerts.push({
@@ -289,6 +299,14 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, De
             }
         }
 
+        if ($scope.emp.allowedZones.length === 0) {
+            $scope.alerts.push({
+                type: 'danger',
+                msg: 'Employee must have permission to enter at least one zone'
+            });
+            wrongField = true;
+        }
+
 
         if (!wrongField) {
             $scope.emp.allowedZones = [];
@@ -297,8 +315,29 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, De
                     $scope.emp.allowedZones.push(zone.id);
                 }
             });
-            EmpSvc.update($scope.emp);
+            var uploadObject = {
+
+
+                data: $scope.emp,
+                file: $scope.file
+            }
+
+            if (!$scope.emp.id) {
+                uploadObject.url= '/api/employee/'
+                uploadObject.method = 'POST'
+            } else {
+                uploadObject.url= '/api/employee/' + $scope.emp.id,
+                uploadObject.method = 'PUT'
+            }
+            console.log(uploadObject)
+            Upload.upload(uploadObject);
+
+
+            //$window.location = "/#/employees"
+
+            console.log("redirect")
         }
+
     };
 
 
@@ -306,8 +345,6 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, De
     $scope.zoneFilter = '';
 
     $scope.selectZone = function(zone) {
-
-
         $scope.$parent.selectedZone = zone;
         //$scope.$parent.zoneChange();
     };
@@ -364,7 +401,7 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, De
             }
         }
         root.showChildren = result;
-        result = result || root.label.toLowerCase().indexOf($scope.zoneFilter.toLowerCase()) > -1;
+        result = result || root.name.toLowerCase().indexOf($scope.zoneFilter.toLowerCase()) > -1;
         if (result) {
             root.hidden = false;
         }
@@ -391,6 +428,7 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, EmpSvc, ZonesSvc, De
     }
 
 });
+
 app.controller('LoginCtrl', function($scope,$location, $rootScope, AuthSvc) {
 
 
@@ -882,16 +920,16 @@ app.controller('NavbarCtrl', function($scope,$rootScope, $http, $route, $locatio
 
 app.controller('zoneTreeCtrl', function($scope, $filter, EmpSvc, ZonesSvc, $routeParams) {
 
-    /* 
+    /*
         Control of zones tree renderer
     */
 
 
     ZonesSvc.fetch().success(function(data) {
         $scope.zones = data;
-        //$scope.$parent.zones = $scope.zones;
-        $scope.$parent.selectedZone = data[0];
-        $scope.$parent.panelReadyCallback();
+
+        $scope.$parent.zoneChangeCallback(data[0])
+
 
     });
 
@@ -901,8 +939,8 @@ app.controller('zoneTreeCtrl', function($scope, $filter, EmpSvc, ZonesSvc, $rout
     $scope.selectZone = function(zone) {
 
 
-        $scope.$parent.selectedZone = zone;
-        $scope.$parent.zoneChangeCallback();
+
+        $scope.$parent.zoneChangeCallback(zone);
     };
     $scope.toggleZone = function(zone) {
         zone.showChildren = !zone.showChildren;
@@ -955,7 +993,7 @@ app.controller('zoneTreeCtrl', function($scope, $filter, EmpSvc, ZonesSvc, $rout
             }
         }
         root.showChildren = result;
-        result = result || root.label.toLowerCase().indexOf($scope.zoneFilter.toLowerCase()) > -1;
+        result = result || root.name.toLowerCase().indexOf($scope.zoneFilter.toLowerCase()) > -1;
         if (result) {
             root.hidden = false;
         }
@@ -981,45 +1019,73 @@ app.controller('zoneTreeCtrl', function($scope, $filter, EmpSvc, ZonesSvc, $rout
         }
     }
 });
-app.controller('ZonesCtrl', function($scope, ZonesSvc, lodash) {
+
+app.controller('ZonesCtrl', function($scope, ZonesSvc, PortalSvc, lodash) {
     $scope.viewPersons = true;
     $scope.fromTime = null;
     $scope.toTime = null;
     $scope.panelReady = false;
-    console.log($scope.toTime)
-    $scope.panelReadyCallback = function() {
-        console.log($scope.selectedZone.id);
-        $scope.zoneChangeCallback()
-    };
+    $scope.showZones = false;
 
-    $scope.zoneChangeCallback = function() {
+
+    var processTransactionData = function(data) {
+        console.log(data)
+        var result = lodash.chain(data)
+            .groupBy("employeeId")
+            .pairs()
+            .map(function(currentItem) {
+                return lodash.object(lodash.zip(["employeeId", "entries"], currentItem));
+            })
+            .value();
+
+
+        $scope.personTransactions = result;
+
+        $scope.transactions = data;
+    }
+
+    $scope.zoneChangeCallback = function(zone) {
+        $scope.selectedZone = zone
         $scope.zoneTransactions = null;
-
         $scope.transactions = null;
-        ZonesSvc.fetchTransactions($scope.selectedZone.id, moment($scope.fromTime).unix(), moment($scope.toTime).unix()).success(function(data) {
+        ZonesSvc.fetchTransactions(zone.id, moment($scope.fromTime).unix(),
+            moment($scope.toTime).unix()).success(function(data) {
 
 
-            console.log(data);
-            var result = lodash.chain(data)
-                .groupBy("employeeId")
-                .pairs()
-                .map(function(currentItem) {
-                    return lodash.object(lodash.zip(["employeeId", "entries"], currentItem));
-                })
-                .value();
-
-
-            $scope.zoneTransactions = result;
-
-            $scope.transactions = data;
+            processTransactionData(data);
 
 
         });
 
+
+
     };
+
+    $scope.portalChangeCallback = function(portal) {
+        $scope.selectedPortal = portal
+        $scope.zoneTransactions = null;
+        $scope.transactions = null;
+        PortalSvc.fetchTransactions($scope.selectedPortal.id, moment($scope.fromTime).unix(),
+            moment($scope.toTime).unix()).success(function(data) {
+            processTransactionData(data);
+        });
+
+
+    };
+
+    PortalSvc.fetch().success(function(data) {
+        $scope.portals = data
+        $scope.portalChangeCallback(data[0])
+
+    })
+
+
+
+
 
 
 });
+
 app.directive('cytoscape', function($rootScope) {
     // graph visualisation by - https://github.com/cytoscape/cytoscape.js
     return {
@@ -1310,7 +1376,9 @@ app.service('EmpSvc', function($http) {
 
     	return $http.put('/api/employee/' + data.id, data);
     };
+
 });
+
 app.service('MapSvc', function($http) {
     this.fetch = function(buildingId) {
 
@@ -1320,6 +1388,22 @@ app.service('MapSvc', function($http) {
         return $http.post('api/map', {
             nodePositions: nodePositions
         });
+    };
+});
+
+app.service('PortalSvc', function($http) {
+    this.fetch = function() {
+        return $http.get('/api/portal');
+    };
+    this.fetchTransactions = function(id, from, to) {
+    	var url = '/api/transaction/portal/' + id + '?';
+    	if (from) {
+    		url = url + "&from=" + from;
+    	}
+    	if (to) {
+    		url = url + "&to=" + to
+    	}
+        return $http.get(url );
     };
 });
 
@@ -1338,13 +1422,15 @@ app.service('ZonesSvc', function($http) {
     	var url = '/api/transaction/zone/' + id + '?';
     	if (from) {
     		url = url + "&from=" + from;
-    	} 
+    	}
     	if (to) {
     		url = url + "&to=" + to
     	}
         return $http.get(url );
     };
+    
 });
+
 app.controller('MapPortalModalInstance', function($scope, $location, $modalInstance, $http, label, node) {
     $scope.ready = false;
     $scope.alarmTab = true;

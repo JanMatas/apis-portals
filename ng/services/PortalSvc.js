@@ -1,9 +1,9 @@
-app.service('ZonesSvc', function($http) {
+app.service('PortalSvc', function($http) {
     this.fetch = function() {
-        return $http.get('/api/zone');
+        return $http.get('/api/portal');
     };
     this.fetchTransactions = function(id, from, to) {
-    	var url = '/api/transaction/zone/' + id + '?';
+    	var url = '/api/transaction/portal/' + id + '?';
     	if (from) {
     		url = url + "&from=" + from;
     	}
@@ -12,5 +12,4 @@ app.service('ZonesSvc', function($http) {
     	}
         return $http.get(url );
     };
-    
 });

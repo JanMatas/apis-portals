@@ -3,7 +3,7 @@
         <span ng-click="toggleZone(zone)">
             <span ng-if="zone.children.length !== 0 && !zone.showChildren" class="glyphicon glyphicon-plus" ></span>
         <span ng-if="zone.children.length !== 0 && zone.showChildren" class="glyphicon glyphicon-minus"></span>
-        <span ng-if="zone.children.length === 0" class="glyphicon glyphicon-one-fine-dot"></span> {{zone.label}}
+        <span ng-if="zone.children.length === 0" class="glyphicon glyphicon-one-fine-dot"></span> {{zone.name}}
         </span>
         <toggle-switch ng-model="zone.permission" ng-click="togglePermission(zone)" class="pull-right"></toggle-switch>
         <hr>
@@ -26,8 +26,11 @@
             <br>
             <div class="col-md-4 text-center">
                 <div class="profile-image-container">
-                    <img class="img-thumbnail avatar img-responsive" ng-src="{{emp.img}}" on-error-src="http://google.com/favicon.ico" />
-                    <div class="col-offset-4 centered text-left">
+
+                    <img class="img-thumbnail avatar img-responsive" ngf-src="file || emp.img" on-error-src="http://google.com/favicon.ico" />
+                    <div class="col-offset-4 centered ">
+                        <div class="btn" ngf-select ng-model="file" name="file" ngf-pattern="'image/*"
+                            accept="image/*" ngf-max-size="20MB" ngf-min-height="100">Select image</div>
                     </div>
                 </div>
                 <br>
@@ -51,7 +54,7 @@
                                 <span ng-click="toggleZone(zone)">
                             <span ng-if="zone.children && !zone.showChildren" class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                                 <span ng-if="zone.children && zone.showChildren" class="glyphicon glyphicon-minus" aria-hidden="true"></span>
-                                <span ng-if="!zone.children" class="glyphicon glyphicon-fire" aria-hidden="true"></span> {{zone.label}}
+                                <span ng-if="!zone.children" class="glyphicon glyphicon-fire" aria-hidden="true"></span> {{zone.name}}
                                 </span>
                                 <toggle-switch ng-model="zone.permission" ng-click="togglePermission(zone)" class="pull-right"></toggle-switch>
                                 <hr>
@@ -111,6 +114,10 @@
                             <datepicker ng-model="dt" min-date="emp.validUntil" show-weeks="true" class="well well-sm" custom-class="getDayClass(date, mode)"></datepicker>
                         </div>
                     </div>
+
+
+
+
                     <button type="submit" class="btn btn-default btn-lg btn-block">Submit</button>
                     <div>
                 </form>

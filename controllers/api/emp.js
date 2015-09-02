@@ -6,15 +6,18 @@ var apiConfig = require('./config');
 var mysql = require('mysql');
 var apiUtils = require('./apiUtils');
 var _ = require('lodash');
+var mv = require('mv')
 
 var squel = require('squel');
+var multiparty = require('connect-multiparty')
+multipartyMiddleware = multiparty()
+
 
 router.get('/:empId', processGetRequest);
 router.get('/', processGetRequest);
 
-router.put('/:empId', processPutRequest);
-router.post('/', processPostRequest);
-
+router.put('/:empId',multipartyMiddleware, processPutRequest);
+router.post('/', multipartyMiddleware, processPostRequest);
 
 
 
@@ -50,11 +53,11 @@ function processGetRequest(req, res, next) {
         .fields(fields)
         // Get all the data about user
         .from("sys_user")
-        
-   
+
+
         // Employment type
         .join("sys_employmenttype", null, "sys_employmenttype.pk_ = sys_user.sys_employmenttype_pk_")
-       
+
         // Department
         .join("sys_ostr", null, "sys_user.sys_ostr_pk_ = sys_ostr.pk_")
         // Find employee permissions
@@ -64,7 +67,7 @@ function processGetRequest(req, res, next) {
         //.where("user_permission.sys_area_pk_ = emp_permission.sys_area_pk_");
 
 
-        console.log(s.toString());
+
 
 
     if (id) {
@@ -113,11 +116,16 @@ function processGetRequest(req, res, next) {
 
 
 function processPutRequest(req, resp, next) {
+
+    var file = req.files.file;
+    var data =  JSON.parse(req.body.data);
+
+
     var zoneRows = [];
-    for (var z in req.body.allowedZones) {
+    for (var z in data.allowedZones) {
         zoneRows.push({
-            sys_user_pk_: req.body.id,
-            sys_area_pk_: req.body.allowedZones[z]
+            sys_user_pk_: data.id,
+            sys_area_pk_: data.allowedZones[z]
 
         });
     }
@@ -126,28 +134,29 @@ function processPutRequest(req, resp, next) {
 
     var zoneQuery1 = squel.delete()
         .from("por_permission")
-        .where("sys_area_pk_ NOT IN (" + req.body.allowedZones.toString() + ")")
-        .where("sys_user_pk_ = " + req.body.id);
+        .where("sys_area_pk_ NOT IN (" + data.allowedZones.toString() + ")")
+        .where("sys_user_pk_ = " + data.id);
+
 
 
     var zoneQuery2 = squelMysql.insert()
         .into("por_permission")
         .setFieldsRows(zoneRows)
-        .onDupUpdate("sys_user_pk_", req.body.id); // hack to ignore duplicate inserts
-    console.log("Query 2 : " + zoneQuery2.toString());
+        .onDupUpdate("sys_user_pk_", data.id); // hack to ignore duplicate inserts
+
 
     var userQuery = squel.update()
         .table("sys_user")
 
-        .set("email", req.body.email)
-        .set("phone", req.body.phone)
-        .set("sex", req.body.gender === "Male" ? "M" : "F")
-        .set("firstname", req.body.firstname)
-        .set("lastname", req.body.lastname)
-        
-        .where("pk_ = " + req.body.id);
+        .set("email", data.email)
+        .set("phone", data.phone)
+        .set("sex", data.gender === "Male" ? "M" : "F")
+        .set("firstname", data.firstname)
+        .set("lastname", data.lastname)
 
- 
+        .where("pk_ = " + data.id);
+
+
 
 
 
@@ -176,7 +185,7 @@ function processPutRequest(req, resp, next) {
                             });
                         }
 
- 
+
                             connection.commit(function(err) {
                                 if (err) {
                                     connection.rollback(function() {
@@ -184,7 +193,11 @@ function processPutRequest(req, resp, next) {
                                     });
                                 }
                                 console.log('success!');
-                           
+                                if (file) {
+                                    mv(file.path, 'data/images/emps/' +data.id + '.jpg', function(err) {
+                            console.log(err)
+                            });
+                                }
                         });
                     });
                 });
@@ -197,6 +210,84 @@ function processPutRequest(req, resp, next) {
 }
 
 function processPostRequest(req, resp, next) {
+    var data =  JSON.parse(req.body.data);
+    console.log(data);
 
+
+    var file = req.files.file;
+
+
+ // hack to ignore duplicate inserts
+
+    squelMysql = squel.useFlavour('mysql');
+    var userQuery = squelMysql.insert()
+        .into("sys_user")
+        .set("sys_ostr_pk_", data.department)
+        .set("email", data.email)
+        .set("phone", data.phone)
+        .set("sex", data.gender === "Male" ? "M" : "F")
+        .set("firstname", data.firstname)
+        .set("lastname", data.lastname)
+        .set("tag", data.tagNumber)
+
+
+    db.getConnection(function(err, connection) {
+        connection.beginTransaction(function(err) {
+            if (err) {
+                next(err);
+            }
+            connection.query(userQuery.toString(),{title: 'test'}, function(err, result) {
+                if (err) {
+                    connection.rollback(function() {
+                        next(err);
+                    });
+                    next(err)
+                }
+
+
+                console.log(err)
+                id = result.insertId;
+                var zoneRows = [];
+                for (var z in data.allowedZones) {
+                    zoneRows.push({
+                        sys_user_pk_: id,
+                        sys_area_pk_: data.allowedZones[z]
+
+                    });
+                }
+                var zoneQuery = squelMysql.insert()
+                    .into("por_permission")
+                    .setFieldsRows(zoneRows)
+                    .onDupUpdate("sys_user_pk_", id);
+                    console.log(zoneQuery.toString());
+                connection.query(zoneQuery.toString(), function(err, result) {
+                    if (err) {
+                        connection.rollback(function() {
+                            next(err);
+                        });
+                        next(err)
+                    }
+
+
+
+                        connection.commit(function(err) {
+                            if (err) {
+                                connection.rollback(function() {
+                                    next(err);
+                                });
+                            }
+                            console.log('success!');
+                            if (file) {
+                                mv(file.path, 'data/images/emps/' +id + '.jpg', function(err) {
+                                next(err)
+                        });
+                            }
+                            resp.sendStatus(200)
+                    });
+                });
+
+            });
+        });
+    });
 
 }
