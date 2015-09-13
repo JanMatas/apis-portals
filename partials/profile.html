@@ -3,6 +3,7 @@
         <div class="row">
             <div class="col-md-12 lead">
                 Employee profile
+
                 <a ng-show="showConfig" ng-href="/#/profileSettings/{{emp.id}}" class="btn btn-primary pull-right">Edit</a>
                 <hr>
             </div>
@@ -11,7 +12,7 @@
             <br>
             <div class="col-md-4 text-center">
                 <div class="profile-image-container">
-                    <img class="img-thumbnail avatar img-responsive" ng-src="{{emp.img}}">
+                    <img class="img-thumbnail avatar img-responsive" ngf-src="emp.img  ||  'images/placeholders/placeholder.png'" on-error-src="images/placeholders/placeholder.png" />
                     <div class="col-offset-4 centered text-left">
                         <br>
                         <h1 class="only-bottom-margin">{{emp.firstname}} <br> {{emp.lastname}}</h1>

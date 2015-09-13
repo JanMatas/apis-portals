@@ -55,9 +55,6 @@ router.get('/settings/:raspiId', function(req, res, next) {
     });
 });
 
-router.get('/transaction/:raspiId', function(req,res, next) {
-    return res.status(200).send("aa");
-});
 
 router.post('/transaction/:raspiId', function(req, res, next) {
     console.log("tst");
@@ -75,7 +72,7 @@ router.post('/transaction/:raspiId', function(req, res, next) {
         .where("sys_user.tag = " + req.body.tagId);
         // TODO missing data .where("sys_static_card.cardnumber = " + req.body.tagId);
 
-
+    console.log(query.toString())
     db.fetchData(query.toString(), function(err, rows) {
 
         if (err) {
@@ -83,7 +80,8 @@ router.post('/transaction/:raspiId', function(req, res, next) {
         }
 
         if (rows.length === 0 && req.body.alarm !== "alarm" ) {
-            return res.status(500).send("User with given id does not exist");
+
+            return res.status(403).send("User with given id does not exist");
         }
         if (req.body.alarm !== "alarm") {
             var userId = rows[0].id;
@@ -121,6 +119,7 @@ router.post('/transaction/:raspiId', function(req, res, next) {
                 .set("t_reader", readerId)
                 .set("t_date", date)
                 .set("ss6", req.body.direction)
+            console.log(query.toString())
             if (userId) {
                 query.set("sys_user_pk_", userId);
             }

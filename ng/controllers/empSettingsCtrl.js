@@ -114,7 +114,7 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, $window, Upload, Emp
             Upload.upload(uploadObject);
 
 
-            //$window.location = "/#/employees"
+            $window.location = "/#/employees"
 
             console.log("redirect")
         }
