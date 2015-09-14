@@ -154,6 +154,7 @@ app.controller('EmpGridCtrl', function($scope, EmpGridSvc) {
     });
     EmpGridSvc.fetch().error(function(err) {
         console.log(err)
+        
     });
 
 });
@@ -330,12 +331,23 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, $window, Upload, Emp
                 uploadObject.method = 'PUT'
             }
             console.log(uploadObject)
-            Upload.upload(uploadObject);
+            up = Upload.upload(uploadObject).success(function (data, status, headers, config) {
+            console.log("data")
+             $window.location = "/#/employees"
+        }).error(function (data, status, headers, config) {
+            if (data == "ER_DUP_ENTRY") {
+                $scope.alerts.push({
+                    type: 'danger',
+                    msg: 'Tag ID already used .'
+                });
+            } else {
+                alert(data)
+            }
+        })
 
 
-            $window.location = "/#/employees"
+           
 
-            console.log("redirect")
         }
 
     };
@@ -1050,11 +1062,7 @@ app.controller('ZonesCtrl', function($scope, ZonesSvc, PortalSvc, lodash) {
         $scope.transactions = null;
         ZonesSvc.fetchTransactions(zone.id, moment($scope.fromTime).unix(),
             moment($scope.toTime).unix()).success(function(data) {
-
-
             processTransactionData(data);
-
-
         });
 
 
@@ -1070,7 +1078,6 @@ app.controller('ZonesCtrl', function($scope, ZonesSvc, PortalSvc, lodash) {
             processTransactionData(data);
         });
 
-
     };
 
     PortalSvc.fetch().success(function(data) {
@@ -1078,11 +1085,6 @@ app.controller('ZonesCtrl', function($scope, ZonesSvc, PortalSvc, lodash) {
         $scope.portalChangeCallback(data[0])
 
     })
-
-
-
-
-
 
 });
 

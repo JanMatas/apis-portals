@@ -23,8 +23,7 @@ router.get('/permissions/:raspiId', function(req, res, next) {
         }
         var data = [];
 
-        console.log(rows)
-        for (var i in rows) {
+       for (var i in rows) {
 
             data.push(rows[i].tag);
 
@@ -57,9 +56,9 @@ router.get('/settings/:raspiId', function(req, res, next) {
 
 
 router.post('/transaction/:raspiId', function(req, res, next) {
-    console.log("tst");
-    console.log("transaction -> id: " + req.body.tagId + " dir: " +
-         req.body.direction + " portal: " + req.params.raspiId);
+
+    console.log("Body: %j", req.body)
+
     if (!req.body) {
         return res.status(403).send("No request body");
     }
@@ -72,7 +71,6 @@ router.post('/transaction/:raspiId', function(req, res, next) {
         .where("sys_user.tag = " + req.body.tagId);
         // TODO missing data .where("sys_static_card.cardnumber = " + req.body.tagId);
 
-    console.log(query.toString())
     db.fetchData(query.toString(), function(err, rows) {
 
         if (err) {
@@ -86,7 +84,6 @@ router.post('/transaction/:raspiId', function(req, res, next) {
         if (req.body.alarm !== "alarm") {
             var userId = rows[0].id;
         }
-        console.log(rows)
 
         query = squel.select()
             .field("sys_reader.pk_")
@@ -119,16 +116,14 @@ router.post('/transaction/:raspiId', function(req, res, next) {
                 .set("t_reader", readerId)
                 .set("t_date", date)
                 .set("ss6", req.body.direction)
-            console.log(query.toString())
             if (userId) {
                 query.set("sys_user_pk_", userId);
             }
-            if(req.body.alarm) {
+            if(req.body.alarm == "True") {
                 query.set("ss5","alarm")
             }
 
 
-            console.log(query.toString())
             db.executeQuery(query.toString(), function(err, data) {
 
                 if (err) {

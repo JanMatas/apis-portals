@@ -131,7 +131,6 @@ router.get('/:zoneId', function(req, res, next) {
         .where("areas.id ='" + req.params.zoneId +"'" );
 
 
-    console.log(query.toString())
     db.fetchData(query.toString(), function(err, rows) {
 
         if (err) {

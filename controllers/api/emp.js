@@ -71,7 +71,6 @@ function processGetRequest(req, res, next) {
 
 
     if (id) {
-        console.log("id : " + id);
         s.where("sys_user.pk_ = " + id);
     }
 
@@ -145,7 +144,7 @@ function processPutRequest(req, resp, next) {
         .onDupUpdate("sys_user_pk_", data.id); // hack to ignore duplicate inserts
 
 
-    var userQuery = squel.update()
+    var userQuery = squelMysql.update()
         .table("sys_user")
 
         .set("email", data.email)
@@ -153,23 +152,32 @@ function processPutRequest(req, resp, next) {
         .set("sex", data.gender === "Male" ? "M" : "F")
         .set("firstname", data.firstname)
         .set("lastname", data.lastname)
-
+        .set("tag", data.tagNumber)
         .where("pk_ = " + data.id);
 
 
 
 
+  
 
     db.getConnection(function(err, connection) {
         connection.beginTransaction(function(err) {
+
             if (err) {
                 next(err);
             }
             connection.query(userQuery.toString(), function(err, result) {
+                
                 if (err) {
                     connection.rollback(function() {
                         next(err);
                     });
+                    if (err.code === 'ER_DUP_ENTRY') {
+                        resp.send(500, "ER_DUP_ENTRY")
+                    } else {
+                        next(err)
+                    }
+
 
                 }
                 connection.query(zoneQuery1.toString(), function(err, result) {
@@ -192,12 +200,15 @@ function processPutRequest(req, resp, next) {
                                         next(err);
                                     });
                                 }
-                                console.log('success!');
                                 if (file) {
                                     mv(file.path, 'data/images/emps/' +data.id + '.jpg', function(err) {
-                            console.log(err)
+                                        resp.sendStatus(200)
+                           
                             });
+                                } else {
+                                    resp.sendStatus(200)
                                 }
+
                         });
                     });
                 });
@@ -211,7 +222,6 @@ function processPutRequest(req, resp, next) {
 
 function processPostRequest(req, resp, next) {
     var data =  JSON.parse(req.body.data);
-    console.log(data);
 
 
     var file = req.files.file;
@@ -236,7 +246,7 @@ function processPostRequest(req, resp, next) {
             if (err) {
                 next(err);
             }
-            connection.query(userQuery.toString(),{title: 'test'}, function(err, result) {
+            connection.query(userQuery.toString(), function(err, result) {
                 if (err) {
                     connection.rollback(function() {
                         next(err);
@@ -259,7 +269,6 @@ function processPostRequest(req, resp, next) {
                     .into("por_permission")
                     .setFieldsRows(zoneRows)
                     .onDupUpdate("sys_user_pk_", id);
-                    console.log(zoneQuery.toString());
                 connection.query(zoneQuery.toString(), function(err, result) {
                     if (err) {
                         connection.rollback(function() {
@@ -276,7 +285,6 @@ function processPostRequest(req, resp, next) {
                                     next(err);
                                 });
                             }
-                            console.log('success!');
                             if (file) {
                                 mv(file.path, 'data/images/emps/' +id + '.jpg', function(err) {
                                 next(err)

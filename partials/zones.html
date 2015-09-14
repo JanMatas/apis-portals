@@ -139,7 +139,7 @@
                         </td>
                         <td>{{ entry.timestamp | timestampToDate }}</td>
                         <td>{{ entry.timestamp | timestampToTime }}</td>
-                        <td>In</td>
+                        <td>{{entry.direction}}</td>
                     </tr>
                 </tbody>
             </table>
@@ -165,7 +165,7 @@
                             <tr ng-repeat="entry in person.entries">
                                 <td>{{ entry.timestamp | timestampToTime }}</td>
                                 <td>{{ entry.timestamp | timestampToDate }}</td>
-                                <td>In</td>
+                                <td>{{entry.direction}}</td>
                             </tr>
                         </tbody>
                     </table>

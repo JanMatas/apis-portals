@@ -28,11 +28,7 @@ app.controller('ZonesCtrl', function($scope, ZonesSvc, PortalSvc, lodash) {
         $scope.transactions = null;
         ZonesSvc.fetchTransactions(zone.id, moment($scope.fromTime).unix(),
             moment($scope.toTime).unix()).success(function(data) {
-
-
             processTransactionData(data);
-
-
         });
 
 
@@ -48,7 +44,6 @@ app.controller('ZonesCtrl', function($scope, ZonesSvc, PortalSvc, lodash) {
             processTransactionData(data);
         });
 
-
     };
 
     PortalSvc.fetch().success(function(data) {
@@ -56,10 +51,5 @@ app.controller('ZonesCtrl', function($scope, ZonesSvc, PortalSvc, lodash) {
         $scope.portalChangeCallback(data[0])
 
     })
-
-
-
-
-
 
 });

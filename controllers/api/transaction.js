@@ -37,7 +37,6 @@ router.get('/portal/:portalId', function(req, res, next) {
         if (err) {
             return next(err);
         }
-        console.log(rows);
         res.json(rows);
     });
 });

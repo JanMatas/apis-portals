@@ -111,12 +111,23 @@ app.controller('EmpSettingsCtrl', function($scope, $filter, $window, Upload, Emp
                 uploadObject.method = 'PUT'
             }
             console.log(uploadObject)
-            Upload.upload(uploadObject);
+            up = Upload.upload(uploadObject).success(function (data, status, headers, config) {
+            console.log("data")
+             $window.location = "/#/employees"
+        }).error(function (data, status, headers, config) {
+            if (data == "ER_DUP_ENTRY") {
+                $scope.alerts.push({
+                    type: 'danger',
+                    msg: 'Tag ID already used .'
+                });
+            } else {
+                alert(data)
+            }
+        })
 
 
-            $window.location = "/#/employees"
+           
 
-            console.log("redirect")
         }
 
     };

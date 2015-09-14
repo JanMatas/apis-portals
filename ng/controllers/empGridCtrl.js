@@ -31,6 +31,7 @@ app.controller('EmpGridCtrl', function($scope, EmpGridSvc) {
     });
     EmpGridSvc.fetch().error(function(err) {
         console.log(err)
+        
     });
 
 });

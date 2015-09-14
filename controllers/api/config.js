@@ -55,7 +55,8 @@ var availableFields = {
         "zoneToId" : "in.pk_",
         "zoneFromName" : "out.cname",
         "zoneToName" : "in.cname",
-        "alarm" : "sys_elog.ss5"
+        "alarm" : "sys_elog.ss5",
+        "direction" : "sys_elog.ss6"
     }
 
 };
@@ -67,7 +68,7 @@ var defaultFields = {
     portal : ["id", "name"],
     map_zones : ["id", "name", "map_x", "map_y"],
     map_portals : ["id", "name", "map_x", "map_y", "zoneFrom", "zoneTo"],
-    transaction : ["id", "firstname", "lastname", "timestamp", "employeeId", "alarm"]
+    transaction : ["id", "firstname", "lastname", "timestamp", "employeeId", "alarm", "direction"]
 };
 
 module.exports = {
