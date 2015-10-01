@@ -7,10 +7,12 @@ var mysql = require('mysql');
 var apiUtils = require('./apiUtils');
 var _ = require('lodash');
 var mv = require('mv')
-
+var wsBroadcast = require('../../websockets').broadcast
+var easyimg = require('easyimage');
 var squel = require('squel');
 var multiparty = require('connect-multiparty')
 multipartyMiddleware = multiparty()
+
 
 
 router.get('/:empId', processGetRequest);
@@ -200,11 +202,21 @@ function processPutRequest(req, resp, next) {
                                         next(err);
                                     });
                                 }
+                                wsBroadcast("change")
                                 if (file) {
-                                    mv(file.path, 'data/images/emps/' +data.id + '.jpg', function(err) {
-                                        resp.sendStatus(200)
+                                    easyimg.thumbnail({src:file.path, dst:file.path, width:400}).then(
+                                        function(file) {
+                                            mv(file.path, 'data/images/emps/' +data.id + '.jpg', function(err) {
+                                            resp.sendStatus(200)
                            
-                            });
+                                            });
+                                            console.log(file);
+                                        }, function (err) {
+                                            next(err);
+                                        }
+                                    );
+                                    
+
                                 } else {
                                     resp.sendStatus(200)
                                 }
@@ -286,10 +298,21 @@ function processPostRequest(req, resp, next) {
                                 });
                             }
                             if (file) {
-                                mv(file.path, 'data/images/emps/' +id + '.jpg', function(err) {
-                                next(err)
-                        });
-                            }
+                                easyimg.thumbnail({src:file.path, dst:file.path, width:400}).then(
+                                    function(file) {
+                                        mv(file.path, 'data/images/emps/' +data.id + '.jpg', function(err) {
+                                        resp.sendStatus(200)
+                       
+                                        });
+                                        console.log(file);
+                                    }, function (err) {
+                                        next(err);
+                                    }
+                                );
+                                
+
+                            } 
+                            wsBroadcast("change");
                             resp.sendStatus(200)
                     });
                 });

@@ -87,26 +87,27 @@ router.get('/:zoneId', function(req, res, next) {
         .from("sys_area");
 
     var empLastTransId = squel.select()
-        .field("sys_elog.sys_user_pk_")
-        .field("MAX(sys_elog.t_date)")
-        .from("sys_elog")
-        .group("sys_elog.sys_user_pk_")
+        .field("por_translog.sys_user_pk_")
+        .field("MAX(por_translog.t_date)")
+        .from("por_translog")
+        .group("por_translog.sys_user_pk_")
 
     var empLastTransaction  = squel.select()
 
-        .field("sys_elog.sys_user_pk_", "employeeId")
-        .field("sys_elog.pk_")
-        .field("sys_elog.ss6", "direction")
-        .field("sys_elog.t_reader", "t_reader")
+        .field("por_translog.sys_user_pk_", "employeeId")
+        .field("por_translog.pk_")
+        .field("por_translog.dir", "direction")
+        .field("por_translog.t_reader", "t_reader")
 
 
-        .from("sys_elog")
-        .where("(sys_elog.sys_user_pk_, sys_elog.t_date) IN ? ", empLastTransId)
+        .from("por_translog")
+
+        .where("(por_translog.sys_user_pk_, por_translog.t_date) IN ? ", empLastTransId)
 
 
     var employeeCurrentZone  = squel.select()
 
-        .field("IF(STRCMP(employee_last_transaction.direction, 'In'), in.pk_, out.pk_)", "current_zone")
+        .field("IF(STRCMP(employee_last_transaction.direction, 'out'), in.pk_, out.pk_)", "current_zone")
         .field("employee_last_transaction.direction","direction" )
         .field("sys_user.pk_", "employeeId")
         .field("sys_user.firstname", "firstname")

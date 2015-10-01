@@ -4,7 +4,6 @@ var config = require('../../db');
 var authUtils = require('../../authUtils');
 var apiUtils = require('./apiUtils');
 var squel = require('squel');
-
 router.get('/portal/:portalId', function(req, res, next) {
 
     
@@ -17,15 +16,19 @@ router.get('/portal/:portalId', function(req, res, next) {
 
 
     var fields = apiUtils.getFields(req, "transaction");
+
     if (fields === undefined) {
         return res.sendStatus(400);
     }
 
     var s = squel.select()
         .fields(fields)
-        .from("sys_elog")
-        .left_join("sys_user", null, "sys_elog.sys_user_pk_ = sys_user.pk_")
-        .where("sys_elog.t_reader = " + req.params.portalId)
+        .from("por_translog")
+        .left_join("sys_user", null, "por_translog.sys_user_pk_ = sys_user.pk_")
+        .join("sys_reader", null, "por_translog.t_reader = sys_reader.pk_")
+        .join("sys_area", "in", "sys_reader.area_inp_pk_ = in.pk_")
+        .join("sys_area", "out", "sys_reader.area_out_pk_ = out.pk_")
+        .where("por_translog.t_reader = " + req.params.portalId)
         .order("t_date", false);
 
     if (req.query.limit !== undefined) {
@@ -37,13 +40,14 @@ router.get('/portal/:portalId', function(req, res, next) {
         if (err) {
             return next(err);
         }
+        console.log(s.toString())
         res.json(rows);
     });
 });
 
 
 router.get('/zone/:zoneId', function(req, res, next) {
-
+    
     var username = authUtils.authReq(req);
 
     if (username === undefined) {
@@ -55,7 +59,7 @@ router.get('/zone/:zoneId', function(req, res, next) {
     if (fields === undefined) {
         return res.sendStatus(400);
     }
-
+    console.log(fields)
     var subZones = squel.select()
         .field("child_pk_")
         .from("por_subarea")
@@ -63,9 +67,9 @@ router.get('/zone/:zoneId', function(req, res, next) {
 
     var s = squel.select()
         .fields(fields)
-        .from("sys_elog")
-        .join("sys_user", null, "sys_elog.sys_user_pk_ = sys_user.pk_")
-        .join("sys_reader", null, "sys_elog.t_reader = sys_reader.pk_")
+        .from("por_translog")
+        .join("sys_user", null, "por_translog.sys_user_pk_ = sys_user.pk_")
+        .join("sys_reader", null, "por_translog.t_reader = sys_reader.pk_")
         .join("sys_area", "in", "sys_reader.area_inp_pk_ = in.pk_")
         .join("sys_area", "out", "sys_reader.area_out_pk_ = out.pk_")
 

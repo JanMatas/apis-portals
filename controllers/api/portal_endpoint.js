@@ -67,6 +67,8 @@ router.post('/transaction/:raspiId', function(req, res, next) {
     // get user pk_
     var query = squel.select()
         .field("pk_", "id")
+        .field("firstname")
+        .field("lastname")
         .from("sys_user")
         .where("sys_user.tag = " + req.body.tagId);
         // TODO missing data .where("sys_static_card.cardnumber = " + req.body.tagId);
@@ -77,13 +79,14 @@ router.post('/transaction/:raspiId', function(req, res, next) {
             return next(err);
         }
 
-        if (rows.length === 0 && req.body.alarm !== "alarm" ) {
-
-            return res.status(403).send("User with given id does not exist");
-        }
-        if (req.body.alarm !== "alarm") {
+     
+        if (rows.length !== 0) {
             var userId = rows[0].id;
+            var name = rows[0].firstname + rows[0].lastname
+        } else {
+            var name = "alarm"
         }
+        
 
         query = squel.select()
             .field("sys_reader.pk_")
@@ -112,15 +115,15 @@ router.post('/transaction/:raspiId', function(req, res, next) {
 
             query = squel.insert()
 
-                .into("sys_elog")
+                .into("por_translog")
                 .set("t_reader", readerId)
                 .set("t_date", date)
-                .set("ss6", req.body.direction)
+                .set("dir", req.body.direction)
             if (userId) {
                 query.set("sys_user_pk_", userId);
             }
             if(req.body.alarm == "True") {
-                query.set("ss5","alarm")
+                query.set("alarm","alarm")
             }
 
 
@@ -131,7 +134,7 @@ router.post('/transaction/:raspiId', function(req, res, next) {
                 }
 
 
-                res.sendStatus(201);
+                res.status(201).send(name);
             });
         });
     });

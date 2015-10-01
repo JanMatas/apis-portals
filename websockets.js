@@ -82,20 +82,32 @@ var connect = function(server) {
 
         ws.on('close', function() {
             console.log("disconnect");
-            /*
+            
             _.remove(portals, {
                 ws: ws
             });
             console.log(portals);
-            */
+            
         });
 
     });
 };
 
+var broadcast = function(message) {
+    _.map(portals, function(portal) {
+        try {
+            portal.ws.send(message)
+        } catch (err) {
+            console.log("WS Broadcast failed: "  + err);
+        }
+
+    })
+}
+
 module.exports = {
     connect: connect,
-    portals: portals
+    portals: portals,
+    broadcast: broadcast
 };
 
 var routeMessage = function(ws, message) {

@@ -3,7 +3,8 @@ app.service('ZonesSvc', function($http) {
         return $http.get('/api/zone');
     };
     this.fetchTransactions = function(id, from, to) {
-    	var url = '/api/transaction/zone/' + id + '?';
+
+    	var url = '/api/transaction/zone/' + id + '?&fields=zoneToName,zoneFromName';
     	if (from) {
     		url = url + "&from=" + from;
     	}

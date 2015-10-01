@@ -1041,6 +1041,28 @@ app.controller('ZonesCtrl', function($scope, ZonesSvc, PortalSvc, lodash) {
 
 
     var processTransactionData = function(data) {
+        data = lodash.map(data, function(entry) {
+            console.log(entry)
+            if (entry.firstname == null) {
+                entry.firstname = 'Not'
+            }
+            if (entry.lastname == null) {
+                entry.lastname = 'recorded'
+            }
+            if (entry.employeeId == null) {
+                entry.photo = '/images/placeholders/placeholder.png'
+            } else {
+                entry.photo = '/images/emps/' + entry.employeeId + '.jpg'
+            }
+            if (entry.direction == 'in') {
+                entry.destination = entry.zoneToName
+            } else  {
+                entry.destination = entry.zoneFromName
+            }
+            console.log(entry)
+            return entry
+
+        })
         console.log(data)
         var result = lodash.chain(data)
             .groupBy("employeeId")
@@ -1398,7 +1420,7 @@ app.service('PortalSvc', function($http) {
         return $http.get('/api/portal');
     };
     this.fetchTransactions = function(id, from, to) {
-    	var url = '/api/transaction/portal/' + id + '?';
+    	var url = '/api/transaction/portal/' + id + '?fields=zoneToName,zoneFromName';
     	if (from) {
     		url = url + "&from=" + from;
     	}
@@ -1421,7 +1443,8 @@ app.service('ZonesSvc', function($http) {
         return $http.get('/api/zone');
     };
     this.fetchTransactions = function(id, from, to) {
-    	var url = '/api/transaction/zone/' + id + '?';
+
+    	var url = '/api/transaction/zone/' + id + '?&fields=zoneToName,zoneFromName';
     	if (from) {
     		url = url + "&from=" + from;
     	}
@@ -1437,7 +1460,7 @@ app.controller('MapPortalModalInstance', function($scope, $location, $modalInsta
     $scope.ready = false;
     $scope.alarmTab = true;
 
-    $http.get('/api/transaction/portal/' + node + '?limit=5').success(function(data) {
+    $http.get('/api/transaction/portal/' + node + '?limit=100').success(function(data) {
         $scope.ready = true;
         $scope.transactions = [];
         $scope.alarms = [];
@@ -1445,9 +1468,9 @@ app.controller('MapPortalModalInstance', function($scope, $location, $modalInsta
         for (var x in data) {
             console.log(data)
             if (data[x].alarm === 'alarm') {
-                if (data[x].employeeId === "null") {
-                    console.log("£")
-                }
+
+                
+
                 $scope.alarms.push({
                     empId: data[x].employeeId === null ? undefined : data[x].employeeId,
                     firstname: data[x].firstname === null ? "Not" : data[x].firstname,
@@ -1456,13 +1479,15 @@ app.controller('MapPortalModalInstance', function($scope, $location, $modalInsta
                     date: data[x].timestamp * 1000
                 });
             } else {
-                $scope.transactions.push({
-                    empId: data[x].employeeId,
-                    firstname: data[x].firstname,
-                    lastname: data[x].lastname,
-                    img: '/images/emps/' + data[x].employeeId + '.jpg',
-                    date: data[x].timestamp * 1000
-                });
+                if ($scope.transactions.length < 5){
+                    $scope.transactions.push({
+                        empId: data[x].employeeId,
+                        firstname: data[x].firstname,
+                        lastname: data[x].lastname,
+                        img: '/images/emps/' + data[x].employeeId + '.jpg',
+                        date: data[x].timestamp * 1000
+                    });
+                }   
             }
 
         }
