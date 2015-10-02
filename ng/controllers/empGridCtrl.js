@@ -21,13 +21,7 @@ app.controller('EmpGridCtrl', function($scope, EmpGridSvc) {
 
     EmpGridSvc.fetch().success(function(data) {
         $scope.ready=true;
-        var departments = splitIntoDepartments(data);
-        for (var d in departments) {
-            $scope.departments.push({
-                department: d,
-                emps: departments[d]
-            });
-        }
+u(){}
     });
     EmpGridSvc.fetch().error(function(err) {
         console.log(err)
