@@ -21,7 +21,12 @@ app.controller('EmpGridCtrl', function($scope, EmpGridSvc) {
 
     EmpGridSvc.fetch().success(function(data) {
         $scope.ready=true;
-u(){}
+        for (var d in departments) {
+            $scope.departments.push({
+                department: d,
+                emps: departments[d]
+            });
+        }	
     });
     EmpGridSvc.fetch().error(function(err) {
         console.log(err)
