@@ -131,7 +131,7 @@
                     <tr ng-repeat="entry in transactions">
                         <td>
                             <a ng-href="/#/profile/{{person.entries[0].id}}">
-                                <img class="style=" display: inline-block; width="30px" " img-list " ng-src="/images/emps/{{entry.employeeId}}.jpg">
+                                <img class="style=" display: inline-block; width="30px" " img-list " ng-src="{{entry.photo}}">
                                 <span>
                                     {{entry.firstname + " " + entry.lastname}}
                                 </span>
@@ -139,7 +139,7 @@
                         </td>
                         <td>{{ entry.timestamp | timestampToDate }}</td>
                         <td>{{ entry.timestamp | timestampToTime }}</td>
-                        <td>{{entry.direction}}</td>
+                        <td>{{entry.destination}}</td>
                     </tr>
                 </tbody>
             </table>
@@ -147,7 +147,7 @@
         <div ng-if="viewPersons" class="transaction container" ng-repeat="person in personTransactions  ">
             <div class="col-md-3  col-sm-3 col-xs-3">
                 <a ng-href="/#/profile/{{person.entries[0].employeeId}}">
-                    <img class="img-thumbnail img-responsive img-circle imageClip " ng-src="/images/emps/{{person.employeeId}}.jpg">
+                    <img class="img-thumbnail img-responsive img-circle imageClip " ng-src="{{person.entries[0].photo}}">
                 </a>
             </div>
             <div class="col-md-9 col-sm-12">
@@ -165,7 +165,7 @@
                             <tr ng-repeat="entry in person.entries">
                                 <td>{{ entry.timestamp | timestampToTime }}</td>
                                 <td>{{ entry.timestamp | timestampToDate }}</td>
-                                <td>{{entry.direction}}</td>
+                                <td>{{entry.destination}}</td>
                             </tr>
                         </tbody>
                     </table>

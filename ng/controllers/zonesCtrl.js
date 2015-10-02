@@ -7,6 +7,28 @@ app.controller('ZonesCtrl', function($scope, ZonesSvc, PortalSvc, lodash) {
 
 
     var processTransactionData = function(data) {
+        data = lodash.map(data, function(entry) {
+            console.log(entry)
+            if (entry.firstname == null) {
+                entry.firstname = 'Not'
+            }
+            if (entry.lastname == null) {
+                entry.lastname = 'recorded'
+            }
+            if (entry.employeeId == null) {
+                entry.photo = '/images/placeholders/placeholder.png'
+            } else {
+                entry.photo = '/images/emps/' + entry.employeeId + '.jpg'
+            }
+            if (entry.direction == 'in') {
+                entry.destination = entry.zoneToName
+            } else  {
+                entry.destination = entry.zoneFromName
+            }
+            console.log(entry)
+            return entry
+
+        })
         console.log(data)
         var result = lodash.chain(data)
             .groupBy("employeeId")

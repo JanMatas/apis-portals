@@ -46,8 +46,8 @@ var availableFields = {
         "map_y" : "sys_reader.map_y"
     },
     transaction : {
-        "id" : "sys_elog.pk_",
-        "timestamp" : "UNIX_TIMESTAMP(sys_elog.t_date)",
+        "id" : "por_translog.pk_",
+        "timestamp" : "UNIX_TIMESTAMP(por_translog.t_date)",
         "firstname" : "sys_user.firstname",
         "lastname" : "sys_user.lastname",
         "employeeId" : "sys_user.pk_",
@@ -55,8 +55,8 @@ var availableFields = {
         "zoneToId" : "in.pk_",
         "zoneFromName" : "out.cname",
         "zoneToName" : "in.cname",
-        "alarm" : "sys_elog.ss5",
-        "direction" : "sys_elog.ss6"
+        "alarm" : "por_translog.alarm",
+        "direction" : "por_translog.dir"
     }
 
 };

@@ -18,6 +18,14 @@ var getConnection = function(callback) {
 
     connection.connect(function(err) {
         callback(err, connection);
+        connection.on('error', function(err) {
+            connection.destroy();
+	    if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
+      		getConnection(callback)                         // lost due to either server restart, or a
+    	    }
+            cb(err, undefined);
+            return;
+        });
     });
 };
 
@@ -30,11 +38,7 @@ var executeQuery = function(query, cb) {
             cb(err, undefined);
             return;
         }
-        connection.on('error', function(err) {
-            connection.destroy();
-            cb(err, undefined);
-            return;
-        });
+       
 
         connection.query(query, function(err, rows) {
             connection.destroy();

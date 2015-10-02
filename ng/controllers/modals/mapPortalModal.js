@@ -2,7 +2,7 @@ app.controller('MapPortalModalInstance', function($scope, $location, $modalInsta
     $scope.ready = false;
     $scope.alarmTab = true;
 
-    $http.get('/api/transaction/portal/' + node + '?limit=5').success(function(data) {
+    $http.get('/api/transaction/portal/' + node + '?limit=100').success(function(data) {
         $scope.ready = true;
         $scope.transactions = [];
         $scope.alarms = [];
@@ -10,9 +10,9 @@ app.controller('MapPortalModalInstance', function($scope, $location, $modalInsta
         for (var x in data) {
             console.log(data)
             if (data[x].alarm === 'alarm') {
-                if (data[x].employeeId === "null") {
-                    console.log("£")
-                }
+
+                
+
                 $scope.alarms.push({
                     empId: data[x].employeeId === null ? undefined : data[x].employeeId,
                     firstname: data[x].firstname === null ? "Not" : data[x].firstname,
@@ -21,13 +21,15 @@ app.controller('MapPortalModalInstance', function($scope, $location, $modalInsta
                     date: data[x].timestamp * 1000
                 });
             } else {
-                $scope.transactions.push({
-                    empId: data[x].employeeId,
-                    firstname: data[x].firstname,
-                    lastname: data[x].lastname,
-                    img: '/images/emps/' + data[x].employeeId + '.jpg',
-                    date: data[x].timestamp * 1000
-                });
+                if ($scope.transactions.length < 5){
+                    $scope.transactions.push({
+                        empId: data[x].employeeId,
+                        firstname: data[x].firstname,
+                        lastname: data[x].lastname,
+                        img: '/images/emps/' + data[x].employeeId + '.jpg',
+                        date: data[x].timestamp * 1000
+                    });
+                }   
             }
 
         }

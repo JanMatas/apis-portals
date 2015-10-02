@@ -1,0 +1,136 @@
+Error: Connection lost: The server closed the connection.
+    at Protocol.end (/var/opt/apis-portals/node_modules/mysql/lib/protocol/Protocol.js:103:13)
+    at Socket.<anonymous> (/var/opt/apis-portals/node_modules/mysql/lib/Connection.js:102:28)
+    at Socket.emit (events.js:129:20)
+    at _stream_readable.js:908:16
+    at process._tickCallback (node.js:355:11)
+    --------------------
+    at Protocol._enqueue (/var/opt/apis-portals/node_modules/mysql/lib/protocol/Protocol.js:135:48)
+    at Protocol.handshake (/var/opt/apis-portals/node_modules/mysql/lib/protocol/Protocol.js:52:41)
+    at Connection.connect (/var/opt/apis-portals/node_modules/mysql/lib/Connection.js:123:18)
+    at getConnection (/var/opt/apis-portals/db.js:19:16)
+    at Object.executeQuery (/var/opt/apis-portals/db.js:26:5)
+    at /var/opt/apis-portals/controllers/api/portal_endpoint.js:97:12
+    at Query._callback (/var/opt/apis-portals/db.js:41:13)
+    at Query.Sequence.end (/var/opt/apis-portals/node_modules/mysql/lib/protocol/sequences/Sequence.js:96:24)
+    at Query._handleFinalResultPacket (/var/opt/apis-portals/node_modules/mysql/lib/protocol/sequences/Query.js:144:8)
+    at Query.EofPacket (/var/opt/apis-portals/node_modules/mysql/lib/protocol/sequences/Query.js:128:8)
+Error: Connection lost: The server closed the connection.
+    at Protocol.end (/var/opt/apis-portals/node_modules/mysql/lib/protocol/Protocol.js:103:13)
+    at Socket.<anonymous> (/var/opt/apis-portals/node_modules/mysql/lib/Connection.js:102:28)
+    at Socket.emit (events.js:129:20)
+    at _stream_readable.js:908:16
+    at process._tickCallback (node.js:355:11)
+    --------------------
+    at Protocol._enqueue (/var/opt/apis-portals/node_modules/mysql/lib/protocol/Protocol.js:135:48)
+    at Protocol.handshake (/var/opt/apis-portals/node_modules/mysql/lib/protocol/Protocol.js:52:41)
+    at Connection.connect (/var/opt/apis-portals/node_modules/mysql/lib/Connection.js:123:18)
+    at getConnection (/var/opt/apis-portals/db.js:19:16)
+    at Object.executeQuery (/var/opt/apis-portals/db.js:26:5)
+    at /var/opt/apis-portals/controllers/api/portal_endpoint.js:76:8
+    at Layer.handle [as handle_request] (/var/opt/apis-portals/node_modules/express/lib/router/layer.js:95:5)
+    at next (/var/opt/apis-portals/node_modules/express/lib/router/route.js:131:13)
+    at Route.dispatch (/var/opt/apis-portals/node_modules/express/lib/router/route.js:112:3)
+    at Layer.handle [as handle_request] (/var/opt/apis-portals/node_modules/express/lib/router/layer.js:95:5)
+Error: Connection lost: The server closed the connection.
+    at Protocol.end (/var/opt/apis-portals/node_modules/mysql/lib/protocol/Protocol.js:103:13)
+    at Socket.<anonymous> (/var/opt/apis-portals/node_modules/mysql/lib/Connection.js:102:28)
+    at Socket.emit (events.js:129:20)
+    at _stream_readable.js:908:16
+    at process._tickCallback (node.js:355:11)
+    --------------------
+    at Protocol._enqueue (/var/opt/apis-portals/node_modules/mysql/lib/protocol/Protocol.js:135:48)
+    at Protocol.handshake (/var/opt/apis-portals/node_modules/mysql/lib/protocol/Protocol.js:52:41)
+    at Connection.connect (/var/opt/apis-portals/node_modules/mysql/lib/Connection.js:123:18)
+    at getConnection (/var/opt/apis-portals/db.js:19:16)
+    at Object.executeQuery (/var/opt/apis-portals/db.js:26:5)
+    at /var/opt/apis-portals/controllers/api/portal_endpoint.js:76:8
+    at Layer.handle [as handle_request] (/var/opt/apis-portals/node_modules/express/lib/router/layer.js:95:5)
+    at next (/var/opt/apis-portals/node_modules/express/lib/router/route.js:131:13)
+    at Route.dispatch (/var/opt/apis-portals/node_modules/express/lib/router/route.js:112:3)
+    at Layer.handle [as handle_request] (/var/opt/apis-portals/node_modules/express/lib/router/layer.js:95:5)
+Error: Connection lost: The server closed the connection.
+    at Protocol.end (/var/opt/apis-portals/node_modules/mysql/lib/protocol/Protocol.js:103:13)
+    at Socket.<anonymous> (/var/opt/apis-portals/node_modules/mysql/lib/Connection.js:102:28)
+    at Socket.emit (events.js:129:20)
+    at _stream_readable.js:908:16
+    at process._tickCallback (node.js:355:11)
+    --------------------
+    at Protocol._enqueue (/var/opt/apis-portals/node_modules/mysql/lib/protocol/Protocol.js:135:48)
+    at Protocol.handshake (/var/opt/apis-portals/node_modules/mysql/lib/protocol/Protocol.js:52:41)
+    at Connection.connect (/var/opt/apis-portals/node_modules/mysql/lib/Connection.js:123:18)
+    at getConnection (/var/opt/apis-portals/db.js:19:16)
+    at Object.executeQuery (/var/opt/apis-portals/db.js:26:5)
+    at /var/opt/apis-portals/controllers/api/portal_endpoint.js:76:8
+    at Layer.handle [as handle_request] (/var/opt/apis-portals/node_modules/express/lib/router/layer.js:95:5)
+    at next (/var/opt/apis-portals/node_modules/express/lib/router/route.js:131:13)
+    at Route.dispatch (/var/opt/apis-portals/node_modules/express/lib/router/route.js:112:3)
+    at Layer.handle [as handle_request] (/var/opt/apis-portals/node_modules/express/lib/router/layer.js:95:5)
+Error: Connection lost: The server closed the connection.
+    at Protocol.end (/var/opt/apis-portals/node_modules/mysql/lib/protocol/Protocol.js:103:13)
+    at Socket.<anonymous> (/var/opt/apis-portals/node_modules/mysql/lib/Connection.js:102:28)
+    at Socket.emit (events.js:129:20)
+    at _stream_readable.js:908:16
+    at process._tickCallback (node.js:355:11)
+    --------------------
+    at Protocol._enqueue (/var/opt/apis-portals/node_modules/mysql/lib/protocol/Protocol.js:135:48)
+    at Protocol.handshake (/var/opt/apis-portals/node_modules/mysql/lib/protocol/Protocol.js:52:41)
+    at Connection.connect (/var/opt/apis-portals/node_modules/mysql/lib/Connection.js:123:18)
+    at getConnection (/var/opt/apis-portals/db.js:19:16)
+    at Object.executeQuery (/var/opt/apis-portals/db.js:26:5)
+    at /var/opt/apis-portals/controllers/api/portal_endpoint.js:76:8
+    at Layer.handle [as handle_request] (/var/opt/apis-portals/node_modules/express/lib/router/layer.js:95:5)
+    at next (/var/opt/apis-portals/node_modules/express/lib/router/route.js:131:13)
+    at Route.dispatch (/var/opt/apis-portals/node_modules/express/lib/router/route.js:112:3)
+    at Layer.handle [as handle_request] (/var/opt/apis-portals/node_modules/express/lib/router/layer.js:95:5)
+Error: Connection lost: The server closed the connection.
+    at Protocol.end (/var/opt/apis-portals/node_modules/mysql/lib/protocol/Protocol.js:103:13)
+    at Socket.<anonymous> (/var/opt/apis-portals/node_modules/mysql/lib/Connection.js:102:28)
+    at Socket.emit (events.js:129:20)
+    at _stream_readable.js:908:16
+    at process._tickCallback (node.js:355:11)
+    --------------------
+    at Protocol._enqueue (/var/opt/apis-portals/node_modules/mysql/lib/protocol/Protocol.js:135:48)
+    at Protocol.handshake (/var/opt/apis-portals/node_modules/mysql/lib/protocol/Protocol.js:52:41)
+    at Connection.connect (/var/opt/apis-portals/node_modules/mysql/lib/Connection.js:123:18)
+    at getConnection (/var/opt/apis-portals/db.js:19:16)
+    at Object.executeQuery (/var/opt/apis-portals/db.js:26:5)
+    at /var/opt/apis-portals/controllers/api/portal_endpoint.js:97:12
+    at Query._callback (/var/opt/apis-portals/db.js:41:13)
+    at Query.Sequence.end (/var/opt/apis-portals/node_modules/mysql/lib/protocol/sequences/Sequence.js:96:24)
+    at Query._handleFinalResultPacket (/var/opt/apis-portals/node_modules/mysql/lib/protocol/sequences/Query.js:144:8)
+    at Query.EofPacket (/var/opt/apis-portals/node_modules/mysql/lib/protocol/sequences/Query.js:128:8)
+Error: Connection lost: The server closed the connection.
+    at Protocol.end (/var/opt/apis-portals/node_modules/mysql/lib/protocol/Protocol.js:103:13)
+    at Socket.<anonymous> (/var/opt/apis-portals/node_modules/mysql/lib/Connection.js:102:28)
+    at Socket.emit (events.js:129:20)
+    at _stream_readable.js:908:16
+    at process._tickCallback (node.js:355:11)
+    --------------------
+    at Protocol._enqueue (/var/opt/apis-portals/node_modules/mysql/lib/protocol/Protocol.js:135:48)
+    at Protocol.handshake (/var/opt/apis-portals/node_modules/mysql/lib/protocol/Protocol.js:52:41)
+    at Connection.connect (/var/opt/apis-portals/node_modules/mysql/lib/Connection.js:123:18)
+    at getConnection (/var/opt/apis-portals/db.js:19:16)
+    at Object.executeQuery (/var/opt/apis-portals/db.js:26:5)
+    at /var/opt/apis-portals/controllers/api/portal_endpoint.js:76:8
+    at Layer.handle [as handle_request] (/var/opt/apis-portals/node_modules/express/lib/router/layer.js:95:5)
+    at next (/var/opt/apis-portals/node_modules/express/lib/router/route.js:131:13)
+    at Route.dispatch (/var/opt/apis-portals/node_modules/express/lib/router/route.js:112:3)
+    at Layer.handle [as handle_request] (/var/opt/apis-portals/node_modules/express/lib/router/layer.js:95:5)
+Error: Connection lost: The server closed the connection.
+    at Protocol.end (/var/opt/apis-portals/node_modules/mysql/lib/protocol/Protocol.js:103:13)
+    at Socket.<anonymous> (/var/opt/apis-portals/node_modules/mysql/lib/Connection.js:102:28)
+    at Socket.emit (events.js:129:20)
+    at _stream_readable.js:908:16
+    at process._tickCallback (node.js:355:11)
+    --------------------
+    at Protocol._enqueue (/var/opt/apis-portals/node_modules/mysql/lib/protocol/Protocol.js:135:48)
+    at Protocol.handshake (/var/opt/apis-portals/node_modules/mysql/lib/protocol/Protocol.js:52:41)
+    at Connection.connect (/var/opt/apis-portals/node_modules/mysql/lib/Connection.js:123:18)
+    at getConnection (/var/opt/apis-portals/db.js:19:16)
+    at Object.executeQuery (/var/opt/apis-portals/db.js:26:5)
+    at /var/opt/apis-portals/controllers/api/portal_endpoint.js:97:12
+    at Query._callback (/var/opt/apis-portals/db.js:41:13)
+    at Query.Sequence.end (/var/opt/apis-portals/node_modules/mysql/lib/protocol/sequences/Sequence.js:96:24)
+    at Query._handleFinalResultPacket (/var/opt/apis-portals/node_modules/mysql/lib/protocol/sequences/Query.js:144:8)
+    at Query.EofPacket (/var/opt/apis-portals/node_modules/mysql/lib/protocol/sequences/Query.js:128:8)

@@ -3,7 +3,7 @@ app.service('PortalSvc', function($http) {
         return $http.get('/api/portal');
     };
     this.fetchTransactions = function(id, from, to) {
-    	var url = '/api/transaction/portal/' + id + '?';
+    	var url = '/api/transaction/portal/' + id + '?fields=zoneToName,zoneFromName';
     	if (from) {
     		url = url + "&from=" + from;
     	}
